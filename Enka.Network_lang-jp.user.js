@@ -15,11 +15,11 @@
     function getConvertJsonURL(language) {
         switch (language) {
             case LANGUAGE.EN:
-                return "file:///D:/Users\\sapph\\Documents\\Genshin\\Userscript\\enkaNet\\en.json";
+                return "https://raw.githubusercontent.com/takenoko9973/enkaNetworkConvert/master/en.json";
             case LANGUAGE.JA:
-                return "file:///D:/Users\\sapph\\Documents\\Genshin\\Userscript\\enkaNet\\ja.json";
+                return "https://raw.githubusercontent.com/takenoko9973/enkaNetworkConvert/master/ja.json";
             default:
-                return "file:///D:/Users\\sapph\\Documents\\Genshin\\Userscript\\enkaNet\\en.json";
+                return "https://raw.githubusercontent.com/takenoko9973/enkaNetworkConvert/master/en.json";
         }
     }
 
