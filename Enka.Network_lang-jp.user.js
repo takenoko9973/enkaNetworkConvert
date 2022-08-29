@@ -44,6 +44,144 @@
         return Number(stat.replace(/[^0-9.]/g, ''));
     }
 
+    /**
+     * 聖遺物を装備しているかどうか
+     */
+     function isEquippingArtifact(index) {
+        if (index < 0 || 4 < index) return false;
+
+        return Array.from($artifact[index].classList).indexOf("empty") === -1;
+    }
+
+    function createConvertTextElements() {
+        // 好感度
+        const $friend = $doc.getElementsByClassName("fren")[0];
+        if ($friend) {
+            // アイコン用の隙間を削除
+            const $icon = $friend.getElementsByClassName("ShadedSvgIcon")[0];
+            $icon.style.width = "0";
+
+            if (!$friend.getElementsByClassName("FRIEND")[0]) {
+                const $frenText = $doc.createElement("span");
+                $frenText.classList.add("FRIEND");
+                $frenText.classList.add("svelte-1cfvxg7");
+                $frenText.style.cssText = "width:auto; height:auto; font-size:1em; font-weight:bold";
+                $friend.prepend($frenText);
+            }
+        }
+
+        // サブステータス用のテキスト欄の作成
+        const $statText = $doc.createElement("div");
+        $statText.classList += "svelte-1ut2kb8"
+        $statText.style.fontWeight = "bold";
+
+        // 武器
+        const $weaponInfo = $weapon[0].getElementsByTagName("content")[0];
+        const $subStat = $weaponInfo.getElementsByClassName("Substat");
+
+        const baseAtkClass = converterInstance.getClassName("BASE_ATK")
+        if (!$doc.getElementById(baseAtkClass)) {
+            const $baseAtk = $statText.cloneNode(true);
+            $baseAtk.setAttribute("id", baseAtkClass);
+            $baseAtk.classList.add(baseAtkClass);
+            $subStat[0].prepend($baseAtk);
+        }
+
+        if (!$doc.getElementById("weaponSubOP")) {
+            const $subOPName = $statText.cloneNode(true);
+            $subOPName.setAttribute("id", "weaponSubOP");
+            $subStat[1].prepend($subOPName);
+        }
+
+        // 聖遺物
+        for (let i = 0; i < 5; i++) {
+            if (!isEquippingArtifact(i)) continue;
+
+            // メインOP
+            const $mainStat = $artifact[i].getElementsByClassName("mainstat")[0];
+            if ($doc.getElementById("artifactMain" + i) === null) {
+                const $mainOPName = $statText.cloneNode(true);
+                $mainOPName.setAttribute("id", "artifactMain" + i);
+                $mainStat.prepend($mainOPName);
+            }
+
+            // サブOP
+            const $subStat = $artifact[i].getElementsByClassName("Substat");
+            const subLen = $subStat.length;
+            for (let j = 0; j < subLen; j++) {
+                const subOPId = "artifactSub" + i + "-" + j
+                if ($doc.getElementById(subOPId) !== null) continue;
+
+                const $subOPName = $statText.cloneNode(true);
+                $subOPName.setAttribute("id", subOPId);
+                $subStat[j].prepend($subOPName)
+            }
+
+            // スコア表示
+            if ($doc.getElementById("score" + i) === null) {
+                const $scoreBox = $doc.createElement("div");
+                $scoreBox.id = "score" + i;
+                $scoreBox.style.cssText = "position: absolute; font-size: 80%; bottom: -0.2em; right: 0.3em; text-align: right; opacity: .6;";
+                $artifact[i].appendChild($scoreBox);
+            }
+        }
+    }
+
     window.onload = function () {
+        // デバイスの判定
+        const device = navigator.userAgent;
+        if ((device.indexOf("iPhone") > 0 || device.indexOf("iPad") > 0)) {
+            // iOS
+            $doc.querySelector("body").style.WebkitTextSizeAdjust = "95%";
+        }
+
+        // 武器
+        const $weaponInfo = $weapon[0].getElementsByTagName("content")[0];
+        const $weaponName = $weaponInfo.getElementsByTagName("h3")[0];
+        $weaponInfo.style.paddingRight = "0px";
+        $weaponName.style.cssText = "font-weight: bold;";
+        $weapon[0].children[0].style.width = "30%";  // 武器画像
+
+        // キャラクター名のフォント変更
+        const $charaName = $doc.getElementsByClassName("name")[0];
+        $charaName.style.cssText = "padding-top: 1%; padding-bottom: 0%;";
+
+        // ###### キャラカードのデザイン変更 ######
+        const $charaCard = $doc.getElementsByClassName("card-host")[0];
+
+        // 取得時間
+        const $timesta = $doc.createElement("div");
+        $timesta.id = "timesta";
+        $timesta.style.cssText = "position: absolute; top: 1%; left: 2%; font-size: 60%; opacity: 0.4;";
+        $timesta.innerText = "";
+        $timesta.setAttribute("class", "svelte-1ujofp1");
+        $charaCard.appendChild($timesta);
+
+        // cssの全面的な変更
+        const cssStyle = [
+            '.Icon{ display:none !important }',  // アイコンの削除
+            ' .stats.svelte-gp6viv .Substat { padding-top: 4%; }',  // 武器ステータスの枠を大きく
+            '.Substat.svelte-1ut2kb8.svelte-1ut2kb8 { display: flex; align-items: center; margin-right: 0em; line-height: 95%; font-size: 98%; }',  // サブステータスの枠を広げる
+            '.Substat.svelte-1ut2kb8>* { margin-left: auto; }',  // ステータス値を右寄せにする
+            '.substats.svelte-17qi811>.Substat { padding-right: 1.0em; }',  // 聖遺物のサブステータスが右に行きすぎるので調整
+            '.Artifact.svelte-17qi811 .ArtifactIcon { top: -37%; left: -6%; width: 28%; }',  // 聖遺物画像の調整
+            '.mainstat.svelte-17qi811 > div:nth-child(1) { display: flex; align-items: center; top: 3px; margin-bottom: 3px; max-height: 100%; font-size: 110%; line-height: 90%; width: auto; height: 50em; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; }'  // 聖遺物メインステータスの調整
+        ];
+        const $style = $doc.createElement("style");
+        $style.innerHTML = cssStyle.join(" ");
+        $doc.querySelector("head").append($style);
+
+        // 全体の配置の変更
+        const $cardSection = $doc.getElementsByClassName("section");
+        // 左
+        $cardSection[0].style.width = "36%";
+        // 中央
+        $cardSection[1].style.width = "24%";
+        $cardSection[1].style.left = "34%";
+        // 右
+        $cardSection[2].style.width = "43%";
+        $cardSection[2].style.height = "97%";
+
+        createConvertTextElements();
     };
 })();
