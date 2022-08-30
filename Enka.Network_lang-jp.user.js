@@ -109,6 +109,7 @@
             $subStat[0].prepend($baseAtk);
         }
 
+        // サブステがあるかどうか判定
         if ($subStat[1]) {
             if (!$doc.getElementById("weaponSubOP")) {
                 const $subOPName = $statText.cloneNode(true);
