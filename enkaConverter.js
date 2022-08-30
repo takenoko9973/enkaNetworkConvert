@@ -110,17 +110,17 @@ class EnkaConverter {
     }
 
     getStatByClassName(className) {
-        var array = Object.keys(CONVERT_TEXT).map((k)=>(CONVERT_TEXT[k]));
+        var array = Object.keys(this.CONVERT_TEXT).map((k)=>(this.CONVERT_TEXT[k]));
 
         return array.find((s) => s.key === className);
     }
 
-    getStatName(language, key, isSub) {
+    getStatName(language, className, isSub) {
         // 対応していない言語ならば、英語に強制的に変更
         if (!(language in LANGUAGE)) language = LANGUAGE.EN;
 
-        let stat = getStatByClassName(key);
-        if (!stat) return CONVERT_TEXT.UNKNOWN[language];
+        let stat = this.getStatByClassName(className);
+        if (!stat) return this.CONVERT_TEXT.UNKNOWN[language];
         if (!isSub) return stat[language];
 
         // サブステータス時の動作
@@ -128,5 +128,11 @@ class EnkaConverter {
         if (!(language in stat["sub"])) return stat[language];
 
         return stat["sub"][language];
+    }
+
+    getClassName(key) {
+        if (key in this.CONVERT_TEXT) return this.CONVERT_TEXT[key].key;
+
+        return this.CONVERT_TEXT["UNKNOWN"].key;
     }
 }

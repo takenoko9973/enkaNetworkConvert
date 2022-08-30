@@ -1,4 +1,4 @@
-(function () {
+(() => {
     'use strict';
     const version = "v0.40";
 
@@ -8,6 +8,10 @@
     const $artifact = $doc.getElementsByClassName("Artifact");
 
     const converterInstance = new EnkaConverter();
+
+    const BASE_ATK_CLASS = converterInstance.getClassName("BASE_ATK");
+    const TIME_STAMP = "timeStamp"
+
 
     function getLanguage() {
         const $language = $doc.getElementsByXPath('//div[@data-icon="language"]')[0];
@@ -47,10 +51,18 @@
     /**
      * 聖遺物を装備しているかどうか
      */
-     function isEquippingArtifact(index) {
+    function isEquippingArtifact(index) {
         if (index < 0 || 4 < index) return false;
 
         return Array.from($artifact[index].classList).indexOf("empty") === -1;
+    }
+
+    // 余白用要素を返す
+    function getSeparateElement() {
+        const $separateElement = $doc.createElement("span");
+        $separateElement.classList += "sep";
+
+        return $separateElement;
     }
 
     function createConvertTextElements() {
@@ -61,9 +73,10 @@
             const $icon = $friend.getElementsByClassName("ShadedSvgIcon")[0];
             $icon.style.width = "0";
 
-            if (!$friend.getElementsByClassName("FRIEND")[0]) {
+            const friendClassName = converterInstance.getClassName("FRIEND");
+            if (!$friend.getElementsByClassName(friendClassName)[0]) {
                 const $frenText = $doc.createElement("span");
-                $frenText.classList.add("FRIEND");
+                $frenText.classList.add(friendClassName);
                 $frenText.classList.add("svelte-1cfvxg7");
                 $frenText.style.cssText = "width:auto; height:auto; font-size:1em; font-weight:bold";
                 $friend.prepend($frenText);
@@ -72,7 +85,7 @@
 
         // サブステータス用のテキスト欄の作成
         const $statText = $doc.createElement("div");
-        $statText.classList += "svelte-1ut2kb8"
+        $statText.classList += "svelte-1ut2kb8";
         $statText.style.fontWeight = "bold";
 
         // 武器
@@ -84,12 +97,14 @@
             const $baseAtk = $statText.cloneNode(true);
             $baseAtk.setAttribute("id", baseAtkClass);
             $baseAtk.classList.add(baseAtkClass);
+            $subStat[0].prepend(getSeparateElement());
             $subStat[0].prepend($baseAtk);
         }
 
         if (!$doc.getElementById("weaponSubOP")) {
             const $subOPName = $statText.cloneNode(true);
             $subOPName.setAttribute("id", "weaponSubOP");
+            $subStat[1].prepend(getSeparateElement());
             $subStat[1].prepend($subOPName);
         }
 
@@ -99,9 +114,10 @@
 
             // メインOP
             const $mainStat = $artifact[i].getElementsByClassName("mainstat")[0];
-            if ($doc.getElementById("artifactMain" + i) === null) {
+            if (!$doc.getElementById("artifactMain" + i)) {
                 const $mainOPName = $statText.cloneNode(true);
                 $mainOPName.setAttribute("id", "artifactMain" + i);
+                $mainStat.prepend(getSeparateElement());
                 $mainStat.prepend($mainOPName);
             }
 
@@ -110,11 +126,12 @@
             const subLen = $subStat.length;
             for (let j = 0; j < subLen; j++) {
                 const subOPId = "artifactSub" + i + "-" + j
-                if ($doc.getElementById(subOPId) !== null) continue;
+                if ($doc.getElementById(subOPId)) continue;
 
                 const $subOPName = $statText.cloneNode(true);
                 $subOPName.setAttribute("id", subOPId);
-                $subStat[j].prepend($subOPName)
+                $subStat[j].prepend(getSeparateElement());
+                $subStat[j].prepend($subOPName);
             }
 
             // スコア表示
@@ -125,6 +142,58 @@
                 $artifact[i].appendChild($scoreBox);
             }
         }
+    }
+
+    // 武器オプションの日本語化
+    function weaponOPConvert() {
+        const $subStat = $weapon[0].getElementsByClassName("Substat");
+
+        const $baseAtk = $doc.getElementById(BASE_ATK_CLASS);
+        if ($baseAtk) $baseAtk.innerText = getConvertStatName(BASE_ATK_CLASS);
+
+        const $weaponSub = $doc.getElementById("weaponSubOP");
+        if ($weaponSub) $weaponSub.innerText = getConvertStatName($subStat[1].classList[1]);
+    }
+
+    // 聖遺物の日本語化
+    function artifactConv() {
+        for (let i = 0; i < 5; i++) {
+            // 聖遺物を付けていない場合、スキップ
+            if (!isEquippingArtifact(i)) continue;
+
+            // メインOP
+            const $mainStat = $artifact[i].getElementsByClassName("mainstat")[0];
+            $doc.getElementById("artifactMain" + i).innerText = getConvertStatName($mainStat.classList[1])
+
+            // サブOP
+            const $subStat = $artifact[i].getElementsByClassName("Substat");
+            const subLen = $subStat.length;
+            for (let j = 0; j < subLen; j++) {
+                const subOPId = "artifactSub" + i + "-" + j
+                if (!$doc.getElementById(subOPId)) continue;
+
+                $doc.getElementById(subOPId).innerText = getConvertStatName($subStat[j].classList[1], true);
+            }
+        }
+    }
+
+    function enkaConvertStat() {
+        weaponOPConvert();
+        artifactConv();
+
+        // 好感度
+        const $friend = $doc.getElementsByClassName("fren")[0];
+        if ($friend) {
+            const friendClassName = converterInstance.getClassName("FRIEND")
+            const $friendText = $friend.getElementsByClassName(friendClassName)[0];
+            $friendText.innerText = getConvertStatName(friendClassName);
+        }
+
+        // 情報取得日時を表示
+        const date = new Date;
+        date.setTime(date.getTime() - 60 * date.getTimezoneOffset() * 1000);
+        const timeString = date.toISOString().replace("T", " ").substr(0, 19);
+        $doc.getElementById(TIME_STAMP).innerText = version + "_" + timeString;
     }
 
     window.onload = function () {
@@ -142,27 +211,22 @@
         $weaponName.style.cssText = "font-weight: bold;";
         $weapon[0].children[0].style.width = "30%";  // 武器画像
 
-        // キャラクター名のフォント変更
-        const $charaName = $doc.getElementsByClassName("name")[0];
-        $charaName.style.cssText = "padding-top: 1%; padding-bottom: 0%;";
-
         // ###### キャラカードのデザイン変更 ######
         const $charaCard = $doc.getElementsByClassName("card-host")[0];
 
         // 取得時間
-        const $timesta = $doc.createElement("div");
-        $timesta.id = "timesta";
-        $timesta.style.cssText = "position: absolute; top: 1%; left: 2%; font-size: 60%; opacity: 0.4;";
-        $timesta.innerText = "";
-        $timesta.setAttribute("class", "svelte-1ujofp1");
-        $charaCard.appendChild($timesta);
+        const $timeStamp = $doc.createElement("div");
+        $timeStamp.id = TIME_STAMP;
+        $timeStamp.style.cssText = "position: absolute; top: 1%; left: 2%; font-size: 60%; opacity: 0.4;";
+        $timeStamp.innerText = "";
+        $timeStamp.setAttribute("class", "svelte-1ujofp1");
+        $charaCard.appendChild($timeStamp);
 
         // cssの全面的な変更
         const cssStyle = [
             '.Icon{ display:none !important }',  // アイコンの削除
             ' .stats.svelte-gp6viv .Substat { padding-top: 4%; }',  // 武器ステータスの枠を大きく
             '.Substat.svelte-1ut2kb8.svelte-1ut2kb8 { display: flex; align-items: center; margin-right: 0em; line-height: 95%; font-size: 98%; }',  // サブステータスの枠を広げる
-            '.Substat.svelte-1ut2kb8>* { margin-left: auto; }',  // ステータス値を右寄せにする
             '.substats.svelte-17qi811>.Substat { padding-right: 1.0em; }',  // 聖遺物のサブステータスが右に行きすぎるので調整
             '.Artifact.svelte-17qi811 .ArtifactIcon { top: -37%; left: -6%; width: 28%; }',  // 聖遺物画像の調整
             '.mainstat.svelte-17qi811 > div:nth-child(1) { display: flex; align-items: center; top: 3px; margin-bottom: 3px; max-height: 100%; font-size: 110%; line-height: 90%; width: auto; height: 50em; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; }'  // 聖遺物メインステータスの調整
@@ -183,5 +247,18 @@
         $cardSection[2].style.height = "97%";
 
         createConvertTextElements();
+        enkaConvertStat();
+
+        const $charaName = $doc.getElementsByClassName("name")[0];
+        const $language = $doc.getElementsByXPath('//div[@data-icon="language"]')[0];
+        // 言語やキャラクター変更時に再翻訳
+        const observeConf = { childList: true, attributes: true, characterData: true };
+        const observer = new MutationObserver(mutations => {
+            console.log("observe")
+            createConvertTextElements();
+            enkaConvertStat();
+        })
+        observer.observe($charaName, observeConf); // キャラクター変更時
+        observer.observe($language, observeConf); // 言語変更時
     };
 })();
