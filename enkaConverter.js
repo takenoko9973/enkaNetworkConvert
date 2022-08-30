@@ -82,6 +82,11 @@ class EnkaConverter {
             [LANGUAGE.EN]: "Pyro DMG",
             [LANGUAGE.JA]: "炎元素ダメージ",
         },
+        DENDRO: {
+            key: "GRASS_ADD_HURT",
+            [LANGUAGE.EN]: "Dendro DMG",
+            [LANGUAGE.JA]: "草元素ダメージ",
+        },
         GEO: {
             key: "ROCK_ADD_HURT",
             [LANGUAGE.EN]: "Geo DMG",

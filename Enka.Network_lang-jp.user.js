@@ -146,7 +146,7 @@
             if ($doc.getElementById("score" + i) === null) {
                 const $scoreBox = $doc.createElement("div");
                 $scoreBox.id = "score" + i;
-                $scoreBox.style.cssText = "position: absolute; font-size: 80%; bottom: -0.2em; right: 0.3em; text-align: right; opacity: .6;";
+                $scoreBox.style.cssText = "position: absolute; font-size: 70%; top: -0.2em; right: 0.3em; text-align: right; opacity: .6;";
                 $artifact[i].appendChild($scoreBox);
             }
         }
@@ -235,6 +235,59 @@
         }
     }
 
+    /**
+ * 聖遺物のスコアを計算
+ */
+    function calcArtifactScore(index) {
+        let score = 0;
+        if (!isEquippingArtifact(index)) return score;
+
+        const $subStat = Array.from($artifact[index].getElementsByClassName("Substat"));
+        const $subStatName = $subStat.map(sub => sub.classList[1]);
+        const $subStatAmount = $subStat.map(sub => sub.lastChild.innerText.replace(/[^0-9.]/g, ''));
+        const subLen = $subStat.length;
+
+        for (let i = 0; i < subLen; i++) {
+            if (Array.from($subStat[i].classList).indexOf("meh") !== -1) continue;
+
+            switch ($subStatName[i]) {
+                case converterInstance.getClassName("CRIT_RATE"):
+                    score += Number($subStatAmount[i]) * 2;
+                    break;
+                case converterInstance.getClassName("CRIT_DMG"):
+                    score += Number($subStatAmount[i]);
+                    break;
+                case converterInstance.getClassName("HP"):
+                    if (scoreH !== SCORE_TYPE.HP) break;
+                    score += Number($subStatAmount[i]);
+                    break;
+                case converterInstance.getClassName("ATK"):
+                    if (scoreH !== SCORE_TYPE.ATTACK) break;
+                    score += Number($subStatAmount[i]);
+                    break;
+                case converterInstance.getClassName("DEF"):
+                    if (scoreH !== SCORE_TYPE.DEFENSE) break;
+                    score += Number($subStatAmount[i]);
+                    break;
+            }
+        }
+
+        return score;
+    }
+
+    function getExtraText() {
+        const language = getLanguage();
+
+        switch (language) {
+            case LANGUAGE.EN:
+                return "Crit Ratio 1:{0} / Score({1}) Avg. {2} Total {3}";
+            case LANGUAGE.JA:
+                return "会心率ダメ比 1:{0} / 聖遺物スコア({1}) 平均:{2} 合計:{3}";
+            default:
+                return "Crit Ratio 1:{0} / Score({1}) Avg. {2} Total {3}";
+        }
+    }
+
     function enkaConvertStat() {
         weaponOPConvert();
         artifactConvert();
@@ -254,11 +307,56 @@
         $doc.getElementById(TIME_STAMP).innerText = version + "_" + timeString;
 
         // スコア方式選択ボタン
-        const typeLen =  Object.keys(SCORE_TYPE).length
+        const typeLen = Object.keys(SCORE_TYPE).length
         for (let i = 0; i < typeLen; i++) {
             const $radio = $doc.getElementById("r" + i).parentNode;
             $radio.children[1].innerText = getConvertStatName($radio.children[1].classList[0]);
         }
+
+        // ------ 追加情報
+        let sumScore = 0;
+        let avgScore = 0;
+        const $extraText = $doc.getElementById("extraData");
+
+        // スコア計算
+        for (let i = 0; i < 5; i++) {
+            let score = 0.0;
+
+            const $scoreBox = $doc.getElementById("score" + i);
+            if ($scoreBox === null) continue;
+
+            $scoreBox.setAttribute("class", "svelte-1ujofp1");
+
+            // 聖遺物を付けている場合、計算
+            if (isEquippingArtifact(i)) {
+                score = calcArtifactScore(i);
+                sumScore += score;
+
+                $scoreBox.innerText = score.toFixed(1);
+            } else {
+                $scoreBox.innerText = "";
+            }
+        }
+        avgScore = sumScore / 5;
+
+        const critRate = getCharacterStats(converterInstance.getClassName("CRIT_RATE"));
+        const critDMG = getCharacterStats(converterInstance.getClassName("CRIT_DMG"));
+        const critRatio = critDMG / critRate;
+
+        let type = "";
+        switch (scoreH) {
+            case SCORE_TYPE.HP:
+                type = getConvertStatName(converterInstance.getClassName("HP"));
+                break;
+            case SCORE_TYPE.ATTACK:
+                type = getConvertStatName(converterInstance.getClassName("ATK"));
+                break;
+            case SCORE_TYPE.DEFENSE:
+                type = getConvertStatName(converterInstance.getClassName("DEF"));
+                break;
+        }
+
+        $extraText.innerText = getExtraText().format(critRatio.toFixed(1), type, avgScore.toFixed(1), sumScore.toFixed(1));
     }
 
     window.onload = function () {
@@ -279,6 +377,14 @@
         // ###### キャラカードのデザイン変更 ######
         const $charaCard = $doc.getElementsByClassName("card-host")[0];
 
+        // その他情報を表示する枠
+        const $exParam = $doc.createElement("div");
+        $exParam.innerText = "";
+        $exParam.style.cssText = "position: absolute; bottom: .2%; right: 1.3%; text-align: right; font-size: 80%;";
+        $exParam.id = "extraData";
+        $exParam.setAttribute("class", "svelte-1ujofp1");
+        $charaCard.appendChild($exParam);
+
         // 取得時間
         const $timeStamp = $doc.createElement("div");
         $timeStamp.id = TIME_STAMP;
@@ -294,8 +400,8 @@
             '.Substat.svelte-1ut2kb8.svelte-1ut2kb8 { display: flex; align-items: center; margin-right: 0em; line-height: 95%; font-size: 98%; }',  // サブステータスの枠を広げる
             '.substats.svelte-17qi811>.Substat { padding-right: 1.0em; }',  // 聖遺物のサブステータスが右に行きすぎるので調整
             '.Artifact.svelte-17qi811 .ArtifactIcon { top: -37%; left: -6%; width: 28%; }',  // 聖遺物画像の調整
-            '.mainstat.svelte-17qi811 > div:nth-child(1) { display: flex; align-items: center; top: 3px; margin-bottom: 3px; max-height: 100%; font-size: 110%; line-height: 90%; width: auto; height: 50em; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; }',  // 聖遺物メインステータスの調整
-            '.mainstat.svelte-17qi811 > div:nth-child(4) { display: flex; align-items: center; margin-left: auto }'  // 聖遺物メインステータスの調整
+            '.mainstat.svelte-17qi811 > div:nth-child(1) { display: flex; align-items: center; top: 3px; max-height: 100%; font-size: 110%; line-height: 90%; width: auto; height: 50em; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; }',  // 聖遺物メインステータスの調整
+            '.mainstat.svelte-17qi811 > div:nth-child(4) { display: flex; align-items: center; margin-left: auto; margin-bottom: -0.3em; }'  // 聖遺物メインステータスの調整
         ];
         const $style = $doc.createElement("style");
         $style.innerHTML = cssStyle.join(" ");
