@@ -4,7 +4,7 @@
 String.prototype.format = function () {
     let formatted = this;
     for (let arg in arguments) {
-        formatted = formatted.replace("{" + arg + "}", arguments[arg]);
+        formatted = formatted.replaceAll("{" + arg + "}", arguments[arg]);
     }
     return formatted;
 };
