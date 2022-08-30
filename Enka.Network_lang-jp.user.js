@@ -109,11 +109,13 @@
             $subStat[0].prepend($baseAtk);
         }
 
-        if (!$doc.getElementById("weaponSubOP")) {
-            const $subOPName = $statText.cloneNode(true);
-            $subOPName.setAttribute("id", "weaponSubOP");
-            $subStat[1].prepend(getSeparateElement());
-            $subStat[1].prepend($subOPName);
+        if ($subStat[1]) {
+            if (!$doc.getElementById("weaponSubOP")) {
+                const $subOPName = $statText.cloneNode(true);
+                $subOPName.setAttribute("id", "weaponSubOP");
+                $subStat[1].prepend(getSeparateElement());
+                $subStat[1].prepend($subOPName);
+            }
         }
 
         // 聖遺物
