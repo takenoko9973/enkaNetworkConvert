@@ -13,7 +13,7 @@
 // @updateURL    https://github.com/takenoko9973/enkaNetworkConvert/raw/master/Enka.Network_lang-jp.user.js
 // @downloadURL  https://github.com/takenoko9973/enkaNetworkConvert/raw/master/Enka.Network_lang-jp.user.js
 // @supportURL   https://github.com/takenoko9973/enkaNetworkConvert
-// @since        0.40T enka.netoworkのアップデートに対応
+// @since        0.40T enka.networkのアップデートに対応
 // @since        0.31T 聖遺物が5か所 または サブOPが4か所埋まっていないときに正常に表示されない不具合を修正 主人公を選択したとき、好感度部分でエラーが発生する不具合修正
 // @since        0.30T 英語表示対応
 // @since        0.21T URLの修正
