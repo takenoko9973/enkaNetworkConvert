@@ -363,13 +363,6 @@
     }
 
     window.onload = function () {
-        // デバイスの判定
-        const device = navigator.userAgent;
-        if ((device.indexOf("iPhone") > 0 || device.indexOf("iPad") > 0)) {
-            // iOS
-            $doc.querySelector("body").style.WebkitTextSizeAdjust = "95%";
-        }
-
         // 武器
         const $weaponInfo = $weapon[0].getElementsByTagName("content")[0];
         const $weaponName = $weaponInfo.getElementsByTagName("h3")[0];
