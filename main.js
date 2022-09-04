@@ -70,7 +70,7 @@
     // 余白用要素を返す
     function getSeparateElement() {
         const $separateElement = $doc.createElement("span");
-        $separateElement.classList += "sep";
+        $separateElement.classList.add("sep");
 
         return $separateElement;
     }
@@ -86,8 +86,7 @@
             const friendClassName = converterInstance.getClassName("FRIEND");
             if (!$friend.getElementsByClassName(friendClassName)[0]) {
                 const $frenText = $doc.createElement("span");
-                $frenText.classList.add(friendClassName);
-                $frenText.classList.add("svelte-1cfvxg7");
+                $frenText.classList.add(friendClassName, "svelte-1cfvxg7");
                 $frenText.style.cssText = "width:auto; height:auto; font-size:1em; font-weight:bold";
                 $friend.prepend($frenText);
             }
@@ -95,7 +94,7 @@
 
         // サブステータス用のテキスト欄の作成
         const $statText = $doc.createElement("div");
-        $statText.classList += "svelte-1ut2kb8";
+        $statText.classList.add("svelte-1ut2kb8");
         $statText.style.fontWeight = "bold";
 
         // 武器
@@ -105,7 +104,7 @@
         const baseAtkClass = converterInstance.getClassName("BASE_ATK")
         if (!$doc.getElementById(baseAtkClass)) {
             const $baseAtk = $statText.cloneNode(true);
-            $baseAtk.setAttribute("id", baseAtkClass);
+            $baseAtk.id = baseAtkClass;
             $baseAtk.classList.add(baseAtkClass);
             $subStat[0].prepend(getSeparateElement());
             $subStat[0].prepend($baseAtk);
@@ -115,7 +114,7 @@
         if ($subStat[1]) {
             if (!$doc.getElementById("weaponSubOP")) {
                 const $subOPName = $statText.cloneNode(true);
-                $subOPName.setAttribute("id", "weaponSubOP");
+                $subOPName.id = "weaponSubOP";
                 $subStat[1].prepend(getSeparateElement());
                 $subStat[1].prepend($subOPName);
             }
@@ -129,7 +128,7 @@
             const $mainStat = $artifact[i].getElementsByClassName("mainstat")[0];
             if (!$doc.getElementById("artifactMain" + i)) {
                 const $mainOPName = $statText.cloneNode(true);
-                $mainOPName.setAttribute("id", "artifactMain" + i);
+                $mainOPName.id = "artifactMain" + i;
                 $mainStat.prepend(getSeparateElement());
                 $mainStat.prepend($mainOPName);
             }
@@ -142,7 +141,7 @@
                 if ($doc.getElementById(subOPId)) continue;
 
                 const $subOPName = $statText.cloneNode(true);
-                $subOPName.setAttribute("id", subOPId);
+                $subOPName.id = subOPId;
                 $subStat[j].prepend(getSeparateElement());
                 $subStat[j].prepend($subOPName);
             }
@@ -173,13 +172,11 @@
 
         // スコア選択欄を作成
         $scoreSelectDiv = $doc.createElement("div");
-        $scoreSelectDiv.classList.add("Input");
-        $scoreSelectDiv.classList.add("svelte-nsdlaj");
+        $scoreSelectDiv.classList.add("Input", "svelte-nsdlaj");
 
         // 説明テキストを追加
         const $text = $doc.createElement("label");
-        $text.classList.add("SCORE_SELECT");
-        $text.classList.add("svelte-nsdlaj");
+        $text.classList.add("SCORE_SELECT", "svelte-nsdlaj");
         $text.cssStyle = "margin-left: 0.5em;";
 
         // 計算方法変更用ボタン
@@ -196,7 +193,7 @@
             const $radio = $doc.createElement("input");
             $radio.id = id;
             $radio.name = SCORE_RADIO_NAME;
-            $radio.type = "radio";
+            $radio.setAttribute("type", "radio");
             $radio.value = SCORE_TYPE[key];
 
             // ラベル (ボタンとリンクさせる)
@@ -393,7 +390,7 @@
         const $weaponInfo = $weapon[0].getElementsByTagName("content")[0];
         const $weaponName = $weaponInfo.getElementsByTagName("h3")[0];
         $weaponInfo.style.paddingRight = "0px";
-        $weaponName.style.cssText = "font-weight: bold;";
+        $weaponName.style.fontWeight = "bold";
         $weapon[0].children[0].style.width = "30%";  // 武器画像
 
         // ###### キャラカードのデザイン変更 ######
@@ -401,18 +398,18 @@
 
         // その他情報を表示する枠
         const $exParam = $doc.createElement("div");
+        $exParam.id = "extraData";
         $exParam.innerText = "";
         $exParam.style.cssText = "position: absolute; bottom: .2%; right: 1.3%; text-align: right; font-size: 80%;";
-        $exParam.id = "extraData";
-        $exParam.setAttribute("class", "svelte-1ujofp1");
+        $exParam.classList.add("svelte-1ujofp1")
         $charaCard.appendChild($exParam);
 
         // 取得時間
         const $timeStamp = $doc.createElement("div");
         $timeStamp.id = TIME_STAMP;
-        $timeStamp.style.cssText = "position: absolute; top: 1%; left: 2%; font-size: 60%; opacity: 0.4;";
         $timeStamp.innerText = "";
-        $timeStamp.setAttribute("class", "svelte-1ujofp1");
+        $timeStamp.style.cssText = "position: absolute; top: 1%; left: 2%; font-size: 60%; opacity: 0.4;";
+        $exParam.classList.add("svelte-1ujofp1")
         $charaCard.appendChild($timeStamp);
 
         // cssの全面的な変更
