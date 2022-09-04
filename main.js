@@ -293,7 +293,7 @@
                     break;
                 case converterInstance.getClassName("DEF"):
                     if (scoreH !== SCORE_TYPE.DEFENSE) break;
-                    score += Number($subStatAmount[i]);
+                    score += Number($subStatAmount[i]) * 0.8;
                     break;
             }
         }
