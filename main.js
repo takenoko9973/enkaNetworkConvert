@@ -13,6 +13,8 @@
     const TIME_STAMP = "timeStamp"
 
     // スコア計算基準指定 H:HP, A:攻撃力, D:防御力
+    const SCORE_RADIO_NAME = "sSource"
+    let $scoreSelectDiv = null;
     const SCORE_TYPE = {
         HP: "H",
         ATTACK: "A",
@@ -157,49 +159,70 @@
 
     function createModeChangeBottom() {
         const $cardToggles = $doc.getElementsByClassName("CardToggles")[0];
-        $cardToggles.classList.add("checkboxuid");
+        const $rowElement = $cardToggles.getElementsByClassName("row")[0].cloneNode(false);
+        $cardToggles.getElementsByClassName("Input")[0].parentNode.after($rowElement);  // カードオプションの下に作成
 
         const radioStyle = [
-            ' .checkboxuid label { position: relative; display: inline-flex; }',
-            ' .checkboxuid label input[type="checkbox"] { position: absolute; opacity: 0; }',
-            ' .checkboxuid label input[type="checkbox"] + span { display: inline; color: rgba(255,255,255,.5); border:1px solid rgba(255,255,255,.5); border-radius: 4px;  padding:.5em .7em; }',
-            ' .checkboxuid label input[type="checkbox"]:checked + span { color: rgba(255,255,255,1); }',
-            '.inline_radio{ display: inline-flex; margin-left: 0.5em; }',
-            '.inline_radio input[type="radio"] { position: absolute; opacity: 0; }',
-            '.radbox{ color: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,.5); border-radius: 4px; padding: .5em .7em; margin-right: 0.5em; }',
-            '.inline_radio p input[type="radio"]:checked + label { color: rgba(255,255,255,1); }'
+            '.inline_radio input[type="radio"] { position: absolute; opacity: 0; }',  // チェックボックスを隠す
+            '.inline_radio label.radbox[type="radio"] { color: rgba(255,255,255,.5);}',  // 普段は薄目
+            '.inline_radio input[type="radio"]:checked + label.radbox[type="radio"] { color: rgba(255,255,255,1); border-color: rgba(255,255,255,1); }'  // 選択しているボタンを強調
         ];
         const $style = $doc.createElement("style");
         $style.innerHTML = radioStyle.join(" ");
         $doc.querySelector("head").append($style);
 
-        // 計算方法変更用ボタン
-        const $div = $doc.createElement("div");
-        $div.cssStyle = "display: inline-flex; flex-direction: column;";
+        // スコア選択欄を作成
+        $scoreSelectDiv = $doc.createElement("div");
+        $scoreSelectDiv.classList.add("Input");
+        $scoreSelectDiv.classList.add("svelte-nsdlaj");
+
+        // 説明テキストを追加
         const $text = $doc.createElement("label");
-        $text.classList += "svelte-nsdlaj";
+        $text.classList.add("SCORE_SELECT");
+        $text.classList.add("svelte-nsdlaj");
         $text.cssStyle = "margin-left: 0.5em;";
 
+        // 計算方法変更用ボタン
         const $scoreModeGroup = $doc.createElement("group");
         $scoreModeGroup.classList.add("inline_radio");
-        let i = 0;
-        for (let item in SCORE_TYPE) {
-            $scoreModeGroup.innerHTML += '<p><input type="radio" name="ssouce" value="{0}" id="r{1}"><label for="r{1}" class="{2} radbox"></label></p>'.format(SCORE_TYPE[item], i, item);
-            i++;
-        }
 
-        $div.appendChild($text);
-        $div.appendChild($scoreModeGroup);
-        $cardToggles.getElementsByClassName("Input")[0].parentNode.appendChild($div);
+        // ボタンの作成
+        const keys = Object.keys(SCORE_TYPE);
+        for (let i = 0; i < keys.length; i++) {
+            const key = keys[i];
+            const id = "SCORE_{0}_R".format(key);
+
+            // ボタン
+            const $radio = $doc.createElement("input");
+            $radio.id = id;
+            $radio.name = SCORE_RADIO_NAME;
+            $radio.type = "radio";
+            $radio.value = SCORE_TYPE[key];
+
+            // ラベル (ボタンとリンクさせる)
+            const $label = $doc.createElement("label");
+            $label.setAttribute("for", id);
+            $label.setAttribute("type", "radio");
+            $label.setAttribute("data-type", "OUTLINE");
+            $label.setAttribute("data-variant", "HALF");
+            $label.style.marginTop = "0em";
+            $label.classList.add(key, "radbox", "Button", "svelte-1dpa14o", "label");
+
+            $scoreModeGroup.appendChild($radio);
+            $scoreModeGroup.appendChild($label);
+        }
+        $scoreSelectDiv.appendChild($text);
+        $scoreSelectDiv.appendChild($scoreModeGroup);
+        $rowElement.appendChild($scoreSelectDiv);
 
         // 攻撃をデフォルトにする
-        const $atkRadio = $div.getElementsByClassName("ATTACK")[0].parentNode;
-        $atkRadio.getElementsByTagName("input")[0].checked = true;
+        const atkRadioId = $scoreSelectDiv.getElementsByClassName("ATTACK")[0].getAttribute("for");
+        $doc.getElementById(atkRadioId).checked = true;
 
         // スコア評価対象変更時に発火
-        $doc.getElementsByName("ssouce").forEach((function (e) {
+        $doc.getElementsByName(SCORE_RADIO_NAME).forEach((function (e) {
             e.addEventListener("click", (function () {
-                scoreH = $doc.querySelector("input:checked[name=ssouce]").value;
+                scoreH = $doc.querySelector("input:checked[name={0}]".format(SCORE_RADIO_NAME)).value;
                 enkaConvertStat();
             }))
         }));
@@ -310,10 +333,13 @@
         $doc.getElementById(TIME_STAMP).innerText = version + "_" + timeString;
 
         // スコア方式選択ボタン
-        const typeLen = Object.keys(SCORE_TYPE).length
-        for (let i = 0; i < typeLen; i++) {
-            const $radio = $doc.getElementById("r" + i).parentNode;
-            $radio.children[1].innerText = getConvertStatName($radio.children[1].classList[0]);
+        const $scoreSelectInfo = $scoreSelectDiv.children[0];
+        $scoreSelectInfo.innerText = getConvertStatName($scoreSelectInfo.classList[0]);
+
+        const $scoreButtons = $scoreSelectDiv.getElementsByClassName("Button");
+        for (let i = 0; i < $scoreButtons.length; i++) {
+            const $labet = $scoreButtons[i];
+            $labet.innerText = getConvertStatName($labet.classList[0]);
         }
 
         // ------ 追加情報

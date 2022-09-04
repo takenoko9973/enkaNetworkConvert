@@ -107,6 +107,11 @@ class EnkaConverter {
             [LANGUAGE.EN]: "Friendship",
             [LANGUAGE.JA]: "好感度",
         },
+        SCORE_SELECT: {
+            key: "SCORE_SELECT",
+            [LANGUAGE.EN]: "Score type",
+            [LANGUAGE.JA]: "スコア計算方法",
+        },
         UNKNOWN: {
             key: "UNKNOWN",
             [LANGUAGE.EN]: "Unknown",
