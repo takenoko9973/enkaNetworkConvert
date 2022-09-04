@@ -1,6 +1,6 @@
 (() => {
     'use strict';
-    const version = "v0.40";
+    const version = "v0.41";
 
     const $doc = document;
     const $weapon = $doc.getElementsByClassName("Weapon");
