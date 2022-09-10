@@ -1,22 +1,661 @@
 // ==UserScript==
 // @name         Enka.Network_lang-jp_mod_by_takenoko
-// @description  Enka.Network æ—¥æœ¬èªåŒ–ã‚¹ã‚¯ãƒªãƒ—ãƒˆ
+// @description  Enka.Network “ú–{Œê‰»ƒXƒNƒŠƒvƒg
 // @namespace    http://tampermonkey.net/
-// @version      0.41
+// @version      0.42
 // @author       Takenoko-ya
 // @match        https://enka.network/u/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=shinshin.moe
 // @grant        none
-// @require      https://github.com/takenoko9973/enkaNetworkConvert/raw/master/util.js
-// @require      https://github.com/takenoko9973/enkaNetworkConvert/raw/master/enkaConverter.js
-// @require      https://github.com/takenoko9973/enkaNetworkConvert/raw/master/main.js
 // @updateURL    https://github.com/takenoko9973/enkaNetworkConvert/raw/master/Enka.Network_lang-jp.user.js
 // @downloadURL  https://github.com/takenoko9973/enkaNetworkConvert/raw/master/Enka.Network_lang-jp.user.js
 // @supportURL   https://github.com/takenoko9973/enkaNetworkConvert
-// @since        0.41T ã‚¹ã‚³ã‚¢é¸æŠã®ãƒœã‚¿ãƒ³ã®é…ç½®ã‚’å¤‰æ›´ é˜²å¾¡é¸æŠã®æ™‚ã€é˜²å¾¡%ã«0.8ã®è£œæ­£ã‚’æ›ã‘ã‚‹ã‚ˆã†ã«
-// @since        0.40T enka.networkã®ã‚¢ãƒƒãƒ—ãƒ‡ãƒ¼ãƒˆã«å¯¾å¿œ
-// @since        0.31T è–éºç‰©ãŒ5ã‹æ‰€ ã¾ãŸã¯ ã‚µãƒ–OPãŒ4ã‹æ‰€åŸ‹ã¾ã£ã¦ã„ãªã„ã¨ãã«æ­£å¸¸ã«è¡¨ç¤ºã•ã‚Œãªã„ä¸å…·åˆã‚’ä¿®æ­£ ä¸»äººå…¬ã‚’é¸æŠã—ãŸã¨ãã€å¥½æ„Ÿåº¦éƒ¨åˆ†ã§ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã™ã‚‹ä¸å…·åˆä¿®æ­£
-// @since        0.30T è‹±èªè¡¨ç¤ºå¯¾å¿œ
-// @since        0.21T URLã®ä¿®æ­£
-// @since        0.20T ã‚³ãƒ¼ãƒ‰ã‚’æ•´ç† ã‚ªãƒ—ã‚·ãƒ§ãƒ³å€¤ã®è¡¨ç¤ºä½ç½®ã‚’å³ç«¯ã«å›ºå®š ãƒ‡ã‚¶ã‚¤ãƒ³ã®èª¿æ•´ è–éºç‰©ç”»åƒã®ã‚µã‚¤ã‚ºã‚’èª¿æ•´ ä»–ã®UIDã‚’å…¥åŠ›ã—ãŸéš›ã€usernameæ¬„ãŒæ›´æ–°ã•ã‚Œãªã„ä¸å…·åˆã‚’ä¿®æ­£
+// @since        0.42T requireŒo—R‚¾‚ÆƒLƒƒƒbƒVƒ…‚³‚ê‚é—l‚È‚Ì‚Åíœ class–¼•ÏX‚É‘Î‰
+// @since        0.41T ƒXƒRƒA‘I‘ğ‚Ìƒ{ƒ^ƒ“‚Ì”z’u‚ğ•ÏX –hŒä‘I‘ğ‚ÌA–hŒä%‚É0.8‚Ì•â³‚ğŠ|‚¯‚é‚æ‚¤‚É
+// @since        0.40T enka.network‚ÌƒAƒbƒvƒf[ƒg‚É‘Î‰
+// @since        0.31T ¹ˆâ•¨‚ª5‚©Š ‚Ü‚½‚Í ƒTƒuOP‚ª4‚©Š–„‚Ü‚Á‚Ä‚¢‚È‚¢‚Æ‚«‚É³í‚É•\¦‚³‚ê‚È‚¢•s‹ï‡‚ğC³ ålŒö‚ğ‘I‘ğ‚µ‚½‚Æ‚«ADŠ´“x•”•ª‚ÅƒGƒ‰[‚ª”­¶‚·‚é•s‹ï‡C³
+// @since        0.30T ‰pŒê•\¦‘Î‰
+// @since        0.21T URL‚ÌC³
+// @since        0.20T ƒR[ƒh‚ğ®— ƒIƒvƒVƒ‡ƒ“’l‚Ì•\¦ˆÊ’u‚ğ‰E’[‚ÉŒÅ’è ƒfƒUƒCƒ“‚Ì’²® ¹ˆâ•¨‰æ‘œ‚ÌƒTƒCƒY‚ğ’²® ‘¼‚ÌUID‚ğ“ü—Í‚µ‚½ÛAusername—“‚ªXV‚³‚ê‚È‚¢•s‹ï‡‚ğC³
 // ==/UserScript==
+/*
+* python‚âC#‚Ìformatƒƒ\ƒbƒh“I‚È‹@”\‚ğÀŒ»
+*/
+String.prototype.format = function () {
+    let formatted = this;
+    for (let arg in arguments) {
+        formatted = formatted.replaceAll("{" + arg + "}", arguments[arg]);
+    }
+    return formatted;
+};
+
+/**
+ * —v‘f‚ğxPath‚Åw’è
+ * @param expression xPath
+ * @param parentElement e‚Æ‚È‚é—v‘f (ƒfƒtƒHƒ‹ƒg‚Ídocument)
+ */
+document.getElementsByXPath = function (expression, parentElement) {
+    var r = []
+    var x = document.evaluate(expression, parentElement || document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null)
+    for (var i = 0, l = x.snapshotLength; i < l; i++) {
+        r.push(x.snapshotItem(i))
+    }
+    return r;
+}
+const LANGUAGE = {
+    EN: "EN",
+    JA: "JA",
+};
+
+class EnkaConverter {
+    constructor() { }
+
+    CONVERT_TEXT = {
+        BASE_ATK: {
+            key: "BASE_ATK",
+            [LANGUAGE.EN]: "Base ATK",
+            [LANGUAGE.JA]: "Šî‘bUŒ‚—Í",
+        },
+        HP: {
+            key: "HP",
+            [LANGUAGE.EN]: "HP",
+            [LANGUAGE.JA]: "HP",
+        },
+        HP_P: {
+            key: "HP_PERCENT",
+            [LANGUAGE.EN]: "HP",
+            [LANGUAGE.JA]: "HP",
+        },
+        ATK: {
+            key: "ATTACK",
+            [LANGUAGE.EN]: "ATK",
+            [LANGUAGE.JA]: "UŒ‚—Í",
+        },
+        ATK_P: {
+            key: "ATTACK_PERCENT",
+            [LANGUAGE.EN]: "ATK",
+            [LANGUAGE.JA]: "UŒ‚—Í",
+        },
+        DEF: {
+            key: "DEFENSE",
+            [LANGUAGE.EN]: "DEF",
+            [LANGUAGE.JA]: "–hŒä—Í",
+        },
+        DEF_P: {
+            key: "DEFENSE_PERCENT",
+            [LANGUAGE.EN]: "DEF",
+            [LANGUAGE.JA]: "–hŒä—Í",
+        },
+        CRIT_RATE: {
+            key: "CRITICAL",
+            [LANGUAGE.EN]: "CRIT Rate",
+            [LANGUAGE.JA]: "‰ïS—¦",
+        },
+        CRIT_DMG: {
+            key: "CRITICAL_HURT",
+            [LANGUAGE.EN]: "CRIT DMG",
+            [LANGUAGE.JA]: "‰ïSƒ_ƒ[ƒW",
+            sub: {
+                [LANGUAGE.JA]: "‰ïSƒ_ƒ",
+            }
+        },
+        EM: {
+            key: "ELEMENT_MASTERY",
+            [LANGUAGE.EN]: "Elemental Mastery",
+            [LANGUAGE.JA]: "Œ³‘fn’m",
+            sub: {
+                [LANGUAGE.EN]: "EM",
+            }
+        },
+        ENERGY_RECHARGE: {
+            key: "CHARGE_EFFICIENCY",
+            [LANGUAGE.EN]: "Energy Recharge",
+            [LANGUAGE.JA]: "Œ³‘fƒ`ƒƒ[ƒW",
+            sub: {
+                [LANGUAGE.EN]: "ER",
+                [LANGUAGE.JA]: "Œ³‘fƒ`ƒƒ",
+            }
+        },
+        CRYO: {
+            key: "ICE_ADD_HURT",
+            [LANGUAGE.EN]: "Cryo DMG",
+            [LANGUAGE.JA]: "•XŒ³‘fƒ_ƒ[ƒW",
+        },
+        ANEMO: {
+            key: "WIND_ADD_HURT",
+            [LANGUAGE.EN]: "Anemo DMG",
+            [LANGUAGE.JA]: "•—Œ³‘fƒ_ƒ[ƒW",
+        },
+        ELECTRO: {
+            key: "ELEC_ADD_HURT",
+            [LANGUAGE.EN]: "Electro DMG",
+            [LANGUAGE.JA]: "—‹Œ³‘fƒ_ƒ[ƒW",
+        },
+        HYDRO: {
+            key: "WATER_ADD_HURT",
+            [LANGUAGE.EN]: "Hydro DMG",
+            [LANGUAGE.JA]: "…Œ³‘fƒ_ƒ[ƒW",
+        },
+        PYRO: {
+            key: "FIRE_ADD_HURT",
+            [LANGUAGE.EN]: "Pyro DMG",
+            [LANGUAGE.JA]: "‰ŠŒ³‘fƒ_ƒ[ƒW",
+        },
+        DENDRO: {
+            key: "GRASS_ADD_HURT",
+            [LANGUAGE.EN]: "Dendro DMG",
+            [LANGUAGE.JA]: "‘Œ³‘fƒ_ƒ[ƒW",
+        },
+        GEO: {
+            key: "ROCK_ADD_HURT",
+            [LANGUAGE.EN]: "Geo DMG",
+            [LANGUAGE.JA]: "ŠâŒ³‘fƒ_ƒ[ƒW",
+        },
+        PHYS: {
+            key: "PHYSICAL_ADD_HURT",
+            [LANGUAGE.EN]: "Physical DMG",
+            [LANGUAGE.JA]: "•¨—ƒ_ƒ[ƒW",
+        },
+        HEAL_BNS: {
+            key: "HEAL_ADD",
+            [LANGUAGE.EN]: "Healing Bonus",
+            [LANGUAGE.JA]: "—^‚¦‚é¡–üŒø‰Ê",
+        },
+        FRIEND: {
+            key: "FRIEND",
+            [LANGUAGE.EN]: "Friendship",
+            [LANGUAGE.JA]: "DŠ´“x",
+        },
+        SCORE_SELECT: {
+            key: "SCORE_SELECT",
+            [LANGUAGE.EN]: "Score type",
+            [LANGUAGE.JA]: "ƒXƒRƒAŒvZ•û–@",
+        },
+        UNKNOWN: {
+            key: "UNKNOWN",
+            [LANGUAGE.EN]: "Unknown",
+            [LANGUAGE.JA]: "•s–¾",
+        }
+    }
+
+    getStatByClassName(className) {
+        var array = Object.keys(this.CONVERT_TEXT).map((k) => (this.CONVERT_TEXT[k]));
+
+        return array.find((s) => s.key === className);
+    }
+
+    getStatName(language, className, isSub) {
+        // ‘Î‰‚µ‚Ä‚¢‚È‚¢Œ¾Œê‚È‚ç‚ÎA‰pŒê‚É‹­§“I‚É•ÏX
+        if (!(language in LANGUAGE)) language = LANGUAGE.EN;
+
+        let stat = this.getStatByClassName(className);
+        if (!stat) return this.CONVERT_TEXT.UNKNOWN[language];
+        if (!isSub) return stat[language];
+
+        // ƒTƒuƒXƒe[ƒ^ƒX‚Ì“®ì
+        if (!("sub" in stat)) return stat[language];
+        if (!(language in stat["sub"])) return stat[language];
+
+        return stat["sub"][language];
+    }
+
+    getClassName(key) {
+        if (key in this.CONVERT_TEXT) return this.CONVERT_TEXT[key].key;
+
+        return this.CONVERT_TEXT["UNKNOWN"].key;
+    }
+}
+(() => {
+    'use strict';
+    const version = "v0.42";
+
+    const $doc = document;
+    const $weapon = $doc.getElementsByClassName("Weapon");
+    const $charaStats = $doc.getElementsByClassName("StatsTable");
+    const $artifact = $doc.getElementsByClassName("Artifact");
+
+    const converterInstance = new EnkaConverter();
+
+    const BASE_ATK_CLASS = converterInstance.CONVERT_TEXT.BASE_ATK.key;
+    const TIME_STAMP = "timeStamp"
+
+    // ƒXƒRƒAŒvZŠî€w’è H:HP, A:UŒ‚—Í, D:–hŒä—Í
+    const SCORE_RADIO_NAME = "sSource"
+    let $scoreSelectDiv = null;
+    const SCORE_TYPE = {
+        HP: "H",
+        ATTACK: "A",
+        DEFENSE: "D",
+    }
+    let scoreH = SCORE_TYPE.ATTACK;
+
+
+    function getLanguage() {
+        const $language = $doc.getElementsByXPath('//div[@data-icon="language"]')[0];
+        return $language.innerText;
+    }
+
+    function getConvertStatName(key, isSub) {
+        const language = getLanguage();
+        const name = converterInstance.getStatName(language, key, isSub);
+
+        return name;
+    }
+
+    /**
+     * •\¦‚³‚¹‚Ä‚¢‚éƒvƒŒƒCƒ„[‚ÌUID‚Æ–¼‘O‚ğæ“¾
+     */
+    function getPlayerInfo() {
+        const playerUID = location.pathname.split("/")[2]; // url‚©‚çUID‚ğæ“¾
+        const $playerInfo = $doc.getElementsByClassName("PlayerInfo")[0];
+        const playerName = $playerInfo.getElementsByTagName("h1")[0].innerText; // ƒvƒŒƒCƒ„[–¼‚ğæ“¾
+
+        return [playerUID, playerName];
+    }
+
+    /**
+     * ƒLƒƒƒ‰ƒNƒ^[‚Ì‡ŒvƒXƒe[ƒ^ƒX‚ğæ“¾
+     */
+    function getCharacterStats(key) {
+        let index = -1;
+        const $statsList = $charaStats[0].children;
+        if ((index = Array.from($statsList).map(stat => stat.classList[1]).indexOf(key)) === -1) return 0;
+
+        const stat = $statsList[index].children[1].children[2].innerText;
+        return Number(stat.replace(/[^0-9.]/g, ''));
+    }
+
+    /**
+     * ¹ˆâ•¨‚ğ‘•”õ‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©
+     */
+    function isEquippingArtifact(index) {
+        if (index < 0 || 4 < index) return false;
+
+        return Array.from($artifact[index].classList).indexOf("empty") === -1;
+    }
+
+    // —]”’—p—v‘f‚ğ•Ô‚·
+    function getSeparateElement() {
+        const $separateElement = $doc.createElement("span");
+        $separateElement.classList.add("sep");
+
+        return $separateElement;
+    }
+
+    function createConvertTextElements() {
+        // DŠ´“x
+        const $friend = $doc.getElementsByClassName("fren")[0];
+        if ($friend) {
+            // ƒAƒCƒRƒ“—p‚ÌŒ„ŠÔ‚ğíœ
+            const $icon = $friend.getElementsByClassName("ShadedSvgIcon")[0];
+            $icon.style.width = "0";
+
+            const friendClassName = converterInstance.CONVERT_TEXT.FRIEND.key;
+            if (!$friend.getElementsByClassName(friendClassName)[0]) {
+                const $frenText = $doc.createElement("span");
+                $frenText.classList.add(friendClassName, "svelte-1cfvxg7");
+                $frenText.style.cssText = "width:auto; height:auto; font-size:1em; font-weight:bold";
+                $friend.prepend($frenText);
+            }
+        }
+
+        // ƒTƒuƒXƒe[ƒ^ƒX—p‚ÌƒeƒLƒXƒg—“‚Ìì¬
+        const $statText = $doc.createElement("div");
+        $statText.classList.add("svelte-1ut2kb8");
+        $statText.style.fontWeight = "bold";
+
+        // •Ší
+        const $weaponInfo = $weapon[0].getElementsByTagName("content")[0];
+        const $subStat = $weaponInfo.getElementsByClassName("Substat");
+
+        const baseAtkClass = converterInstance.CONVERT_TEXT.BASE_ATK.key;
+        if (!$doc.getElementById(baseAtkClass)) {
+            const $baseAtk = $statText.cloneNode(true);
+            $baseAtk.id = baseAtkClass;
+            $baseAtk.classList.add(baseAtkClass);
+            $subStat[0].prepend(getSeparateElement());
+            $subStat[0].prepend($baseAtk);
+        }
+
+        // ƒTƒuƒXƒe‚ª‚ ‚é‚©‚Ç‚¤‚©”»’è
+        if ($subStat[1]) {
+            if (!$doc.getElementById("weaponSubOP")) {
+                const $subOPName = $statText.cloneNode(true);
+                $subOPName.id = "weaponSubOP";
+                $subStat[1].prepend(getSeparateElement());
+                $subStat[1].prepend($subOPName);
+            }
+        }
+
+        // ¹ˆâ•¨
+        for (let i = 0; i < 5; i++) {
+            if (!isEquippingArtifact(i)) continue;
+
+            // ƒƒCƒ“OP
+            const $mainStat = $artifact[i].getElementsByClassName("mainstat")[0];
+            if (!$doc.getElementById("artifactMain" + i)) {
+                const $mainOPName = $statText.cloneNode(true);
+                $mainOPName.id = "artifactMain" + i;
+                $mainStat.prepend(getSeparateElement());
+                $mainStat.prepend($mainOPName);
+            }
+
+            // ƒTƒuOP
+            const $subStat = $artifact[i].getElementsByClassName("Substat");
+            const subLen = $subStat.length;
+            for (let j = 0; j < subLen; j++) {
+                const subOPId = "artifactSub" + i + "-" + j
+                if ($doc.getElementById(subOPId)) continue;
+
+                const $subOPName = $statText.cloneNode(true);
+                $subOPName.id = subOPId;
+                $subStat[j].prepend(getSeparateElement());
+                $subStat[j].prepend($subOPName);
+            }
+
+            // ƒXƒRƒA•\¦
+            if ($doc.getElementById("score" + i) === null) {
+                const $scoreBox = $doc.createElement("div");
+                $scoreBox.id = "score" + i;
+                $scoreBox.style.cssText = "position: absolute; font-size: 70%; top: -0.2em; right: 0.3em; text-align: right; opacity: .6;";
+                $artifact[i].appendChild($scoreBox);
+            }
+        }
+    }
+
+    function createModeChangeBottom() {
+        const $cardToggles = $doc.getElementsByClassName("CardToggles")[0];
+        const $rowElement = $cardToggles.getElementsByClassName("row")[0].cloneNode(false);
+        $cardToggles.getElementsByClassName("Input")[0].parentNode.after($rowElement);  // ƒJ[ƒhƒIƒvƒVƒ‡ƒ“‚Ì‰º‚Éì¬
+
+        const radioStyle = [
+            '.inline_radio input[type="radio"] { position: absolute; opacity: 0; }',  // ƒ`ƒFƒbƒNƒ{ƒbƒNƒX‚ğ‰B‚·
+            '.inline_radio label.radbox[type="radio"] { color: rgba(255,255,255,.5);}',  // •’i‚Í”––Ú
+            '.inline_radio input[type="radio"]:checked + label.radbox[type="radio"] { color: rgba(255,255,255,1); border-color: rgba(255,255,255,1); }'  // ‘I‘ğ‚µ‚Ä‚¢‚éƒ{ƒ^ƒ“‚ğ‹­’²
+        ];
+        const $style = $doc.createElement("style");
+        $style.innerHTML = radioStyle.join(" ");
+        $doc.querySelector("head").append($style);
+
+        // ƒXƒRƒA‘I‘ğ—“‚ğì¬
+        $scoreSelectDiv = $doc.createElement("div");
+        $scoreSelectDiv.classList.add("Input", "svelte-nsdlaj");
+
+        // à–¾ƒeƒLƒXƒg‚ğ’Ç‰Á
+        const $text = $doc.createElement("label");
+        $text.classList.add("SCORE_SELECT", "svelte-nsdlaj");
+        $text.cssStyle = "margin-left: 0.5em;";
+
+        // ŒvZ•û–@•ÏX—pƒ{ƒ^ƒ“
+        const $scoreModeGroup = $doc.createElement("group");
+        $scoreModeGroup.classList.add("inline_radio");
+
+        // ƒ{ƒ^ƒ“‚Ìì¬
+        const keys = Object.keys(SCORE_TYPE);
+        for (let i = 0; i < keys.length; i++) {
+            const key = keys[i];
+            const id = "SCORE_{0}_R".format(key);
+
+            // ƒ{ƒ^ƒ“
+            const $radio = $doc.createElement("input");
+            $radio.id = id;
+            $radio.name = SCORE_RADIO_NAME;
+            $radio.setAttribute("type", "radio");
+            $radio.value = SCORE_TYPE[key];
+
+            // ƒ‰ƒxƒ‹ (ƒ{ƒ^ƒ“‚ÆƒŠƒ“ƒN‚³‚¹‚é)
+            const $label = $doc.createElement("label");
+            $label.setAttribute("for", id);
+            $label.setAttribute("type", "radio");
+            $label.setAttribute("data-type", "OUTLINE");
+            $label.setAttribute("data-variant", "HALF");
+            $label.style.marginTop = "0em";
+            $label.classList.add(key, "radbox", "Button", "svelte-1dpa14o", "label");
+
+            $scoreModeGroup.appendChild($radio);
+            $scoreModeGroup.appendChild($label);
+        }
+        $scoreSelectDiv.appendChild($text);
+        $scoreSelectDiv.appendChild($scoreModeGroup);
+        $rowElement.appendChild($scoreSelectDiv);
+
+        // UŒ‚‚ğƒfƒtƒHƒ‹ƒg‚É‚·‚é
+        const atkRadioId = $scoreSelectDiv.getElementsByClassName("ATTACK")[0].getAttribute("for");
+        $doc.getElementById(atkRadioId).checked = true;
+
+        // ƒXƒRƒA•]‰¿‘ÎÛ•ÏX‚É”­‰Î
+        $doc.getElementsByName(SCORE_RADIO_NAME).forEach((function (e) {
+            e.addEventListener("click", (function () {
+                scoreH = $doc.querySelector("input:checked[name={0}]".format(SCORE_RADIO_NAME)).value;
+                enkaConvertStat();
+            }))
+        }));
+    }
+
+    // •ŠíƒIƒvƒVƒ‡ƒ“‚Ì“ú–{Œê‰»
+    function weaponOPConvert() {
+        const $subStat = $weapon[0].getElementsByClassName("Substat");
+
+        const $baseAtk = $doc.getElementById(BASE_ATK_CLASS);
+        if ($baseAtk) $baseAtk.innerText = getConvertStatName(BASE_ATK_CLASS);
+
+        const $weaponSub = $doc.getElementById("weaponSubOP");
+        if ($weaponSub) $weaponSub.innerText = getConvertStatName($subStat[1].classList[1]);
+    }
+
+    // ¹ˆâ•¨‚Ì“ú–{Œê‰»
+    function artifactConvert() {
+        for (let i = 0; i < 5; i++) {
+            // ¹ˆâ•¨‚ğ•t‚¯‚Ä‚¢‚È‚¢ê‡AƒXƒLƒbƒv
+            if (!isEquippingArtifact(i)) continue;
+
+            // ƒƒCƒ“OP
+            const $mainStat = $artifact[i].getElementsByClassName("mainstat")[0];
+            $doc.getElementById("artifactMain" + i).innerText = getConvertStatName($mainStat.classList[1])
+
+            // ƒTƒuOP
+            const $subStat = $artifact[i].getElementsByClassName("Substat");
+            const subLen = $subStat.length;
+            for (let j = 0; j < subLen; j++) {
+                const subOPId = "artifactSub" + i + "-" + j
+                if (!$doc.getElementById(subOPId)) continue;
+
+                $doc.getElementById(subOPId).innerText = getConvertStatName($subStat[j].classList[1], true);
+            }
+        }
+    }
+
+    /**
+ * ¹ˆâ•¨‚ÌƒXƒRƒA‚ğŒvZ
+ */
+    function calcArtifactScore(index) {
+        let score = 0;
+        if (!isEquippingArtifact(index)) return score;
+
+        const $subStat = Array.from($artifact[index].getElementsByClassName("Substat"));
+        const $subStatName = $subStat.map(sub => sub.classList[1]);
+        const $subStatAmount = $subStat.map(sub => sub.lastChild.innerText.replace(/[^0-9.]/g, ''));
+        const subLen = $subStat.length;
+
+        for (let i = 0; i < subLen; i++) {
+            switch ($subStatName[i]) {
+                case converterInstance.CONVERT_TEXT.CRIT_RATE.key:
+                    score += Number($subStatAmount[i]) * 2;
+                    break;
+                case converterInstance.CONVERT_TEXT.CRIT_DMG.key:
+                    score += Number($subStatAmount[i]);
+                    break;
+                case converterInstance.CONVERT_TEXT.HP_P.key:
+                    if (scoreH !== SCORE_TYPE.HP) break;
+                    score += Number($subStatAmount[i]);
+                    break;
+                case converterInstance.CONVERT_TEXT.ATK_P.key:
+                    if (scoreH !== SCORE_TYPE.ATTACK) break;
+                    score += Number($subStatAmount[i]);
+                    break;
+                case converterInstance.CONVERT_TEXT.DEF_P.key:
+                    if (scoreH !== SCORE_TYPE.DEFENSE) break;
+                    score += Number($subStatAmount[i]) * 0.8;
+                    break;
+            }
+        }
+
+        return score;
+    }
+
+    function getExtraText() {
+        const language = getLanguage();
+
+        switch (language) {
+            case LANGUAGE.EN:
+                return "Crit Ratio 1:{0} / Score({1}) Avg. {2} Total {3}";
+            case LANGUAGE.JA:
+                return "‰ïS—¦ƒ_ƒ”ä 1:{0} / ¹ˆâ•¨ƒXƒRƒA({1}) •½‹Ï:{2} ‡Œv:{3}";
+            default:
+                return "Crit Ratio 1:{0} / Score({1}) Avg. {2} Total {3}";
+        }
+    }
+
+    function enkaConvertStat() {
+        weaponOPConvert();
+        artifactConvert();
+
+        // DŠ´“x
+        const $friend = $doc.getElementsByClassName("fren")[0];
+        if ($friend) {
+            const friendClassName = converterInstance.CONVERT_TEXT.FRIEND.key;
+            const $friendText = $friend.getElementsByClassName(friendClassName)[0];
+            $friendText.innerText = getConvertStatName(friendClassName);
+        }
+
+        // î•ñæ“¾“ú‚ğ•\¦
+        const date = new Date;
+        date.setTime(date.getTime() - 60 * date.getTimezoneOffset() * 1000);
+        const timeString = date.toISOString().replace("T", " ").substr(0, 19);
+        $doc.getElementById(TIME_STAMP).innerText = version + "_" + timeString;
+
+        // ƒXƒRƒA•û®‘I‘ğƒ{ƒ^ƒ“
+        const $scoreSelectInfo = $scoreSelectDiv.children[0];
+        $scoreSelectInfo.innerText = getConvertStatName($scoreSelectInfo.classList[0]);
+
+        const $scoreButtons = $scoreSelectDiv.getElementsByClassName("Button");
+        for (let i = 0; i < $scoreButtons.length; i++) {
+            const $labet = $scoreButtons[i];
+            $labet.innerText = getConvertStatName($labet.classList[0]);
+        }
+
+        // ------ ’Ç‰Áî•ñ
+        let sumScore = 0;
+        let avgScore = 0;
+        const $extraText = $doc.getElementById("extraData");
+
+        // ƒXƒRƒAŒvZ
+        for (let i = 0; i < 5; i++) {
+            let score = 0.0;
+
+            const $scoreBox = $doc.getElementById("score" + i);
+            if ($scoreBox === null) continue;
+
+            $scoreBox.setAttribute("class", "svelte-1ujofp1");
+
+            // ¹ˆâ•¨‚ğ•t‚¯‚Ä‚¢‚éê‡AŒvZ
+            if (isEquippingArtifact(i)) {
+                score = calcArtifactScore(i);
+                sumScore += score;
+
+                $scoreBox.innerText = score.toFixed(1);
+            } else {
+                $scoreBox.innerText = "";
+            }
+        }
+        avgScore = sumScore / 5;
+
+        const critRate = getCharacterStats(converterInstance.CONVERT_TEXT.CRIT_RATE.key);
+        const critDMG = getCharacterStats(converterInstance.CONVERT_TEXT.CRIT_DMG.key);
+        const critRatio = critDMG / critRate;
+
+        let type = "";
+        switch (scoreH) {
+            case SCORE_TYPE.HP:
+                type = getConvertStatName(converterInstance.CONVERT_TEXT.HP_P.key);
+                break;
+            case SCORE_TYPE.ATTACK:
+                type = getConvertStatName(converterInstance.CONVERT_TEXT.ATK_P.key);
+                break;
+            case SCORE_TYPE.DEFENSE:
+                type = getConvertStatName(converterInstance.CONVERT_TEXT.DEF_P.key);
+                break;
+        }
+
+        $extraText.innerText = getExtraText().format(critRatio.toFixed(1), type, avgScore.toFixed(1), sumScore.toFixed(1));
+    }
+
+    window.onload = function () {
+        // •Ší
+        const $weaponInfo = $weapon[0].getElementsByTagName("content")[0];
+        const $weaponName = $weaponInfo.getElementsByTagName("h3")[0];
+        $weaponInfo.style.paddingRight = "0px";
+        $weaponName.style.fontWeight = "bold";
+        $weapon[0].children[0].style.width = "30%";  // •Ší‰æ‘œ
+
+        // ###### ƒLƒƒƒ‰ƒJ[ƒh‚ÌƒfƒUƒCƒ“•ÏX ######
+        const $charaCard = $doc.getElementsByClassName("card-host")[0];
+
+        // ‚»‚Ì‘¼î•ñ‚ğ•\¦‚·‚é˜g
+        const $exParam = $doc.createElement("div");
+        $exParam.id = "extraData";
+        $exParam.innerText = "";
+        $exParam.style.cssText = "position: absolute; bottom: .2%; right: 1.3%; text-align: right; font-size: 80%;";
+        $exParam.classList.add("svelte-1ujofp1")
+        $charaCard.appendChild($exParam);
+
+        // æ“¾ŠÔ
+        const $timeStamp = $doc.createElement("div");
+        $timeStamp.id = TIME_STAMP;
+        $timeStamp.innerText = "";
+        $timeStamp.style.cssText = "position: absolute; top: 1%; left: 2%; font-size: 60%; opacity: 0.4;";
+        $exParam.classList.add("svelte-1ujofp1")
+        $charaCard.appendChild($timeStamp);
+
+        // css‚Ì‘S–Ê“I‚È•ÏX
+        const cssStyle = [
+            '.Card .Icon{ display:none !important }',  // ƒAƒCƒRƒ“‚Ìíœ
+            '.stats.svelte-gp6viv .Substat { padding-top: 4%; }',  // •ŠíƒXƒe[ƒ^ƒX‚Ì˜g‚ğ‘å‚«‚­
+            '.Card .Substat.svelte-1ut2kb8.svelte-1ut2kb8 { display: flex; align-items: center; margin-right: 0em; line-height: 95%; font-size: 98%; }',  // ƒTƒuƒXƒe[ƒ^ƒX‚Ì˜g‚ğL‚°‚é
+            '.substats.svelte-17qi811>.Substat { padding-right: 1.0em; }',  // ¹ˆâ•¨‚ÌƒTƒuƒXƒe[ƒ^ƒX‚ª‰E‚És‚«‚·‚¬‚é‚Ì‚Å’²®
+            '.Artifact.svelte-17qi811 .ArtifactIcon { top: -37%; left: -6%; width: 28%; }',  // ¹ˆâ•¨‰æ‘œ‚Ì’²®
+            '.mainstat.svelte-17qi811 > div:nth-child(1) { display: flex; align-items: center; top: 3px; max-height: 100%; font-size: 110%; line-height: 90%; width: auto; height: 50em; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; }',  // ¹ˆâ•¨ƒƒCƒ“ƒXƒe[ƒ^ƒX‚Ì’²®
+            '.mainstat.svelte-17qi811 > div:nth-child(4) { display: flex; align-items: center; margin-left: auto; margin-bottom: -0.3em; }'  // ¹ˆâ•¨ƒƒCƒ“ƒXƒe[ƒ^ƒX‚Ì’²®
+        ];
+        const $style = $doc.createElement("style");
+        $style.innerHTML = cssStyle.join(" ");
+        $doc.querySelector("head").append($style);
+
+        // ‘S‘Ì‚Ì”z’u‚Ì•ÏX
+        const $cardSection = $doc.getElementsByClassName("section");
+        // ¶
+        $cardSection[0].style.width = "36%";
+        // ’†‰›
+        $cardSection[1].style.width = "24%";
+        $cardSection[1].style.left = "34%";
+        // ‰E
+        $cardSection[2].style.width = "43%";
+        $cardSection[2].style.height = "97%";
+
+        createConvertTextElements();
+        createModeChangeBottom();
+
+        enkaConvertStat();
+
+        const $charaName = $doc.getElementsByClassName("name")[0];
+        const $language = $doc.getElementsByXPath('//div[@data-icon="language"]')[0];
+        // Œ¾Œê‚âƒLƒƒƒ‰ƒNƒ^[•ÏX‚ÉÄ–|–ó
+        const observeConf = { childList: true, attributes: true, characterData: true };
+        const observer = new MutationObserver(mutations => {
+            createConvertTextElements();
+            enkaConvertStat();
+        })
+        observer.observe($charaName, observeConf); // ƒLƒƒƒ‰ƒNƒ^[•ÏX
+        observer.observe($language, observeConf); // Œ¾Œê•ÏX
+    };
+})();
