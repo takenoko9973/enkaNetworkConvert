@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Enka.Network_lang-jp_mod_by_takenoko
-// @description  Enka.Network “ú–{Œê‰»ƒXƒNƒŠƒvƒg
+// @description  Enka.Network æ—¥æœ¬èªåŒ–ã‚¹ã‚¯ãƒªãƒ—ãƒˆ
 // @namespace    http://tampermonkey.net/
 // @version      0.42
 // @author       Takenoko-ya
@@ -10,16 +10,16 @@
 // @updateURL    https://github.com/takenoko9973/enkaNetworkConvert/raw/master/Enka.Network_lang-jp.user.js
 // @downloadURL  https://github.com/takenoko9973/enkaNetworkConvert/raw/master/Enka.Network_lang-jp.user.js
 // @supportURL   https://github.com/takenoko9973/enkaNetworkConvert
-// @since        0.42T requireŒo—R‚¾‚ÆƒLƒƒƒbƒVƒ…‚³‚ê‚é—l‚È‚Ì‚Åíœ class–¼•ÏX‚É‘Î‰
-// @since        0.41T ƒXƒRƒA‘I‘ğ‚Ìƒ{ƒ^ƒ“‚Ì”z’u‚ğ•ÏX –hŒä‘I‘ğ‚ÌA–hŒä%‚É0.8‚Ì•â³‚ğŠ|‚¯‚é‚æ‚¤‚É
-// @since        0.40T enka.network‚ÌƒAƒbƒvƒf[ƒg‚É‘Î‰
-// @since        0.31T ¹ˆâ•¨‚ª5‚©Š ‚Ü‚½‚Í ƒTƒuOP‚ª4‚©Š–„‚Ü‚Á‚Ä‚¢‚È‚¢‚Æ‚«‚É³í‚É•\¦‚³‚ê‚È‚¢•s‹ï‡‚ğC³ ålŒö‚ğ‘I‘ğ‚µ‚½‚Æ‚«ADŠ´“x•”•ª‚ÅƒGƒ‰[‚ª”­¶‚·‚é•s‹ï‡C³
-// @since        0.30T ‰pŒê•\¦‘Î‰
-// @since        0.21T URL‚ÌC³
-// @since        0.20T ƒR[ƒh‚ğ®— ƒIƒvƒVƒ‡ƒ“’l‚Ì•\¦ˆÊ’u‚ğ‰E’[‚ÉŒÅ’è ƒfƒUƒCƒ“‚Ì’²® ¹ˆâ•¨‰æ‘œ‚ÌƒTƒCƒY‚ğ’²® ‘¼‚ÌUID‚ğ“ü—Í‚µ‚½ÛAusername—“‚ªXV‚³‚ê‚È‚¢•s‹ï‡‚ğC³
+// @since        0.42T requireçµŒç”±ã ã¨ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã•ã‚Œã‚‹æ§˜ãªã®ã§å‰Šé™¤ classåå¤‰æ›´ã«å¯¾å¿œ
+// @since        0.41T ã‚¹ã‚³ã‚¢é¸æŠã®ãƒœã‚¿ãƒ³ã®é…ç½®ã‚’å¤‰æ›´ é˜²å¾¡é¸æŠã®æ™‚ã€é˜²å¾¡%ã«0.8ã®è£œæ­£ã‚’æ›ã‘ã‚‹ã‚ˆã†ã«
+// @since        0.40T enka.networkã®ã‚¢ãƒƒãƒ—ãƒ‡ãƒ¼ãƒˆã«å¯¾å¿œ
+// @since        0.31T è–éºç‰©ãŒ5ã‹æ‰€ ã¾ãŸã¯ ã‚µãƒ–OPãŒ4ã‹æ‰€åŸ‹ã¾ã£ã¦ã„ãªã„ã¨ãã«æ­£å¸¸ã«è¡¨ç¤ºã•ã‚Œãªã„ä¸å…·åˆã‚’ä¿®æ­£ ä¸»äººå…¬ã‚’é¸æŠã—ãŸã¨ãã€å¥½æ„Ÿåº¦éƒ¨åˆ†ã§ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã™ã‚‹ä¸å…·åˆä¿®æ­£
+// @since        0.30T è‹±èªè¡¨ç¤ºå¯¾å¿œ
+// @since        0.21T URLã®ä¿®æ­£
+// @since        0.20T ã‚³ãƒ¼ãƒ‰ã‚’æ•´ç† ã‚ªãƒ—ã‚·ãƒ§ãƒ³å€¤ã®è¡¨ç¤ºä½ç½®ã‚’å³ç«¯ã«å›ºå®š ãƒ‡ã‚¶ã‚¤ãƒ³ã®èª¿æ•´ è–éºç‰©ç”»åƒã®ã‚µã‚¤ã‚ºã‚’èª¿æ•´ ä»–ã®UIDã‚’å…¥åŠ›ã—ãŸéš›ã€usernameæ¬„ãŒæ›´æ–°ã•ã‚Œãªã„ä¸å…·åˆã‚’ä¿®æ­£
 // ==/UserScript==
 /*
-* python‚âC#‚Ìformatƒƒ\ƒbƒh“I‚È‹@”\‚ğÀŒ»
+* pythonã‚„C#ã®formatãƒ¡ã‚½ãƒƒãƒ‰çš„ãªæ©Ÿèƒ½ã‚’å®Ÿç¾
 */
 String.prototype.format = function () {
     let formatted = this;
@@ -30,9 +30,9 @@ String.prototype.format = function () {
 };
 
 /**
- * —v‘f‚ğxPath‚Åw’è
+ * è¦ç´ ã‚’xPathã§æŒ‡å®š
  * @param expression xPath
- * @param parentElement e‚Æ‚È‚é—v‘f (ƒfƒtƒHƒ‹ƒg‚Ídocument)
+ * @param parentElement è¦ªã¨ãªã‚‹è¦ç´  (ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯document)
  */
 document.getElementsByXPath = function (expression, parentElement) {
     var r = []
@@ -48,13 +48,13 @@ const LANGUAGE = {
 };
 
 class EnkaConverter {
-    constructor() { }
+    constructor() {}
 
     CONVERT_TEXT = {
         BASE_ATK: {
             key: "BASE_ATK",
             [LANGUAGE.EN]: "Base ATK",
-            [LANGUAGE.JA]: "Šî‘bUŒ‚—Í",
+            [LANGUAGE.JA]: "åŸºç¤æ”»æ’ƒåŠ›",
         },
         HP: {
             key: "HP",
@@ -69,40 +69,40 @@ class EnkaConverter {
         ATK: {
             key: "ATTACK",
             [LANGUAGE.EN]: "ATK",
-            [LANGUAGE.JA]: "UŒ‚—Í",
+            [LANGUAGE.JA]: "æ”»æ’ƒåŠ›",
         },
         ATK_P: {
             key: "ATTACK_PERCENT",
             [LANGUAGE.EN]: "ATK",
-            [LANGUAGE.JA]: "UŒ‚—Í",
+            [LANGUAGE.JA]: "æ”»æ’ƒåŠ›",
         },
         DEF: {
             key: "DEFENSE",
             [LANGUAGE.EN]: "DEF",
-            [LANGUAGE.JA]: "–hŒä—Í",
+            [LANGUAGE.JA]: "é˜²å¾¡åŠ›",
         },
         DEF_P: {
             key: "DEFENSE_PERCENT",
             [LANGUAGE.EN]: "DEF",
-            [LANGUAGE.JA]: "–hŒä—Í",
+            [LANGUAGE.JA]: "é˜²å¾¡åŠ›",
         },
         CRIT_RATE: {
             key: "CRITICAL",
             [LANGUAGE.EN]: "CRIT Rate",
-            [LANGUAGE.JA]: "‰ïS—¦",
+            [LANGUAGE.JA]: "ä¼šå¿ƒç‡",
         },
         CRIT_DMG: {
             key: "CRITICAL_HURT",
             [LANGUAGE.EN]: "CRIT DMG",
-            [LANGUAGE.JA]: "‰ïSƒ_ƒ[ƒW",
+            [LANGUAGE.JA]: "ä¼šå¿ƒãƒ€ãƒ¡ãƒ¼ã‚¸",
             sub: {
-                [LANGUAGE.JA]: "‰ïSƒ_ƒ",
+                [LANGUAGE.JA]: "ä¼šå¿ƒãƒ€ãƒ¡",
             }
         },
         EM: {
             key: "ELEMENT_MASTERY",
             [LANGUAGE.EN]: "Elemental Mastery",
-            [LANGUAGE.JA]: "Œ³‘fn’m",
+            [LANGUAGE.JA]: "å…ƒç´ ç†ŸçŸ¥",
             sub: {
                 [LANGUAGE.EN]: "EM",
             }
@@ -110,89 +110,89 @@ class EnkaConverter {
         ENERGY_RECHARGE: {
             key: "CHARGE_EFFICIENCY",
             [LANGUAGE.EN]: "Energy Recharge",
-            [LANGUAGE.JA]: "Œ³‘fƒ`ƒƒ[ƒW",
+            [LANGUAGE.JA]: "å…ƒç´ ãƒãƒ£ãƒ¼ã‚¸",
             sub: {
                 [LANGUAGE.EN]: "ER",
-                [LANGUAGE.JA]: "Œ³‘fƒ`ƒƒ",
+                [LANGUAGE.JA]: "å…ƒç´ ãƒãƒ£",
             }
         },
         CRYO: {
             key: "ICE_ADD_HURT",
             [LANGUAGE.EN]: "Cryo DMG",
-            [LANGUAGE.JA]: "•XŒ³‘fƒ_ƒ[ƒW",
+            [LANGUAGE.JA]: "æ°·å…ƒç´ ãƒ€ãƒ¡ãƒ¼ã‚¸",
         },
         ANEMO: {
             key: "WIND_ADD_HURT",
             [LANGUAGE.EN]: "Anemo DMG",
-            [LANGUAGE.JA]: "•—Œ³‘fƒ_ƒ[ƒW",
+            [LANGUAGE.JA]: "é¢¨å…ƒç´ ãƒ€ãƒ¡ãƒ¼ã‚¸",
         },
         ELECTRO: {
             key: "ELEC_ADD_HURT",
             [LANGUAGE.EN]: "Electro DMG",
-            [LANGUAGE.JA]: "—‹Œ³‘fƒ_ƒ[ƒW",
+            [LANGUAGE.JA]: "é›·å…ƒç´ ãƒ€ãƒ¡ãƒ¼ã‚¸",
         },
         HYDRO: {
             key: "WATER_ADD_HURT",
             [LANGUAGE.EN]: "Hydro DMG",
-            [LANGUAGE.JA]: "…Œ³‘fƒ_ƒ[ƒW",
+            [LANGUAGE.JA]: "æ°´å…ƒç´ ãƒ€ãƒ¡ãƒ¼ã‚¸",
         },
         PYRO: {
             key: "FIRE_ADD_HURT",
             [LANGUAGE.EN]: "Pyro DMG",
-            [LANGUAGE.JA]: "‰ŠŒ³‘fƒ_ƒ[ƒW",
+            [LANGUAGE.JA]: "ç‚å…ƒç´ ãƒ€ãƒ¡ãƒ¼ã‚¸",
         },
         DENDRO: {
             key: "GRASS_ADD_HURT",
             [LANGUAGE.EN]: "Dendro DMG",
-            [LANGUAGE.JA]: "‘Œ³‘fƒ_ƒ[ƒW",
+            [LANGUAGE.JA]: "è‰å…ƒç´ ãƒ€ãƒ¡ãƒ¼ã‚¸",
         },
         GEO: {
             key: "ROCK_ADD_HURT",
             [LANGUAGE.EN]: "Geo DMG",
-            [LANGUAGE.JA]: "ŠâŒ³‘fƒ_ƒ[ƒW",
+            [LANGUAGE.JA]: "å²©å…ƒç´ ãƒ€ãƒ¡ãƒ¼ã‚¸",
         },
         PHYS: {
             key: "PHYSICAL_ADD_HURT",
             [LANGUAGE.EN]: "Physical DMG",
-            [LANGUAGE.JA]: "•¨—ƒ_ƒ[ƒW",
+            [LANGUAGE.JA]: "ç‰©ç†ãƒ€ãƒ¡ãƒ¼ã‚¸",
         },
         HEAL_BNS: {
             key: "HEAL_ADD",
             [LANGUAGE.EN]: "Healing Bonus",
-            [LANGUAGE.JA]: "—^‚¦‚é¡–üŒø‰Ê",
+            [LANGUAGE.JA]: "ä¸ãˆã‚‹æ²»ç™’åŠ¹æœ",
         },
         FRIEND: {
             key: "FRIEND",
             [LANGUAGE.EN]: "Friendship",
-            [LANGUAGE.JA]: "DŠ´“x",
+            [LANGUAGE.JA]: "å¥½æ„Ÿåº¦",
         },
         SCORE_SELECT: {
             key: "SCORE_SELECT",
             [LANGUAGE.EN]: "Score type",
-            [LANGUAGE.JA]: "ƒXƒRƒAŒvZ•û–@",
+            [LANGUAGE.JA]: "ã‚¹ã‚³ã‚¢è¨ˆç®—æ–¹æ³•",
         },
         UNKNOWN: {
             key: "UNKNOWN",
             [LANGUAGE.EN]: "Unknown",
-            [LANGUAGE.JA]: "•s–¾",
+            [LANGUAGE.JA]: "ä¸æ˜",
         }
     }
 
     getStatByClassName(className) {
-        var array = Object.keys(this.CONVERT_TEXT).map((k) => (this.CONVERT_TEXT[k]));
+        var array = Object.keys(this.CONVERT_TEXT).map((k)=>(this.CONVERT_TEXT[k]));
 
         return array.find((s) => s.key === className);
     }
 
     getStatName(language, className, isSub) {
-        // ‘Î‰‚µ‚Ä‚¢‚È‚¢Œ¾Œê‚È‚ç‚ÎA‰pŒê‚É‹­§“I‚É•ÏX
+        // å¯¾å¿œã—ã¦ã„ãªã„è¨€èªãªã‚‰ã°ã€è‹±èªã«å¼·åˆ¶çš„ã«å¤‰æ›´
         if (!(language in LANGUAGE)) language = LANGUAGE.EN;
 
         let stat = this.getStatByClassName(className);
         if (!stat) return this.CONVERT_TEXT.UNKNOWN[language];
         if (!isSub) return stat[language];
 
-        // ƒTƒuƒXƒe[ƒ^ƒX‚Ì“®ì
+        // ã‚µãƒ–ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹æ™‚ã®å‹•ä½œ
         if (!("sub" in stat)) return stat[language];
         if (!(language in stat["sub"])) return stat[language];
 
@@ -219,7 +219,7 @@ class EnkaConverter {
     const BASE_ATK_CLASS = converterInstance.CONVERT_TEXT.BASE_ATK.key;
     const TIME_STAMP = "timeStamp"
 
-    // ƒXƒRƒAŒvZŠî€w’è H:HP, A:UŒ‚—Í, D:–hŒä—Í
+    // ã‚¹ã‚³ã‚¢è¨ˆç®—åŸºæº–æŒ‡å®š H:HP, A:æ”»æ’ƒåŠ›, D:é˜²å¾¡åŠ›
     const SCORE_RADIO_NAME = "sSource"
     let $scoreSelectDiv = null;
     const SCORE_TYPE = {
@@ -243,18 +243,18 @@ class EnkaConverter {
     }
 
     /**
-     * •\¦‚³‚¹‚Ä‚¢‚éƒvƒŒƒCƒ„[‚ÌUID‚Æ–¼‘O‚ğæ“¾
+     * è¡¨ç¤ºã•ã›ã¦ã„ã‚‹ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®UIDã¨åå‰ã‚’å–å¾—
      */
     function getPlayerInfo() {
-        const playerUID = location.pathname.split("/")[2]; // url‚©‚çUID‚ğæ“¾
+        const playerUID = location.pathname.split("/")[2]; // urlã‹ã‚‰UIDã‚’å–å¾—
         const $playerInfo = $doc.getElementsByClassName("PlayerInfo")[0];
-        const playerName = $playerInfo.getElementsByTagName("h1")[0].innerText; // ƒvƒŒƒCƒ„[–¼‚ğæ“¾
+        const playerName = $playerInfo.getElementsByTagName("h1")[0].innerText; // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼åã‚’å–å¾—
 
         return [playerUID, playerName];
     }
 
     /**
-     * ƒLƒƒƒ‰ƒNƒ^[‚Ì‡ŒvƒXƒe[ƒ^ƒX‚ğæ“¾
+     * ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®åˆè¨ˆã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’å–å¾—
      */
     function getCharacterStats(key) {
         let index = -1;
@@ -266,7 +266,7 @@ class EnkaConverter {
     }
 
     /**
-     * ¹ˆâ•¨‚ğ‘•”õ‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©
+     * è–éºç‰©ã‚’è£…å‚™ã—ã¦ã„ã‚‹ã‹ã©ã†ã‹
      */
     function isEquippingArtifact(index) {
         if (index < 0 || 4 < index) return false;
@@ -274,7 +274,7 @@ class EnkaConverter {
         return Array.from($artifact[index].classList).indexOf("empty") === -1;
     }
 
-    // —]”’—p—v‘f‚ğ•Ô‚·
+    // ä½™ç™½ç”¨è¦ç´ ã‚’è¿”ã™
     function getSeparateElement() {
         const $separateElement = $doc.createElement("span");
         $separateElement.classList.add("sep");
@@ -283,10 +283,10 @@ class EnkaConverter {
     }
 
     function createConvertTextElements() {
-        // DŠ´“x
+        // å¥½æ„Ÿåº¦
         const $friend = $doc.getElementsByClassName("fren")[0];
         if ($friend) {
-            // ƒAƒCƒRƒ“—p‚ÌŒ„ŠÔ‚ğíœ
+            // ã‚¢ã‚¤ã‚³ãƒ³ç”¨ã®éš™é–“ã‚’å‰Šé™¤
             const $icon = $friend.getElementsByClassName("ShadedSvgIcon")[0];
             $icon.style.width = "0";
 
@@ -299,12 +299,12 @@ class EnkaConverter {
             }
         }
 
-        // ƒTƒuƒXƒe[ƒ^ƒX—p‚ÌƒeƒLƒXƒg—“‚Ìì¬
+        // ã‚µãƒ–ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ç”¨ã®ãƒ†ã‚­ã‚¹ãƒˆæ¬„ã®ä½œæˆ
         const $statText = $doc.createElement("div");
         $statText.classList.add("svelte-1ut2kb8");
         $statText.style.fontWeight = "bold";
 
-        // •Ší
+        // æ­¦å™¨
         const $weaponInfo = $weapon[0].getElementsByTagName("content")[0];
         const $subStat = $weaponInfo.getElementsByClassName("Substat");
 
@@ -317,7 +317,7 @@ class EnkaConverter {
             $subStat[0].prepend($baseAtk);
         }
 
-        // ƒTƒuƒXƒe‚ª‚ ‚é‚©‚Ç‚¤‚©”»’è
+        // ã‚µãƒ–ã‚¹ãƒ†ãŒã‚ã‚‹ã‹ã©ã†ã‹åˆ¤å®š
         if ($subStat[1]) {
             if (!$doc.getElementById("weaponSubOP")) {
                 const $subOPName = $statText.cloneNode(true);
@@ -327,11 +327,11 @@ class EnkaConverter {
             }
         }
 
-        // ¹ˆâ•¨
+        // è–éºç‰©
         for (let i = 0; i < 5; i++) {
             if (!isEquippingArtifact(i)) continue;
 
-            // ƒƒCƒ“OP
+            // ãƒ¡ã‚¤ãƒ³OP
             const $mainStat = $artifact[i].getElementsByClassName("mainstat")[0];
             if (!$doc.getElementById("artifactMain" + i)) {
                 const $mainOPName = $statText.cloneNode(true);
@@ -340,7 +340,7 @@ class EnkaConverter {
                 $mainStat.prepend($mainOPName);
             }
 
-            // ƒTƒuOP
+            // ã‚µãƒ–OP
             const $subStat = $artifact[i].getElementsByClassName("Substat");
             const subLen = $subStat.length;
             for (let j = 0; j < subLen; j++) {
@@ -353,7 +353,7 @@ class EnkaConverter {
                 $subStat[j].prepend($subOPName);
             }
 
-            // ƒXƒRƒA•\¦
+            // ã‚¹ã‚³ã‚¢è¡¨ç¤º
             if ($doc.getElementById("score" + i) === null) {
                 const $scoreBox = $doc.createElement("div");
                 $scoreBox.id = "score" + i;
@@ -366,44 +366,44 @@ class EnkaConverter {
     function createModeChangeBottom() {
         const $cardToggles = $doc.getElementsByClassName("CardToggles")[0];
         const $rowElement = $cardToggles.getElementsByClassName("row")[0].cloneNode(false);
-        $cardToggles.getElementsByClassName("Input")[0].parentNode.after($rowElement);  // ƒJ[ƒhƒIƒvƒVƒ‡ƒ“‚Ì‰º‚Éì¬
+        $cardToggles.getElementsByClassName("Input")[0].parentNode.after($rowElement);  // ã‚«ãƒ¼ãƒ‰ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®ä¸‹ã«ä½œæˆ
 
         const radioStyle = [
-            '.inline_radio input[type="radio"] { position: absolute; opacity: 0; }',  // ƒ`ƒFƒbƒNƒ{ƒbƒNƒX‚ğ‰B‚·
-            '.inline_radio label.radbox[type="radio"] { color: rgba(255,255,255,.5);}',  // •’i‚Í”––Ú
-            '.inline_radio input[type="radio"]:checked + label.radbox[type="radio"] { color: rgba(255,255,255,1); border-color: rgba(255,255,255,1); }'  // ‘I‘ğ‚µ‚Ä‚¢‚éƒ{ƒ^ƒ“‚ğ‹­’²
+            '.inline_radio input[type="radio"] { position: absolute; opacity: 0; }',  // ãƒã‚§ãƒƒã‚¯ãƒœãƒƒã‚¯ã‚¹ã‚’éš ã™
+            '.inline_radio label.radbox[type="radio"] { color: rgba(255,255,255,.5);}',  // æ™®æ®µã¯è–„ç›®
+            '.inline_radio input[type="radio"]:checked + label.radbox[type="radio"] { color: rgba(255,255,255,1); border-color: rgba(255,255,255,1); }'  // é¸æŠã—ã¦ã„ã‚‹ãƒœã‚¿ãƒ³ã‚’å¼·èª¿
         ];
         const $style = $doc.createElement("style");
         $style.innerHTML = radioStyle.join(" ");
         $doc.querySelector("head").append($style);
 
-        // ƒXƒRƒA‘I‘ğ—“‚ğì¬
+        // ã‚¹ã‚³ã‚¢é¸æŠæ¬„ã‚’ä½œæˆ
         $scoreSelectDiv = $doc.createElement("div");
         $scoreSelectDiv.classList.add("Input", "svelte-nsdlaj");
 
-        // à–¾ƒeƒLƒXƒg‚ğ’Ç‰Á
+        // èª¬æ˜ãƒ†ã‚­ã‚¹ãƒˆã‚’è¿½åŠ 
         const $text = $doc.createElement("label");
         $text.classList.add("SCORE_SELECT", "svelte-nsdlaj");
         $text.cssStyle = "margin-left: 0.5em;";
 
-        // ŒvZ•û–@•ÏX—pƒ{ƒ^ƒ“
+        // è¨ˆç®—æ–¹æ³•å¤‰æ›´ç”¨ãƒœã‚¿ãƒ³
         const $scoreModeGroup = $doc.createElement("group");
         $scoreModeGroup.classList.add("inline_radio");
 
-        // ƒ{ƒ^ƒ“‚Ìì¬
+        // ãƒœã‚¿ãƒ³ã®ä½œæˆ
         const keys = Object.keys(SCORE_TYPE);
         for (let i = 0; i < keys.length; i++) {
             const key = keys[i];
             const id = "SCORE_{0}_R".format(key);
 
-            // ƒ{ƒ^ƒ“
+            // ãƒœã‚¿ãƒ³
             const $radio = $doc.createElement("input");
             $radio.id = id;
             $radio.name = SCORE_RADIO_NAME;
             $radio.setAttribute("type", "radio");
             $radio.value = SCORE_TYPE[key];
 
-            // ƒ‰ƒxƒ‹ (ƒ{ƒ^ƒ“‚ÆƒŠƒ“ƒN‚³‚¹‚é)
+            // ãƒ©ãƒ™ãƒ« (ãƒœã‚¿ãƒ³ã¨ãƒªãƒ³ã‚¯ã•ã›ã‚‹)
             const $label = $doc.createElement("label");
             $label.setAttribute("for", id);
             $label.setAttribute("type", "radio");
@@ -419,11 +419,11 @@ class EnkaConverter {
         $scoreSelectDiv.appendChild($scoreModeGroup);
         $rowElement.appendChild($scoreSelectDiv);
 
-        // UŒ‚‚ğƒfƒtƒHƒ‹ƒg‚É‚·‚é
+        // æ”»æ’ƒã‚’ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã«ã™ã‚‹
         const atkRadioId = $scoreSelectDiv.getElementsByClassName("ATTACK")[0].getAttribute("for");
         $doc.getElementById(atkRadioId).checked = true;
 
-        // ƒXƒRƒA•]‰¿‘ÎÛ•ÏX‚É”­‰Î
+        // ã‚¹ã‚³ã‚¢è©•ä¾¡å¯¾è±¡å¤‰æ›´æ™‚ã«ç™ºç«
         $doc.getElementsByName(SCORE_RADIO_NAME).forEach((function (e) {
             e.addEventListener("click", (function () {
                 scoreH = $doc.querySelector("input:checked[name={0}]".format(SCORE_RADIO_NAME)).value;
@@ -432,7 +432,7 @@ class EnkaConverter {
         }));
     }
 
-    // •ŠíƒIƒvƒVƒ‡ƒ“‚Ì“ú–{Œê‰»
+    // æ­¦å™¨ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®æ—¥æœ¬èªåŒ–
     function weaponOPConvert() {
         const $subStat = $weapon[0].getElementsByClassName("Substat");
 
@@ -443,17 +443,17 @@ class EnkaConverter {
         if ($weaponSub) $weaponSub.innerText = getConvertStatName($subStat[1].classList[1]);
     }
 
-    // ¹ˆâ•¨‚Ì“ú–{Œê‰»
+    // è–éºç‰©ã®æ—¥æœ¬èªåŒ–
     function artifactConvert() {
         for (let i = 0; i < 5; i++) {
-            // ¹ˆâ•¨‚ğ•t‚¯‚Ä‚¢‚È‚¢ê‡AƒXƒLƒbƒv
+            // è–éºç‰©ã‚’ä»˜ã‘ã¦ã„ãªã„å ´åˆã€ã‚¹ã‚­ãƒƒãƒ—
             if (!isEquippingArtifact(i)) continue;
 
-            // ƒƒCƒ“OP
+            // ãƒ¡ã‚¤ãƒ³OP
             const $mainStat = $artifact[i].getElementsByClassName("mainstat")[0];
             $doc.getElementById("artifactMain" + i).innerText = getConvertStatName($mainStat.classList[1])
 
-            // ƒTƒuOP
+            // ã‚µãƒ–OP
             const $subStat = $artifact[i].getElementsByClassName("Substat");
             const subLen = $subStat.length;
             for (let j = 0; j < subLen; j++) {
@@ -466,7 +466,7 @@ class EnkaConverter {
     }
 
     /**
- * ¹ˆâ•¨‚ÌƒXƒRƒA‚ğŒvZ
+ * è–éºç‰©ã®ã‚¹ã‚³ã‚¢ã‚’è¨ˆç®—
  */
     function calcArtifactScore(index) {
         let score = 0;
@@ -510,7 +510,7 @@ class EnkaConverter {
             case LANGUAGE.EN:
                 return "Crit Ratio 1:{0} / Score({1}) Avg. {2} Total {3}";
             case LANGUAGE.JA:
-                return "‰ïS—¦ƒ_ƒ”ä 1:{0} / ¹ˆâ•¨ƒXƒRƒA({1}) •½‹Ï:{2} ‡Œv:{3}";
+                return "ä¼šå¿ƒç‡ãƒ€ãƒ¡æ¯” 1:{0} / è–éºç‰©ã‚¹ã‚³ã‚¢({1}) å¹³å‡:{2} åˆè¨ˆ:{3}";
             default:
                 return "Crit Ratio 1:{0} / Score({1}) Avg. {2} Total {3}";
         }
@@ -520,7 +520,7 @@ class EnkaConverter {
         weaponOPConvert();
         artifactConvert();
 
-        // DŠ´“x
+        // å¥½æ„Ÿåº¦
         const $friend = $doc.getElementsByClassName("fren")[0];
         if ($friend) {
             const friendClassName = converterInstance.CONVERT_TEXT.FRIEND.key;
@@ -528,13 +528,13 @@ class EnkaConverter {
             $friendText.innerText = getConvertStatName(friendClassName);
         }
 
-        // î•ñæ“¾“ú‚ğ•\¦
+        // æƒ…å ±å–å¾—æ—¥æ™‚ã‚’è¡¨ç¤º
         const date = new Date;
         date.setTime(date.getTime() - 60 * date.getTimezoneOffset() * 1000);
         const timeString = date.toISOString().replace("T", " ").substr(0, 19);
         $doc.getElementById(TIME_STAMP).innerText = version + "_" + timeString;
 
-        // ƒXƒRƒA•û®‘I‘ğƒ{ƒ^ƒ“
+        // ã‚¹ã‚³ã‚¢æ–¹å¼é¸æŠãƒœã‚¿ãƒ³
         const $scoreSelectInfo = $scoreSelectDiv.children[0];
         $scoreSelectInfo.innerText = getConvertStatName($scoreSelectInfo.classList[0]);
 
@@ -544,12 +544,12 @@ class EnkaConverter {
             $labet.innerText = getConvertStatName($labet.classList[0]);
         }
 
-        // ------ ’Ç‰Áî•ñ
+        // ------ è¿½åŠ æƒ…å ±
         let sumScore = 0;
         let avgScore = 0;
         const $extraText = $doc.getElementById("extraData");
 
-        // ƒXƒRƒAŒvZ
+        // ã‚¹ã‚³ã‚¢è¨ˆç®—
         for (let i = 0; i < 5; i++) {
             let score = 0.0;
 
@@ -558,7 +558,7 @@ class EnkaConverter {
 
             $scoreBox.setAttribute("class", "svelte-1ujofp1");
 
-            // ¹ˆâ•¨‚ğ•t‚¯‚Ä‚¢‚éê‡AŒvZ
+            // è–éºç‰©ã‚’ä»˜ã‘ã¦ã„ã‚‹å ´åˆã€è¨ˆç®—
             if (isEquippingArtifact(i)) {
                 score = calcArtifactScore(i);
                 sumScore += score;
@@ -591,17 +591,17 @@ class EnkaConverter {
     }
 
     window.onload = function () {
-        // •Ší
+        // æ­¦å™¨
         const $weaponInfo = $weapon[0].getElementsByTagName("content")[0];
         const $weaponName = $weaponInfo.getElementsByTagName("h3")[0];
         $weaponInfo.style.paddingRight = "0px";
         $weaponName.style.fontWeight = "bold";
-        $weapon[0].children[0].style.width = "30%";  // •Ší‰æ‘œ
+        $weapon[0].children[0].style.width = "30%";  // æ­¦å™¨ç”»åƒ
 
-        // ###### ƒLƒƒƒ‰ƒJ[ƒh‚ÌƒfƒUƒCƒ“•ÏX ######
+        // ###### ã‚­ãƒ£ãƒ©ã‚«ãƒ¼ãƒ‰ã®ãƒ‡ã‚¶ã‚¤ãƒ³å¤‰æ›´ ######
         const $charaCard = $doc.getElementsByClassName("card-host")[0];
 
-        // ‚»‚Ì‘¼î•ñ‚ğ•\¦‚·‚é˜g
+        // ãã®ä»–æƒ…å ±ã‚’è¡¨ç¤ºã™ã‚‹æ 
         const $exParam = $doc.createElement("div");
         $exParam.id = "extraData";
         $exParam.innerText = "";
@@ -609,7 +609,7 @@ class EnkaConverter {
         $exParam.classList.add("svelte-1ujofp1")
         $charaCard.appendChild($exParam);
 
-        // æ“¾ŠÔ
+        // å–å¾—æ™‚é–“
         const $timeStamp = $doc.createElement("div");
         $timeStamp.id = TIME_STAMP;
         $timeStamp.innerText = "";
@@ -617,28 +617,28 @@ class EnkaConverter {
         $exParam.classList.add("svelte-1ujofp1")
         $charaCard.appendChild($timeStamp);
 
-        // css‚Ì‘S–Ê“I‚È•ÏX
+        // cssã®å…¨é¢çš„ãªå¤‰æ›´
         const cssStyle = [
-            '.Card .Icon{ display:none !important }',  // ƒAƒCƒRƒ“‚Ìíœ
-            '.stats.svelte-gp6viv .Substat { padding-top: 4%; }',  // •ŠíƒXƒe[ƒ^ƒX‚Ì˜g‚ğ‘å‚«‚­
-            '.Card .Substat.svelte-1ut2kb8.svelte-1ut2kb8 { display: flex; align-items: center; margin-right: 0em; line-height: 95%; font-size: 98%; }',  // ƒTƒuƒXƒe[ƒ^ƒX‚Ì˜g‚ğL‚°‚é
-            '.substats.svelte-17qi811>.Substat { padding-right: 1.0em; }',  // ¹ˆâ•¨‚ÌƒTƒuƒXƒe[ƒ^ƒX‚ª‰E‚És‚«‚·‚¬‚é‚Ì‚Å’²®
-            '.Artifact.svelte-17qi811 .ArtifactIcon { top: -37%; left: -6%; width: 28%; }',  // ¹ˆâ•¨‰æ‘œ‚Ì’²®
-            '.mainstat.svelte-17qi811 > div:nth-child(1) { display: flex; align-items: center; top: 3px; max-height: 100%; font-size: 110%; line-height: 90%; width: auto; height: 50em; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; }',  // ¹ˆâ•¨ƒƒCƒ“ƒXƒe[ƒ^ƒX‚Ì’²®
-            '.mainstat.svelte-17qi811 > div:nth-child(4) { display: flex; align-items: center; margin-left: auto; margin-bottom: -0.3em; }'  // ¹ˆâ•¨ƒƒCƒ“ƒXƒe[ƒ^ƒX‚Ì’²®
+            '.Card .Icon{ display:none !important }',  // ã‚¢ã‚¤ã‚³ãƒ³ã®å‰Šé™¤
+            '.stats.svelte-gp6viv .Substat { padding-top: 4%; }',  // æ­¦å™¨ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®æ ã‚’å¤§ãã
+            '.Card .Substat.svelte-1ut2kb8.svelte-1ut2kb8 { display: flex; align-items: center; margin-right: 0em; line-height: 95%; font-size: 98%; }',  // ã‚µãƒ–ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®æ ã‚’åºƒã’ã‚‹
+            '.substats.svelte-17qi811>.Substat { padding-right: 1.0em; }',  // è–éºç‰©ã®ã‚µãƒ–ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãŒå³ã«è¡Œãã™ãã‚‹ã®ã§èª¿æ•´
+            '.Artifact.svelte-17qi811 .ArtifactIcon { top: -37%; left: -6%; width: 28%; }',  // è–éºç‰©ç”»åƒã®èª¿æ•´
+            '.mainstat.svelte-17qi811 > div:nth-child(1) { display: flex; align-items: center; top: 3px; max-height: 100%; font-size: 110%; line-height: 90%; width: auto; height: 50em; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; }',  // è–éºç‰©ãƒ¡ã‚¤ãƒ³ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®èª¿æ•´
+            '.mainstat.svelte-17qi811 > div:nth-child(4) { display: flex; align-items: center; margin-left: auto; margin-bottom: -0.3em; }'  // è–éºç‰©ãƒ¡ã‚¤ãƒ³ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®èª¿æ•´
         ];
         const $style = $doc.createElement("style");
         $style.innerHTML = cssStyle.join(" ");
         $doc.querySelector("head").append($style);
 
-        // ‘S‘Ì‚Ì”z’u‚Ì•ÏX
+        // å…¨ä½“ã®é…ç½®ã®å¤‰æ›´
         const $cardSection = $doc.getElementsByClassName("section");
-        // ¶
+        // å·¦
         $cardSection[0].style.width = "36%";
-        // ’†‰›
+        // ä¸­å¤®
         $cardSection[1].style.width = "24%";
         $cardSection[1].style.left = "34%";
-        // ‰E
+        // å³
         $cardSection[2].style.width = "43%";
         $cardSection[2].style.height = "97%";
 
@@ -649,13 +649,13 @@ class EnkaConverter {
 
         const $charaName = $doc.getElementsByClassName("name")[0];
         const $language = $doc.getElementsByXPath('//div[@data-icon="language"]')[0];
-        // Œ¾Œê‚âƒLƒƒƒ‰ƒNƒ^[•ÏX‚ÉÄ–|–ó
+        // è¨€èªã‚„ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼å¤‰æ›´æ™‚ã«å†ç¿»è¨³
         const observeConf = { childList: true, attributes: true, characterData: true };
         const observer = new MutationObserver(mutations => {
             createConvertTextElements();
             enkaConvertStat();
         })
-        observer.observe($charaName, observeConf); // ƒLƒƒƒ‰ƒNƒ^[•ÏX
-        observer.observe($language, observeConf); // Œ¾Œê•ÏX
+        observer.observe($charaName, observeConf); // ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼å¤‰æ›´æ™‚
+        observer.observe($language, observeConf); // è¨€èªå¤‰æ›´æ™‚
     };
 })();

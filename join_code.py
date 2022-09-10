@@ -7,6 +7,6 @@ for i in file_name:
     with open(i, 'r', encoding="utf-8") as f:
         content += f.read()
 
-with open("Enka.Network_lang-jp.user.js", "w") as f:
+with open("Enka.Network_lang-jp.user.js", "w", encoding="utf-8") as f:
     for line in content:
         f.write(line)
