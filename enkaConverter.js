@@ -17,13 +17,28 @@ class EnkaConverter {
             [LANGUAGE.EN]: "HP",
             [LANGUAGE.JA]: "HP",
         },
+        HP_P: {
+            key: "HP_PERCENT",
+            [LANGUAGE.EN]: "HP",
+            [LANGUAGE.JA]: "HP",
+        },
         ATK: {
             key: "ATTACK",
             [LANGUAGE.EN]: "ATK",
             [LANGUAGE.JA]: "攻撃力",
         },
+        ATK_P: {
+            key: "ATTACK_PERCENT",
+            [LANGUAGE.EN]: "ATK",
+            [LANGUAGE.JA]: "攻撃力",
+        },
         DEF: {
             key: "DEFENSE",
+            [LANGUAGE.EN]: "DEF",
+            [LANGUAGE.JA]: "防御力",
+        },
+        DEF_P: {
+            key: "DEFENSE_PERCENT",
             [LANGUAGE.EN]: "DEF",
             [LANGUAGE.JA]: "防御力",
         },

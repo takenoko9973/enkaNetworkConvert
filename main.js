@@ -1,6 +1,6 @@
 (() => {
     'use strict';
-    const version = "v0.41";
+    const version = "v0.42";
 
     const $doc = document;
     const $weapon = $doc.getElementsByClassName("Weapon");
@@ -9,7 +9,7 @@
 
     const converterInstance = new EnkaConverter();
 
-    const BASE_ATK_CLASS = converterInstance.getClassName("BASE_ATK");
+    const BASE_ATK_CLASS = converterInstance.CONVERT_TEXT.BASE_ATK.key;
     const TIME_STAMP = "timeStamp"
 
     // スコア計算基準指定 H:HP, A:攻撃力, D:防御力
@@ -83,7 +83,7 @@
             const $icon = $friend.getElementsByClassName("ShadedSvgIcon")[0];
             $icon.style.width = "0";
 
-            const friendClassName = converterInstance.getClassName("FRIEND");
+            const friendClassName = converterInstance.CONVERT_TEXT.FRIEND.key;
             if (!$friend.getElementsByClassName(friendClassName)[0]) {
                 const $frenText = $doc.createElement("span");
                 $frenText.classList.add(friendClassName, "svelte-1cfvxg7");
@@ -101,7 +101,7 @@
         const $weaponInfo = $weapon[0].getElementsByTagName("content")[0];
         const $subStat = $weaponInfo.getElementsByClassName("Substat");
 
-        const baseAtkClass = converterInstance.getClassName("BASE_ATK")
+        const baseAtkClass = converterInstance.CONVERT_TEXT.BASE_ATK.key;
         if (!$doc.getElementById(baseAtkClass)) {
             const $baseAtk = $statText.cloneNode(true);
             $baseAtk.id = baseAtkClass;
@@ -271,24 +271,22 @@
         const subLen = $subStat.length;
 
         for (let i = 0; i < subLen; i++) {
-            if (Array.from($subStat[i].classList).indexOf("meh") !== -1) continue;
-
             switch ($subStatName[i]) {
-                case converterInstance.getClassName("CRIT_RATE"):
+                case converterInstance.CONVERT_TEXT.CRIT_RATE.key:
                     score += Number($subStatAmount[i]) * 2;
                     break;
-                case converterInstance.getClassName("CRIT_DMG"):
+                case converterInstance.CONVERT_TEXT.CRIT_DMG.key:
                     score += Number($subStatAmount[i]);
                     break;
-                case converterInstance.getClassName("HP"):
+                case converterInstance.CONVERT_TEXT.HP_P.key:
                     if (scoreH !== SCORE_TYPE.HP) break;
                     score += Number($subStatAmount[i]);
                     break;
-                case converterInstance.getClassName("ATK"):
+                case converterInstance.CONVERT_TEXT.ATK_P.key:
                     if (scoreH !== SCORE_TYPE.ATTACK) break;
                     score += Number($subStatAmount[i]);
                     break;
-                case converterInstance.getClassName("DEF"):
+                case converterInstance.CONVERT_TEXT.DEF_P.key:
                     if (scoreH !== SCORE_TYPE.DEFENSE) break;
                     score += Number($subStatAmount[i]) * 0.8;
                     break;
@@ -318,7 +316,7 @@
         // 好感度
         const $friend = $doc.getElementsByClassName("fren")[0];
         if ($friend) {
-            const friendClassName = converterInstance.getClassName("FRIEND")
+            const friendClassName = converterInstance.CONVERT_TEXT.FRIEND.key;
             const $friendText = $friend.getElementsByClassName(friendClassName)[0];
             $friendText.innerText = getConvertStatName(friendClassName);
         }
@@ -365,20 +363,20 @@
         }
         avgScore = sumScore / 5;
 
-        const critRate = getCharacterStats(converterInstance.getClassName("CRIT_RATE"));
-        const critDMG = getCharacterStats(converterInstance.getClassName("CRIT_DMG"));
+        const critRate = getCharacterStats(converterInstance.CONVERT_TEXT.CRIT_RATE.key);
+        const critDMG = getCharacterStats(converterInstance.CONVERT_TEXT.CRIT_DMG.key);
         const critRatio = critDMG / critRate;
 
         let type = "";
         switch (scoreH) {
             case SCORE_TYPE.HP:
-                type = getConvertStatName(converterInstance.getClassName("HP"));
+                type = getConvertStatName(converterInstance.CONVERT_TEXT.HP_P.key);
                 break;
             case SCORE_TYPE.ATTACK:
-                type = getConvertStatName(converterInstance.getClassName("ATK"));
+                type = getConvertStatName(converterInstance.CONVERT_TEXT.ATK_P.key);
                 break;
             case SCORE_TYPE.DEFENSE:
-                type = getConvertStatName(converterInstance.getClassName("DEF"));
+                type = getConvertStatName(converterInstance.CONVERT_TEXT.DEF_P.key);
                 break;
         }
 
@@ -414,9 +412,9 @@
 
         // cssの全面的な変更
         const cssStyle = [
-            '.Icon{ display:none !important }',  // アイコンの削除
+            '.Card .Icon{ display:none !important }',  // アイコンの削除
             '.stats.svelte-gp6viv .Substat { padding-top: 4%; }',  // 武器ステータスの枠を大きく
-            '.Substat.svelte-1ut2kb8.svelte-1ut2kb8 { display: flex; align-items: center; margin-right: 0em; line-height: 95%; font-size: 98%; }',  // サブステータスの枠を広げる
+            '.Card .Substat.svelte-1ut2kb8.svelte-1ut2kb8 { display: flex; align-items: center; margin-right: 0em; line-height: 95%; font-size: 98%; }',  // サブステータスの枠を広げる
             '.substats.svelte-17qi811>.Substat { padding-right: 1.0em; }',  // 聖遺物のサブステータスが右に行きすぎるので調整
             '.Artifact.svelte-17qi811 .ArtifactIcon { top: -37%; left: -6%; width: 28%; }',  // 聖遺物画像の調整
             '.mainstat.svelte-17qi811 > div:nth-child(1) { display: flex; align-items: center; top: 3px; max-height: 100%; font-size: 110%; line-height: 90%; width: auto; height: 50em; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; }',  // 聖遺物メインステータスの調整
