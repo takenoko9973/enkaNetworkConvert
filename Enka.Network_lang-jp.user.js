@@ -2,7 +2,7 @@
 // @name         Enka.Network_lang-jp_mod_by_takenoko
 // @description  Enka.Network 日本語化スクリプト
 // @namespace    http://tampermonkey.net/
-// @version      0.42
+// @version      0.43
 // @author       Takenoko-ya
 // @match        https://enka.network/u/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=shinshin.moe
@@ -10,6 +10,7 @@
 // @updateURL    https://github.com/takenoko9973/enkaNetworkConvert/raw/master/Enka.Network_lang-jp.user.js
 // @downloadURL  https://github.com/takenoko9973/enkaNetworkConvert/raw/master/Enka.Network_lang-jp.user.js
 // @supportURL   https://github.com/takenoko9973/enkaNetworkConvert
+// @since        0.43T 熟知のスコア計算を追加
 // @since        0.42T require経由だとキャッシュされる様なので削除 class名変更に対応
 // @since        0.41T スコア選択のボタンの配置を変更 防御選択の時、防御%に0.8の補正を掛けるように
 // @since        0.40T enka.networkのアップデートに対応
@@ -207,7 +208,7 @@ class EnkaConverter {
 }
 (() => {
     'use strict';
-    const version = "v0.42";
+    const version = "v0.43";
 
     const $doc = document;
     const $weapon = $doc.getElementsByClassName("Weapon");
@@ -223,11 +224,28 @@ class EnkaConverter {
     const SCORE_RADIO_NAME = "sSource"
     let $scoreSelectDiv = null;
     const SCORE_TYPE = {
-        HP: "H",
-        ATTACK: "A",
-        DEFENSE: "D",
+        HP: {
+            id: "H",
+            key: converterInstance.CONVERT_TEXT.HP_P.key,
+            correction: 1
+        },
+        ATTACK: {
+            id: "A",
+            key: converterInstance.CONVERT_TEXT.ATK_P.key,
+            correction: 1
+        },
+        DEFENSE: {
+            id: "D",
+            key: converterInstance.CONVERT_TEXT.DEF_P.key,
+            correction: 0.8
+        },
+        EM: {
+            id: "EM",
+            key: converterInstance.CONVERT_TEXT.EM.key,
+            correction: 0.25
+        }
     }
-    let scoreH = SCORE_TYPE.ATTACK;
+    let scoreH = SCORE_TYPE.ATTACK.id;
 
 
     function getLanguage() {
@@ -391,9 +409,7 @@ class EnkaConverter {
         $scoreModeGroup.classList.add("inline_radio");
 
         // ボタンの作成
-        const keys = Object.keys(SCORE_TYPE);
-        for (let i = 0; i < keys.length; i++) {
-            const key = keys[i];
+        for (const key in SCORE_TYPE) {
             const id = "SCORE_{0}_R".format(key);
 
             // ボタン
@@ -401,7 +417,7 @@ class EnkaConverter {
             $radio.id = id;
             $radio.name = SCORE_RADIO_NAME;
             $radio.setAttribute("type", "radio");
-            $radio.value = SCORE_TYPE[key];
+            $radio.value = SCORE_TYPE[key].id;
 
             // ラベル (ボタンとリンクさせる)
             const $label = $doc.createElement("label");
@@ -410,7 +426,7 @@ class EnkaConverter {
             $label.setAttribute("data-type", "OUTLINE");
             $label.setAttribute("data-variant", "HALF");
             $label.style.marginTop = "0em";
-            $label.classList.add(key, "radbox", "Button", "svelte-1dpa14o", "label");
+            $label.classList.add(SCORE_TYPE[key].key, "radbox", "Button", "svelte-1dpa14o", "label");
 
             $scoreModeGroup.appendChild($radio);
             $scoreModeGroup.appendChild($label);
@@ -420,7 +436,7 @@ class EnkaConverter {
         $rowElement.appendChild($scoreSelectDiv);
 
         // 攻撃をデフォルトにする
-        const atkRadioId = $scoreSelectDiv.getElementsByClassName("ATTACK")[0].getAttribute("for");
+        const atkRadioId = $scoreSelectDiv.getElementsByClassName(SCORE_TYPE.ATTACK.key)[0].getAttribute("for");
         $doc.getElementById(atkRadioId).checked = true;
 
         // スコア評価対象変更時に発火
@@ -466,8 +482,8 @@ class EnkaConverter {
     }
 
     /**
- * 聖遺物のスコアを計算
- */
+    * 聖遺物のスコアを計算
+    */
     function calcArtifactScore(index) {
         let score = 0;
         if (!isEquippingArtifact(index)) return score;
@@ -478,25 +494,24 @@ class EnkaConverter {
         const subLen = $subStat.length;
 
         for (let i = 0; i < subLen; i++) {
-            switch ($subStatName[i]) {
+            const key = $subStatName[i];
+            switch (key) {
                 case converterInstance.CONVERT_TEXT.CRIT_RATE.key:
                     score += Number($subStatAmount[i]) * 2;
                     break;
                 case converterInstance.CONVERT_TEXT.CRIT_DMG.key:
                     score += Number($subStatAmount[i]);
                     break;
-                case converterInstance.CONVERT_TEXT.HP_P.key:
-                    if (scoreH !== SCORE_TYPE.HP) break;
-                    score += Number($subStatAmount[i]);
-                    break;
-                case converterInstance.CONVERT_TEXT.ATK_P.key:
-                    if (scoreH !== SCORE_TYPE.ATTACK) break;
-                    score += Number($subStatAmount[i]);
-                    break;
-                case converterInstance.CONVERT_TEXT.DEF_P.key:
-                    if (scoreH !== SCORE_TYPE.DEFENSE) break;
-                    score += Number($subStatAmount[i]) * 0.8;
-                    break;
+                default:
+                    // 指定のステータスをスコア換算
+                    for (const typeKey in SCORE_TYPE) {
+                        const scoreType = SCORE_TYPE[typeKey];
+                        if (key != scoreType.key) continue;
+                        if (scoreH != scoreType.id) continue;
+
+                        score += Number($subStatAmount[i]) * scoreType.correction;
+                        break;
+                    }
             }
         }
 
@@ -534,14 +549,14 @@ class EnkaConverter {
         const timeString = date.toISOString().replace("T", " ").substr(0, 19);
         $doc.getElementById(TIME_STAMP).innerText = version + "_" + timeString;
 
-        // スコア方式選択ボタン
+        // スコア方式選択説明テキスト
         const $scoreSelectInfo = $scoreSelectDiv.children[0];
         $scoreSelectInfo.innerText = getConvertStatName($scoreSelectInfo.classList[0]);
-
+        // スコア方式選択ボタン
         const $scoreButtons = $scoreSelectDiv.getElementsByClassName("Button");
         for (let i = 0; i < $scoreButtons.length; i++) {
-            const $labet = $scoreButtons[i];
-            $labet.innerText = getConvertStatName($labet.classList[0]);
+            const $label = $scoreButtons[i];
+            $label.innerText = getConvertStatName($label.classList[0], true);
         }
 
         // ------ 追加情報
@@ -575,16 +590,12 @@ class EnkaConverter {
         const critRatio = critDMG / critRate;
 
         let type = "";
-        switch (scoreH) {
-            case SCORE_TYPE.HP:
-                type = getConvertStatName(converterInstance.CONVERT_TEXT.HP_P.key);
-                break;
-            case SCORE_TYPE.ATTACK:
-                type = getConvertStatName(converterInstance.CONVERT_TEXT.ATK_P.key);
-                break;
-            case SCORE_TYPE.DEFENSE:
-                type = getConvertStatName(converterInstance.CONVERT_TEXT.DEF_P.key);
-                break;
+        for (const typeKey in SCORE_TYPE) {
+            const scoreType = SCORE_TYPE[typeKey];
+            if (scoreH != scoreType.id) continue;
+
+            type = getConvertStatName(scoreType.key, true);
+            break;
         }
 
         $extraText.innerText = getExtraText().format(critRatio.toFixed(1), type, avgScore.toFixed(1), sumScore.toFixed(1));
