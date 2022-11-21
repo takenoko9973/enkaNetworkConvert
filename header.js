@@ -2,7 +2,7 @@
 // @name         Enka.Network_lang-jp_mod_by_takenoko
 // @description  Enka.Network 日本語化スクリプト
 // @namespace    http://tampermonkey.net/
-// @version      0.43
+// @version      0.44
 // @author       Takenoko-ya
 // @match        https://enka.network/u/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=shinshin.moe

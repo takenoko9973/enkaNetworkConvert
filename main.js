@@ -1,6 +1,6 @@
 (() => {
     'use strict';
-    const version = "v0.43";
+    const version = "v0.44";
 
     const $doc = document;
     const $weapon = $doc.getElementsByClassName("Weapon");
@@ -9,33 +9,17 @@
 
     const converterInstance = new EnkaConverter();
 
-    const BASE_ATK_CLASS = converterInstance.CONVERT_TEXT.BASE_ATK.key;
+    const BASE_ATK_CLASS = converterInstance.getClassName("BASE_ATK");
     const TIME_STAMP = "timeStamp"
 
     // スコア計算基準指定 H:HP, A:攻撃力, D:防御力
     const SCORE_RADIO_NAME = "sSource"
     let $scoreSelectDiv = null;
     const SCORE_TYPE = {
-        HP: {
-            id: "H",
-            key: converterInstance.CONVERT_TEXT.HP_P.key,
-            correction: 1
-        },
-        ATTACK: {
-            id: "A",
-            key: converterInstance.CONVERT_TEXT.ATK_P.key,
-            correction: 1
-        },
-        DEFENSE: {
-            id: "D",
-            key: converterInstance.CONVERT_TEXT.DEF_P.key,
-            correction: 0.8
-        },
-        EM: {
-            id: "EM",
-            key: converterInstance.CONVERT_TEXT.EM.key,
-            correction: 0.25
-        }
+        HP: new scoreType("H", converterInstance.getClassName("HP_P"), 1),
+        ATTACK: new scoreType("A", converterInstance.getClassName("ATK_P"), 1),
+        DEFENSE: new scoreType("D", converterInstance.getClassName("DEF_P"), 0.8),
+        EM: new scoreType("EM", converterInstance.getClassName("EM"), 0.25),
     }
     let scoreH = SCORE_TYPE.ATTACK.id;
 
@@ -100,7 +84,7 @@
             const $icon = $friend.getElementsByClassName("ShadedSvgIcon")[0];
             $icon.style.width = "0";
 
-            const friendClassName = converterInstance.CONVERT_TEXT.FRIEND.key;
+            const friendClassName = converterInstance.getClassName("FRIEND");
             if (!$friend.getElementsByClassName(friendClassName)[0]) {
                 const $frenText = $doc.createElement("span");
                 $frenText.classList.add(friendClassName, "svelte-1cfvxg7");
@@ -118,11 +102,10 @@
         const $weaponInfo = $weapon[0].getElementsByTagName("content")[0];
         const $subStat = $weaponInfo.getElementsByClassName("Substat");
 
-        const baseAtkClass = converterInstance.CONVERT_TEXT.BASE_ATK.key;
-        if (!$doc.getElementById(baseAtkClass)) {
+        if (!$doc.getElementById(BASE_ATK_CLASS)) {
             const $baseAtk = $statText.cloneNode(true);
-            $baseAtk.id = baseAtkClass;
-            $baseAtk.classList.add(baseAtkClass);
+            $baseAtk.id = BASE_ATK_CLASS;
+            $baseAtk.classList.add(BASE_ATK_CLASS);
             $subStat[0].prepend(getSeparateElement());
             $subStat[0].prepend($baseAtk);
         }
@@ -288,10 +271,10 @@
         for (let i = 0; i < subLen; i++) {
             const key = $subStatName[i];
             switch (key) {
-                case converterInstance.CONVERT_TEXT.CRIT_RATE.key:
+                case converterInstance.getClassName("CRIT_RATE"):
                     score += Number($subStatAmount[i]) * 2;
                     break;
-                case converterInstance.CONVERT_TEXT.CRIT_DMG.key:
+                case converterInstance.getClassName("CRIT_DMG"):
                     score += Number($subStatAmount[i]);
                     break;
                 default:
@@ -330,7 +313,7 @@
         // 好感度
         const $friend = $doc.getElementsByClassName("fren")[0];
         if ($friend) {
-            const friendClassName = converterInstance.CONVERT_TEXT.FRIEND.key;
+            const friendClassName = converterInstance.getClassName("FRIEND");
             const $friendText = $friend.getElementsByClassName(friendClassName)[0];
             $friendText.innerText = getConvertStatName(friendClassName);
         }
@@ -377,8 +360,8 @@
         }
         avgScore = sumScore / 5;
 
-        const critRate = getCharacterStats(converterInstance.CONVERT_TEXT.CRIT_RATE.key);
-        const critDMG = getCharacterStats(converterInstance.CONVERT_TEXT.CRIT_DMG.key);
+        const critRate = getCharacterStats(converterInstance.getClassName("CRIT_RATE"));
+        const critDMG = getCharacterStats(converterInstance.getClassName("CRIT_DMG"));
         const critRatio = critDMG / critRate;
 
         let type = "";
