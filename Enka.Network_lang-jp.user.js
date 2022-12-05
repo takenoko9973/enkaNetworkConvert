@@ -2,7 +2,7 @@
 // @name         Enka.Network_lang-jp_mod_by_takenoko
 // @description  Enka.Network 日本語化スクリプト
 // @namespace    http://tampermonkey.net/
-// @version      0.43
+// @version      0.44
 // @author       Takenoko-ya
 // @match        https://enka.network/u/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=shinshin.moe
@@ -10,6 +10,7 @@
 // @updateURL    https://github.com/takenoko9973/enkaNetworkConvert/raw/master/Enka.Network_lang-jp.user.js
 // @downloadURL  https://github.com/takenoko9973/enkaNetworkConvert/raw/master/Enka.Network_lang-jp.user.js
 // @supportURL   https://github.com/takenoko9973/enkaNetworkConvert
+// @since        0.44T スコア用クラスを追加 converter配列の要素名を変更 直接クラス名を取得している部分を書き換え
 // @since        0.43T 熟知のスコア計算を追加
 // @since        0.42T require経由だとキャッシュされる様なので削除 class名変更に対応
 // @since        0.41T スコア選択のボタンの配置を変更 防御選択の時、防御%に0.8の補正を掛けるように
@@ -49,51 +50,51 @@ const LANGUAGE = {
 };
 
 class EnkaConverter {
-    constructor() {}
+    constructor() { }
 
-    CONVERT_TEXT = {
+    #CONVERT_TEXT = {
         BASE_ATK: {
-            key: "BASE_ATK",
+            className: "BASE_ATK",
             [LANGUAGE.EN]: "Base ATK",
             [LANGUAGE.JA]: "基礎攻撃力",
         },
         HP: {
-            key: "HP",
+            className: "HP",
             [LANGUAGE.EN]: "HP",
             [LANGUAGE.JA]: "HP",
         },
         HP_P: {
-            key: "HP_PERCENT",
+            className: "HP_PERCENT",
             [LANGUAGE.EN]: "HP",
             [LANGUAGE.JA]: "HP",
         },
         ATK: {
-            key: "ATTACK",
+            className: "ATTACK",
             [LANGUAGE.EN]: "ATK",
             [LANGUAGE.JA]: "攻撃力",
         },
         ATK_P: {
-            key: "ATTACK_PERCENT",
+            className: "ATTACK_PERCENT",
             [LANGUAGE.EN]: "ATK",
             [LANGUAGE.JA]: "攻撃力",
         },
         DEF: {
-            key: "DEFENSE",
+            className: "DEFENSE",
             [LANGUAGE.EN]: "DEF",
             [LANGUAGE.JA]: "防御力",
         },
         DEF_P: {
-            key: "DEFENSE_PERCENT",
+            className: "DEFENSE_PERCENT",
             [LANGUAGE.EN]: "DEF",
             [LANGUAGE.JA]: "防御力",
         },
         CRIT_RATE: {
-            key: "CRITICAL",
+            className: "CRITICAL",
             [LANGUAGE.EN]: "CRIT Rate",
             [LANGUAGE.JA]: "会心率",
         },
         CRIT_DMG: {
-            key: "CRITICAL_HURT",
+            className: "CRITICAL_HURT",
             [LANGUAGE.EN]: "CRIT DMG",
             [LANGUAGE.JA]: "会心ダメージ",
             sub: {
@@ -101,7 +102,7 @@ class EnkaConverter {
             }
         },
         EM: {
-            key: "ELEMENT_MASTERY",
+            className: "ELEMENT_MASTERY",
             [LANGUAGE.EN]: "Elemental Mastery",
             [LANGUAGE.JA]: "元素熟知",
             sub: {
@@ -109,7 +110,7 @@ class EnkaConverter {
             }
         },
         ENERGY_RECHARGE: {
-            key: "CHARGE_EFFICIENCY",
+            className: "CHARGE_EFFICIENCY",
             [LANGUAGE.EN]: "Energy Recharge",
             [LANGUAGE.JA]: "元素チャージ",
             sub: {
@@ -118,79 +119,89 @@ class EnkaConverter {
             }
         },
         CRYO: {
-            key: "ICE_ADD_HURT",
+            className: "ICE_ADD_HURT",
             [LANGUAGE.EN]: "Cryo DMG",
             [LANGUAGE.JA]: "氷元素ダメージ",
         },
         ANEMO: {
-            key: "WIND_ADD_HURT",
+            className: "WIND_ADD_HURT",
             [LANGUAGE.EN]: "Anemo DMG",
             [LANGUAGE.JA]: "風元素ダメージ",
         },
         ELECTRO: {
-            key: "ELEC_ADD_HURT",
+            className: "ELEC_ADD_HURT",
             [LANGUAGE.EN]: "Electro DMG",
             [LANGUAGE.JA]: "雷元素ダメージ",
         },
         HYDRO: {
-            key: "WATER_ADD_HURT",
+            className: "WATER_ADD_HURT",
             [LANGUAGE.EN]: "Hydro DMG",
             [LANGUAGE.JA]: "水元素ダメージ",
         },
         PYRO: {
-            key: "FIRE_ADD_HURT",
+            className: "FIRE_ADD_HURT",
             [LANGUAGE.EN]: "Pyro DMG",
             [LANGUAGE.JA]: "炎元素ダメージ",
         },
         DENDRO: {
-            key: "GRASS_ADD_HURT",
+            className: "GRASS_ADD_HURT",
             [LANGUAGE.EN]: "Dendro DMG",
             [LANGUAGE.JA]: "草元素ダメージ",
         },
         GEO: {
-            key: "ROCK_ADD_HURT",
+            className: "ROCK_ADD_HURT",
             [LANGUAGE.EN]: "Geo DMG",
             [LANGUAGE.JA]: "岩元素ダメージ",
         },
         PHYS: {
-            key: "PHYSICAL_ADD_HURT",
+            className: "PHYSICAL_ADD_HURT",
             [LANGUAGE.EN]: "Physical DMG",
             [LANGUAGE.JA]: "物理ダメージ",
         },
         HEAL_BNS: {
-            key: "HEAL_ADD",
+            className: "HEAL_ADD",
             [LANGUAGE.EN]: "Healing Bonus",
             [LANGUAGE.JA]: "与える治癒効果",
         },
         FRIEND: {
-            key: "FRIEND",
+            className: "FRIEND",
             [LANGUAGE.EN]: "Friendship",
             [LANGUAGE.JA]: "好感度",
         },
         SCORE_SELECT: {
-            key: "SCORE_SELECT",
+            className: "SCORE_SELECT",
             [LANGUAGE.EN]: "Score type",
             [LANGUAGE.JA]: "スコア計算方法",
         },
         UNKNOWN: {
-            key: "UNKNOWN",
+            className: "UNKNOWN",
             [LANGUAGE.EN]: "Unknown",
             [LANGUAGE.JA]: "不明",
         }
     }
 
+    /**
+     * クラス名から、翻訳テーブルを取得
+     * @param {String} className
+     */
     getStatByClassName(className) {
-        var array = Object.keys(this.CONVERT_TEXT).map((k)=>(this.CONVERT_TEXT[k]));
+        const array = Object.keys(this.#CONVERT_TEXT).map((k) => (this.#CONVERT_TEXT[k]));
 
-        return array.find((s) => s.key === className);
+        return array.find((s) => s.className === className);
     }
 
+    /**
+     * ステータス翻訳を返す
+     * @param {String} language 
+     * @param {String} className 
+     * @param {Boolean} isSub サブOP用テキストを返すかどうか
+     */
     getStatName(language, className, isSub) {
         // 対応していない言語ならば、英語に強制的に変更
         if (!(language in LANGUAGE)) language = LANGUAGE.EN;
 
         let stat = this.getStatByClassName(className);
-        if (!stat) return this.CONVERT_TEXT.UNKNOWN[language];
+        if (!stat) return this.#CONVERT_TEXT.UNKNOWN[language];
         if (!isSub) return stat[language];
 
         // サブステータス時の動作
@@ -200,15 +211,20 @@ class EnkaConverter {
         return stat["sub"][language];
     }
 
+    /**
+     * キーに対するステータスクラス名を取得
+     * @param {String} key 
+     */
     getClassName(key) {
-        if (key in this.CONVERT_TEXT) return this.CONVERT_TEXT[key].key;
-
-        return this.CONVERT_TEXT["UNKNOWN"].key;
+        if (key in this.#CONVERT_TEXT)
+            return this.#CONVERT_TEXT[key].className;
+        else
+            return this.#CONVERT_TEXT["UNKNOWN"].className;
     }
 }
 (() => {
     'use strict';
-    const version = "v0.43";
+    const version = "v0.44";
 
     const $doc = document;
     const $weapon = $doc.getElementsByClassName("Weapon");
@@ -217,33 +233,17 @@ class EnkaConverter {
 
     const converterInstance = new EnkaConverter();
 
-    const BASE_ATK_CLASS = converterInstance.CONVERT_TEXT.BASE_ATK.key;
+    const BASE_ATK_CLASS = converterInstance.getClassName("BASE_ATK");
     const TIME_STAMP = "timeStamp"
 
     // スコア計算基準指定 H:HP, A:攻撃力, D:防御力
     const SCORE_RADIO_NAME = "sSource"
     let $scoreSelectDiv = null;
     const SCORE_TYPE = {
-        HP: {
-            id: "H",
-            key: converterInstance.CONVERT_TEXT.HP_P.key,
-            correction: 1
-        },
-        ATTACK: {
-            id: "A",
-            key: converterInstance.CONVERT_TEXT.ATK_P.key,
-            correction: 1
-        },
-        DEFENSE: {
-            id: "D",
-            key: converterInstance.CONVERT_TEXT.DEF_P.key,
-            correction: 0.8
-        },
-        EM: {
-            id: "EM",
-            key: converterInstance.CONVERT_TEXT.EM.key,
-            correction: 0.25
-        }
+        HP: new scoreType("H", converterInstance.getClassName("HP_P"), 1),
+        ATTACK: new scoreType("A", converterInstance.getClassName("ATK_P"), 1),
+        DEFENSE: new scoreType("D", converterInstance.getClassName("DEF_P"), 0.8),
+        EM: new scoreType("EM", converterInstance.getClassName("EM"), 0.25),
     }
     let scoreH = SCORE_TYPE.ATTACK.id;
 
@@ -308,7 +308,7 @@ class EnkaConverter {
             const $icon = $friend.getElementsByClassName("ShadedSvgIcon")[0];
             $icon.style.width = "0";
 
-            const friendClassName = converterInstance.CONVERT_TEXT.FRIEND.key;
+            const friendClassName = converterInstance.getClassName("FRIEND");
             if (!$friend.getElementsByClassName(friendClassName)[0]) {
                 const $frenText = $doc.createElement("span");
                 $frenText.classList.add(friendClassName, "svelte-1cfvxg7");
@@ -326,11 +326,10 @@ class EnkaConverter {
         const $weaponInfo = $weapon[0].getElementsByTagName("content")[0];
         const $subStat = $weaponInfo.getElementsByClassName("Substat");
 
-        const baseAtkClass = converterInstance.CONVERT_TEXT.BASE_ATK.key;
-        if (!$doc.getElementById(baseAtkClass)) {
+        if (!$doc.getElementById(BASE_ATK_CLASS)) {
             const $baseAtk = $statText.cloneNode(true);
-            $baseAtk.id = baseAtkClass;
-            $baseAtk.classList.add(baseAtkClass);
+            $baseAtk.id = BASE_ATK_CLASS;
+            $baseAtk.classList.add(BASE_ATK_CLASS);
             $subStat[0].prepend(getSeparateElement());
             $subStat[0].prepend($baseAtk);
         }
@@ -496,10 +495,10 @@ class EnkaConverter {
         for (let i = 0; i < subLen; i++) {
             const key = $subStatName[i];
             switch (key) {
-                case converterInstance.CONVERT_TEXT.CRIT_RATE.key:
+                case converterInstance.getClassName("CRIT_RATE"):
                     score += Number($subStatAmount[i]) * 2;
                     break;
-                case converterInstance.CONVERT_TEXT.CRIT_DMG.key:
+                case converterInstance.getClassName("CRIT_DMG"):
                     score += Number($subStatAmount[i]);
                     break;
                 default:
@@ -538,7 +537,7 @@ class EnkaConverter {
         // 好感度
         const $friend = $doc.getElementsByClassName("fren")[0];
         if ($friend) {
-            const friendClassName = converterInstance.CONVERT_TEXT.FRIEND.key;
+            const friendClassName = converterInstance.getClassName("FRIEND");
             const $friendText = $friend.getElementsByClassName(friendClassName)[0];
             $friendText.innerText = getConvertStatName(friendClassName);
         }
@@ -585,8 +584,8 @@ class EnkaConverter {
         }
         avgScore = sumScore / 5;
 
-        const critRate = getCharacterStats(converterInstance.CONVERT_TEXT.CRIT_RATE.key);
-        const critDMG = getCharacterStats(converterInstance.CONVERT_TEXT.CRIT_DMG.key);
+        const critRate = getCharacterStats(converterInstance.getClassName("CRIT_RATE"));
+        const critDMG = getCharacterStats(converterInstance.getClassName("CRIT_DMG"));
         const critRatio = critDMG / critRate;
 
         let type = "";
