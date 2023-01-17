@@ -1,0 +1,11 @@
+{
+    "extends": "@tsconfig/node18/tsconfig.json",
+    "compilerOptions": {
+        "target": "es2021",
+        "lib": [
+            "es2021",
+            "dom"
+        ]
+    },
+    "compileOnSave": false
+}
