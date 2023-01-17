@@ -305,7 +305,7 @@
         get correction() { return __classPrivateFieldGet(this, _scoreType_correction, "f"); }
     }
     _scoreType_id = new WeakMap(), _scoreType_key = new WeakMap(), _scoreType_correction = new WeakMap();
-    const version = "v0.44";
+    const version = "v0.50";
     const $doc = document;
     const $weapon = $doc.getElementsByClassName("Weapon");
     const $charaStats = $doc.getElementsByClassName("StatsTable");
@@ -355,10 +355,13 @@
             $icon.style.width = "0";
             const friendClassName = "FRIEND";
             if (!$friend.getElementsByClassName(friendClassName)[0]) {
-                const $frenText = $doc.createElement("span");
-                $frenText.classList.add(friendClassName, "svelte-1cfvxg7");
-                $frenText.style.cssText = "width:auto; height:auto; font-size:1em; font-weight:bold";
-                $friend.prepend($frenText);
+                const $friendText = $doc.createElement("span");
+                $friendText.classList.add(friendClassName, "svelte-1cfvxg7");
+                $friendText.style.width = "auto";
+                $friendText.style.height = "auto";
+                $friendText.style.fontSize = "1em";
+                $friendText.style.fontWeight = "bold";
+                $friend.prepend($friendText);
             }
         }
         const $statText = $doc.createElement("div");
@@ -405,7 +408,12 @@
             if ($doc.getElementById("score" + i) === null) {
                 const $scoreBox = $doc.createElement("div");
                 $scoreBox.id = "score" + i;
-                $scoreBox.style.cssText = "position: absolute; font-size: 70%; top: -0.2em; right: 0.3em; text-align: right; opacity: .6;";
+                $scoreBox.style.position = "absolute";
+                $scoreBox.style.fontSize = "70%";
+                $scoreBox.style.top = "-0.2em";
+                $scoreBox.style.right = "0.3em";
+                $scoreBox.style.textAlign = "right";
+                $scoreBox.style.opacity = "0.6";
                 $artifact[i].appendChild($scoreBox);
             }
         }
@@ -593,13 +601,21 @@
         const $exParam = $doc.createElement("div");
         $exParam.id = "extraData";
         $exParam.innerText = "";
-        $exParam.style.cssText = "position: absolute; bottom: .2%; right: 1.3%; text-align: right; font-size: 80%;";
+        $exParam.style.position = "absolute";
+        $exParam.style.bottom = "0.2%";
+        $exParam.style.right = "1.3%";
+        $exParam.style.textAlign = "right";
+        $exParam.style.fontSize = "80%";
         $exParam.classList.add("svelte-1ujofp1");
         $charaCard.appendChild($exParam);
         const $timeStamp = $doc.createElement("div");
         $timeStamp.id = TIME_STAMP;
         $timeStamp.innerText = "";
-        $timeStamp.style.cssText = "position: absolute; top: 1%; left: 2%; font-size: 60%; opacity: 0.4;";
+        $timeStamp.style.position = "absolute";
+        $timeStamp.style.top = "1%";
+        $timeStamp.style.left = "2%";
+        $timeStamp.style.fontSize = "60%";
+        $timeStamp.style.opacity = "0.4";
         $exParam.classList.add("svelte-1ujofp1");
         $charaCard.appendChild($timeStamp);
         const cssStyle = [

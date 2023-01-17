@@ -1,6 +1,6 @@
 import { OptionLocale } from "./OptionLocale";
-import { languages } from "./interface/languages";
-import { optionKeys, otherKeys } from "./interface/localeKeys";
+import { languages } from "./types/languages";
+import { optionKeys, otherKeys } from "./types/localeKeys";
 
 class scoreType {
     #id;

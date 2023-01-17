@@ -1,7 +1,7 @@
-import type { ILocale } from './interface/ILocale';
-import type { optionKeys, otherKeys } from './interface/localeKeys';
-import type { artifactOptionLocale } from "./interface/IArtifactOption"
-import { languages } from './interface/languages';
+import type { ILocale } from './types/ILocale';
+import type { optionKeys, otherKeys } from './types/localeKeys';
+import type { artifactOptionLocale } from "./types/IArtifactOption"
+import { languages } from './types/languages';
 
 type LocaleArray = {
     [option in optionKeys | otherKeys]: artifactOptionLocale;
