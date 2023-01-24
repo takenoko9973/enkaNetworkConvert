@@ -1,10 +1,10 @@
 import type { ILocale } from './types/ILocale';
-import type { optionKeys, otherKeys } from './types/localeKeys';
-import type { artifactOptionLocale } from "./types/IArtifactOption"
+import type { localeKeys } from './types/localeKeys';
+import type { TranslateWordSet } from "./types/TranslateWordSet"
 import { languages } from './types/languages';
 
 type LocaleArray = {
-    [option in optionKeys | otherKeys]: artifactOptionLocale;
+    [option in localeKeys]: TranslateWordSet;
 }
 
 type LanguageArray = {
@@ -220,7 +220,7 @@ localeArray["JA"] = {
     },
 } as const;
 
-export class OptionLocale implements ILocale {
+export class TranslateKey2Word implements ILocale {
     private language: languages = ""
     private localeArray: LocaleArray | undefined;
 
@@ -234,24 +234,24 @@ export class OptionLocale implements ILocale {
         }
     }
 
-    private isKey(check: string): boolean {
+    private isKey(checkKey: string): boolean {
         if (this.localeArray === undefined) return false;
 
-        return check in this.localeArray;
+        return checkKey in this.localeArray;
     }
 
     getLocale(key: string): string {
         if (this.localeArray === undefined) return "";
         if (!this.isKey(key)) return this.localeArray["UNKNOWN"]["locale"];
 
-        return this.localeArray[key as optionKeys | otherKeys]["locale"];
+        return this.localeArray[key as localeKeys]["locale"];
     }
 
     getLocaleSub(key: string): string {
         if (this.localeArray === undefined) return "";
         if (!this.isKey(key)) return this.localeArray["UNKNOWN"]["locale"];
 
-        return this.localeArray[key as optionKeys | otherKeys]["subOption"]
-            ?? this.localeArray[key as optionKeys | otherKeys]["locale"];
+        return this.localeArray[key as localeKeys]["subOption"]
+            ?? this.localeArray[key as localeKeys]["locale"];
     }
 }

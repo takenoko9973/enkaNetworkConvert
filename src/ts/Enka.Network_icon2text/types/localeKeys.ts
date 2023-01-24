@@ -1,4 +1,4 @@
-export type optionKeys
+export type localeKeys
     = "BASE_ATTACK"
     | "HP"
     | "ATTACK"
@@ -19,8 +19,6 @@ export type optionKeys
     | "ICE_ADD_HURT"
     | "ROCK_ADD_HURT"
     | "GRASS_ADD_HURT"
-    | "UNKNOWN";
-
-export type otherKeys
-    = "FRIEND"
+    | "UNKNOWN"
+    | "FRIEND"
     | "SCORE_SELECT_INFO";

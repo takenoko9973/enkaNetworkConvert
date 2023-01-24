@@ -1,13 +1,13 @@
-import { OptionLocale } from "./OptionLocale";
+import { TranslateKey2Word } from "./TranslateKey2Word";
 import { languages } from "./types/languages";
-import { optionKeys, otherKeys } from "./types/localeKeys";
+import { localeKeys } from "./types/localeKeys";
 
 class scoreType {
     #id;
     #key;
     #correction;
 
-    constructor(id: any, key: optionKeys, correction: any) {
+    constructor(id: any, key: localeKeys, correction: any) {
         this.#id = id;
         this.#key = key;
         this.#correction = correction;
@@ -25,9 +25,9 @@ const $weapon = $doc.getElementsByClassName("Weapon");
 const $charaStats = $doc.getElementsByClassName("StatsTable");
 const $artifact = $doc.getElementsByClassName("Artifact");
 
-let optionLocale: OptionLocale = new OptionLocale("EN");
+let optionLocale: TranslateKey2Word = new TranslateKey2Word("EN");
 
-const BASE_ATK_CLASS: optionKeys = "BASE_ATTACK";
+const BASE_ATK_CLASS: localeKeys = "BASE_ATTACK";
 const TIME_STAMP = "timeStamp"
 
 // スコア計算基準指定 H:HP, A:攻撃力, D:防御力
@@ -200,7 +200,7 @@ function createModeChangeBottom() {
     $scoreSelectDiv.classList.add("Input", "svelte-nsdlaj");
 
     // 説明テキストを追加
-    const scoreSelectClass: otherKeys = "SCORE_SELECT_INFO"
+    const scoreSelectClass: localeKeys = "SCORE_SELECT_INFO"
     const $text = $doc.createElement("label");
     $text.classList.add(scoreSelectClass, "svelte-nsdlaj");
     ($text as HTMLElement).style.marginLeft = "0.5em";
@@ -295,7 +295,7 @@ function calcArtifactScore(index: any) {
     const subLen = $subStat.length;
 
     for (let i = 0; i < subLen; i++) {
-        const key = $subStatName[i] as optionKeys;
+        const key = $subStatName[i] as localeKeys;
         switch (key) {
             case "CRITICAL":
                 score += Number($subStatAmount[i]) * 2;
@@ -343,7 +343,7 @@ function enkaConvertStat() {
     // 好感度
     const $friend = $doc.getElementsByClassName("fren")[0];
     if ($friend) {
-        const friendClassName: otherKeys = "FRIEND";
+        const friendClassName: localeKeys = "FRIEND";
         const $friendText = $friend.getElementsByClassName(friendClassName)[0] as HTMLElement;
         $friendText.innerText = getConvertStatName(friendClassName);
     }
@@ -408,7 +408,7 @@ function enkaConvertStat() {
 
 $doc.addEventListener("DOMContentLoaded", (function () { }))
 window.onload = function () {
-    optionLocale = new OptionLocale(getLanguage());
+    optionLocale = new TranslateKey2Word(getLanguage());
 
     // 武器
     const $weaponInfo = $weapon[0].getElementsByTagName("content")[0] as HTMLElement;
@@ -479,7 +479,7 @@ window.onload = function () {
     // 言語やキャラクター変更時に再翻訳
     const observeConf = { childList: true, attributes: true, characterData: true };
     const observer = new MutationObserver(_mutations => {
-        optionLocale = new OptionLocale(getLanguage());
+        optionLocale = new TranslateKey2Word(getLanguage());
         createConvertTextElements();
         enkaConvertStat();
     })
