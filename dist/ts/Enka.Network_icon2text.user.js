@@ -159,6 +159,10 @@
             "locale": "Score type",
             "subOption": undefined
         },
+        "CARD_EXTRA_INFO": {
+            "locale": "Crit Ratio 1:${critRatio} / Score(${scoreType}) Avg. ${avgScore} Total ${sumScore}",
+            "subOption": undefined
+        },
         "UNKNOWN": {
             "locale": "Unknown",
             "subOption": undefined
@@ -253,12 +257,16 @@
             "locale": "スコア計算方法",
             "subOption": undefined
         },
+        "CARD_EXTRA_INFO": {
+            "locale": "会心率ダメ比 1:${critRatio} / 聖遺物スコア(${scoreType}) 平均:${avgScore} 合計:${sumScore}",
+            "subOption": undefined
+        },
         "UNKNOWN": {
             "locale": "不明",
             "subOption": undefined
         },
     };
-    class OptionLocale {
+    class TranslateKey2Word {
         constructor(language) {
             this.language = "";
             this.language = language;
@@ -268,10 +276,10 @@
                 this.localeArray = localeArray["EN"];
             }
         }
-        isKey(check) {
+        isKey(checkKey) {
             if (this.localeArray === undefined)
                 return false;
-            return check in this.localeArray;
+            return checkKey in this.localeArray;
         }
         getLocale(key) {
             if (this.localeArray === undefined)
@@ -288,6 +296,16 @@
             return this.localeArray[key]["subOption"]
                 ?? this.localeArray[key]["locale"];
         }
+        getConvertStatName(key, isSub = false) {
+            const name = isSub ? this.getLocaleSub(key) : this.getLocale(key);
+            return name;
+        }
+    }
+
+    function fmt(template, values) {
+        return !values
+            ? template
+            : new Function(...Object.keys(values), `return \`${template}\`;`)(...Object.values(values).map(value => value ?? ''));
     }
 
     var _scoreType_id, _scoreType_key, _scoreType_correction;
@@ -310,7 +328,7 @@
     const $weapon = $doc.getElementsByClassName("Weapon");
     const $charaStats = $doc.getElementsByClassName("StatsTable");
     const $artifact = $doc.getElementsByClassName("Artifact");
-    let optionLocale = new OptionLocale("EN");
+    let optionLocale = new TranslateKey2Word("EN");
     const BASE_ATK_CLASS = "BASE_ATTACK";
     const TIME_STAMP = "timeStamp";
     const SCORE_RADIO_NAME = "sSource";
@@ -325,10 +343,6 @@
     function getLanguage() {
         const $language = $doc.getElementsByClassName("Dropdown-selectedItem")[0];
         return $language.innerText;
-    }
-    function getConvertStatName(key, isSub = false) {
-        const name = isSub ? optionLocale.getLocaleSub(key) : optionLocale.getLocale(key);
-        return name;
     }
     function getCharacterStats(key) {
         let index = -1;
@@ -471,24 +485,24 @@
         const $subStat = $weapon[0].getElementsByClassName("Substat");
         const $baseAtk = $doc.getElementById(BASE_ATK_CLASS);
         if ($baseAtk)
-            $baseAtk.innerText = getConvertStatName(BASE_ATK_CLASS);
+            $baseAtk.innerText = optionLocale.getConvertStatName(BASE_ATK_CLASS);
         const $weaponSub = $doc.getElementById("weaponSubOP");
         if ($weaponSub)
-            $weaponSub.innerText = getConvertStatName($subStat[1].classList[1]);
+            $weaponSub.innerText = optionLocale.getConvertStatName($subStat[1].classList[1]);
     }
     function artifactConvert() {
         for (let i = 0; i < 5; i++) {
             if (!isEquippingArtifact(i))
                 continue;
             const $mainStat = $artifact[i].getElementsByClassName("mainstat")[0];
-            $doc.getElementById(`artifactMain${i}`).innerText = getConvertStatName($mainStat.classList[1]);
+            $doc.getElementById(`artifactMain${i}`).innerText = optionLocale.getConvertStatName($mainStat.classList[1]);
             const $subStat = $artifact[i].getElementsByClassName("Substat");
             const subLen = $subStat.length;
             for (let j = 0; j < subLen; j++) {
                 const subOPId = "artifactSub" + i + "-" + j;
                 if (!$doc.getElementById(subOPId))
                     continue;
-                $doc.getElementById(subOPId).innerText = getConvertStatName($subStat[j].classList[1], true);
+                $doc.getElementById(subOPId).innerText = optionLocale.getConvertStatName($subStat[j].classList[1], true);
             }
         }
     }
@@ -524,18 +538,15 @@
         return score;
     }
     function getExtraText(ratio, scoreType, avgScore, score) {
-        const language = getLanguage();
         const ratioFixed = ratio.toFixed(1);
         const avgScoreFixed = avgScore.toFixed(1);
         const scoreFixed = score.toFixed(1);
-        switch (language) {
-            case "EN":
-                return `Crit Ratio 1:${ratioFixed} / Score(${scoreType}) Avg. ${avgScoreFixed} Total ${scoreFixed}`;
-            case "JA":
-                return `会心率ダメ比 1:${ratioFixed} / 聖遺物スコア(${scoreType}) 平均:${avgScoreFixed} 合計:${scoreFixed}`;
-            default:
-                return `Crit Ratio 1:${ratioFixed} / Score(${scoreType}) Avg. ${avgScoreFixed} Total ${scoreFixed}`;
-        }
+        return fmt(optionLocale.getConvertStatName("CARD_EXTRA_INFO"), {
+            critRatio: ratioFixed,
+            scoreType: scoreType,
+            avgScore: avgScoreFixed,
+            sumScore: scoreFixed
+        });
     }
     function enkaConvertStat() {
         weaponOPConvert();
@@ -544,18 +555,18 @@
         if ($friend) {
             const friendClassName = "FRIEND";
             const $friendText = $friend.getElementsByClassName(friendClassName)[0];
-            $friendText.innerText = getConvertStatName(friendClassName);
+            $friendText.innerText = optionLocale.getConvertStatName(friendClassName);
         }
         const date = new Date;
         date.setTime(date.getTime() - 60 * date.getTimezoneOffset() * 1000);
         const timeString = date.toISOString().replace("T", " ").substr(0, 19);
         $doc.getElementById(TIME_STAMP).innerText = version + "_" + timeString;
         const $scoreSelectInfo = $scoreSelectDiv.children[0];
-        $scoreSelectInfo.innerText = getConvertStatName($scoreSelectInfo.classList[0]);
+        $scoreSelectInfo.innerText = optionLocale.getConvertStatName($scoreSelectInfo.classList[0]);
         const $scoreButtons = $scoreSelectDiv.getElementsByClassName("Button");
         for (let i = 0; i < $scoreButtons.length; i++) {
             const $label = $scoreButtons[i];
-            $label.innerText = getConvertStatName($label.classList[0], true);
+            $label.innerText = optionLocale.getConvertStatName($label.classList[0], true);
         }
         let sumScore = 0;
         let avgScore = 0;
@@ -584,14 +595,14 @@
             const scoreType = SCORE_TYPE[typeKey];
             if (scoreH != scoreType.id)
                 continue;
-            type = getConvertStatName(scoreType.key, true);
+            type = optionLocale.getConvertStatName(scoreType.key, true);
             break;
         }
         $extraText.innerText = getExtraText(critRatio, type, avgScore, sumScore);
     }
     $doc.addEventListener("DOMContentLoaded", (function () { }));
     window.onload = function () {
-        optionLocale = new OptionLocale(getLanguage());
+        optionLocale = new TranslateKey2Word(getLanguage());
         const $weaponInfo = $weapon[0].getElementsByTagName("content")[0];
         const $weaponName = $weaponInfo.getElementsByTagName("h3")[0];
         $weaponInfo.style.paddingRight = "0px";
@@ -643,7 +654,7 @@
         const $language = $doc.getElementsByClassName("Dropdown-selectedItem")[0];
         const observeConf = { childList: true, attributes: true, characterData: true };
         const observer = new MutationObserver(_mutations => {
-            optionLocale = new OptionLocale(getLanguage());
+            optionLocale = new TranslateKey2Word(getLanguage());
             createConvertTextElements();
             enkaConvertStat();
         });

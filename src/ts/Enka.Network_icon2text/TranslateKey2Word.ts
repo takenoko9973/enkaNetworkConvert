@@ -119,6 +119,10 @@ localeArray["EN"] = {
         "locale": "Score type",
         "subOption": undefined
     },
+    "CARD_EXTRA_INFO": {
+        "locale": "Crit Ratio 1:${critRatio} / Score(${scoreType}) Avg. ${avgScore} Total ${sumScore}",
+        "subOption": undefined
+    },
     "UNKNOWN": {
         "locale": "Unknown",
         "subOption": undefined
@@ -214,6 +218,10 @@ localeArray["JA"] = {
         "locale": "スコア計算方法",
         "subOption": undefined
     },
+    "CARD_EXTRA_INFO": {
+        "locale": "会心率ダメ比 1:${critRatio} / 聖遺物スコア(${scoreType}) 平均:${avgScore} 合計:${sumScore}",
+        "subOption": undefined
+    },
     "UNKNOWN": {
         "locale": "不明",
         "subOption": undefined
@@ -253,5 +261,11 @@ export class TranslateKey2Word implements ILocale {
 
         return this.localeArray[key as localeKeys]["subOption"]
             ?? this.localeArray[key as localeKeys]["locale"];
+    }
+
+    getConvertStatName(key: string, isSub: boolean = false) {
+        const name = isSub ? this.getLocaleSub(key) : this.getLocale(key);
+
+        return name;
     }
 }

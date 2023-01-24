@@ -21,4 +21,5 @@ export type localeKeys
     | "GRASS_ADD_HURT"
     | "UNKNOWN"
     | "FRIEND"
-    | "SCORE_SELECT_INFO";
+    | "SCORE_SELECT_INFO"
+    | "CARD_EXTRA_INFO";

@@ -1,4 +1,5 @@
 import { TranslateKey2Word } from "./TranslateKey2Word";
+import { fmt } from "./util/fmt";
 import { languages } from "./types/languages";
 import { localeKeys } from "./types/localeKeys";
 
@@ -33,7 +34,7 @@ const TIME_STAMP = "timeStamp"
 // スコア計算基準指定 H:HP, A:攻撃力, D:防御力
 const SCORE_RADIO_NAME = "sSource"
 let $scoreSelectDiv: any = null;
-const SCORE_TYPE: {[key: string]: scoreType} = {
+const SCORE_TYPE: { [key: string]: scoreType } = {
     "HP": new scoreType("H", "HP_PERCENT", 1),
     "ATTACK": new scoreType("A", "ATTACK_PERCENT", 1),
     "DEFENSE": new scoreType("D", "DEFENSE_PERCENT", 0.8),
@@ -45,12 +46,6 @@ let scoreH: string = SCORE_TYPE.ATTACK.id;
 function getLanguage(): languages {
     const $language = $doc.getElementsByClassName("Dropdown-selectedItem")[0] as HTMLElement;
     return $language.innerText as languages;
-}
-
-function getConvertStatName(key: string, isSub: boolean = false) {
-    const name = isSub ? optionLocale.getLocaleSub(key) : optionLocale.getLocale(key);
-
-    return name;
 }
 
 /**
@@ -254,10 +249,10 @@ function weaponOPConvert() {
     const $subStat = $weapon[0].getElementsByClassName("Substat");
 
     const $baseAtk = $doc.getElementById(BASE_ATK_CLASS);
-    if ($baseAtk) $baseAtk.innerText = getConvertStatName(BASE_ATK_CLASS);
+    if ($baseAtk) $baseAtk.innerText = optionLocale.getConvertStatName(BASE_ATK_CLASS);
 
     const $weaponSub = $doc.getElementById("weaponSubOP");
-    if ($weaponSub) $weaponSub.innerText = getConvertStatName($subStat[1].classList[1]);
+    if ($weaponSub) $weaponSub.innerText = optionLocale.getConvertStatName($subStat[1].classList[1]);
 }
 
 // 聖遺物の日本語化
@@ -268,7 +263,7 @@ function artifactConvert() {
 
         // メインOP
         const $mainStat = $artifact[i].getElementsByClassName("mainstat")[0];
-        $doc.getElementById(`artifactMain${i}`)!.innerText = getConvertStatName($mainStat.classList[1])
+        $doc.getElementById(`artifactMain${i}`)!.innerText = optionLocale.getConvertStatName($mainStat.classList[1])
 
         // サブOP
         const $subStat = $artifact[i].getElementsByClassName("Substat");
@@ -277,7 +272,7 @@ function artifactConvert() {
             const subOPId = "artifactSub" + i + "-" + j
             if (!$doc.getElementById(subOPId)) continue;
 
-            $doc.getElementById(subOPId)!.innerText = getConvertStatName($subStat[j].classList[1], true);
+            $doc.getElementById(subOPId)!.innerText = optionLocale.getConvertStatName($subStat[j].classList[1], true);
         }
     }
 }
@@ -320,20 +315,16 @@ function calcArtifactScore(index: any) {
 }
 
 function getExtraText(ratio: number, scoreType: string, avgScore: number, score: number) {
-    const language = getLanguage() as languages;
-
     const ratioFixed = ratio.toFixed(1);
     const avgScoreFixed = avgScore.toFixed(1);
     const scoreFixed = score.toFixed(1);
 
-    switch (language) {
-        case "EN":
-            return `Crit Ratio 1:${ratioFixed} / Score(${scoreType}) Avg. ${avgScoreFixed} Total ${scoreFixed}`;
-        case "JA":
-            return `会心率ダメ比 1:${ratioFixed} / 聖遺物スコア(${scoreType}) 平均:${avgScoreFixed} 合計:${scoreFixed}`;
-        default:
-            return `Crit Ratio 1:${ratioFixed} / Score(${scoreType}) Avg. ${avgScoreFixed} Total ${scoreFixed}`;
-    }
+    return fmt(optionLocale.getConvertStatName("CARD_EXTRA_INFO"), {
+        critRatio: ratioFixed,
+        scoreType: scoreType,
+        avgScore: avgScoreFixed,
+        sumScore: scoreFixed
+    });
 }
 
 function enkaConvertStat() {
@@ -345,7 +336,7 @@ function enkaConvertStat() {
     if ($friend) {
         const friendClassName: localeKeys = "FRIEND";
         const $friendText = $friend.getElementsByClassName(friendClassName)[0] as HTMLElement;
-        $friendText.innerText = getConvertStatName(friendClassName);
+        $friendText.innerText = optionLocale.getConvertStatName(friendClassName);
     }
 
     // 情報取得日時を表示
@@ -356,12 +347,12 @@ function enkaConvertStat() {
 
     // スコア方式選択説明テキスト
     const $scoreSelectInfo = $scoreSelectDiv.children[0];
-    $scoreSelectInfo.innerText = getConvertStatName($scoreSelectInfo.classList[0]);
+    $scoreSelectInfo.innerText = optionLocale.getConvertStatName($scoreSelectInfo.classList[0]);
     // スコア方式選択ボタン
     const $scoreButtons = $scoreSelectDiv.getElementsByClassName("Button");
     for (let i = 0; i < $scoreButtons.length; i++) {
         const $label = $scoreButtons[i];
-        $label.innerText = getConvertStatName($label.classList[0], true);
+        $label.innerText = optionLocale.getConvertStatName($label.classList[0], true);
     }
 
     // ------ 追加情報
@@ -399,7 +390,7 @@ function enkaConvertStat() {
         const scoreType = SCORE_TYPE[typeKey];
         if (scoreH != scoreType.id) continue;
 
-        type = getConvertStatName(scoreType.key, true);
+        type = optionLocale.getConvertStatName(scoreType.key, true);
         break;
     }
 
