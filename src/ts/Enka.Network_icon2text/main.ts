@@ -2,6 +2,7 @@ import { TranslateKey2Word } from "./TranslateKey2Word";
 import { fmt } from "./util/fmt";
 import { languages } from "./types/languages";
 import { localeKeys } from "./types/localeKeys";
+import { myConst } from "./myConst";
 
 class scoreType {
     #id;
@@ -19,17 +20,12 @@ class scoreType {
     get correction() { return this.#correction }
 }
 
-const version = "v0.50";
-
 const $doc = document;
 const $weapon = $doc.getElementsByClassName("Weapon");
 const $charaStats = $doc.getElementsByClassName("StatsTable");
 const $artifact = $doc.getElementsByClassName("Artifact");
 
 let optionLocale: TranslateKey2Word = new TranslateKey2Word("EN");
-
-const BASE_ATK_CLASS: localeKeys = "BASE_ATTACK";
-const TIME_STAMP = "timeStamp"
 
 // スコア計算基準指定 H:HP, A:攻撃力, D:防御力
 const SCORE_RADIO_NAME = "sSource"
@@ -96,7 +92,7 @@ function createConvertTextElements() {
         const $icon = $friend.getElementsByClassName("ShadedSvgIcon")[0];
         ($icon as HTMLElement).style.width = "0";
 
-        const friendClassName = "FRIEND";
+        const friendClassName: localeKeys = "FRIEND";
         if (!$friend.getElementsByClassName(friendClassName)[0]) {
             const $friendText = $doc.createElement("span");
             $friendText.classList.add(friendClassName, "svelte-1cfvxg7");
@@ -117,10 +113,10 @@ function createConvertTextElements() {
     const $weaponInfo = $weapon[0].getElementsByTagName("content")[0];
     const $subStat = $weaponInfo.getElementsByClassName("Substat");
 
-    if (!$doc.getElementById(BASE_ATK_CLASS)) {
+    if (!$doc.getElementById(myConst.className.BASE_ATK_CLASS)) {
         const $baseAtk = $statText.cloneNode(true) as HTMLElement;
-        $baseAtk.id = BASE_ATK_CLASS;
-        $baseAtk.classList.add(BASE_ATK_CLASS);
+        $baseAtk.id = myConst.className.BASE_ATK_CLASS;
+        $baseAtk.classList.add(myConst.className.BASE_ATK_CLASS);
         $subStat[0].prepend(getSeparateElement());
         $subStat[0].prepend($baseAtk);
     }
@@ -248,8 +244,8 @@ function createModeChangeBottom() {
 function weaponOPConvert() {
     const $subStat = $weapon[0].getElementsByClassName("Substat");
 
-    const $baseAtk = $doc.getElementById(BASE_ATK_CLASS);
-    if ($baseAtk) $baseAtk.innerText = optionLocale.getConvertStatName(BASE_ATK_CLASS);
+    const $baseAtk = $doc.getElementById(myConst.className.BASE_ATK_CLASS);
+    if ($baseAtk) $baseAtk.innerText = optionLocale.getConvertStatName(myConst.className.BASE_ATK_CLASS);
 
     const $weaponSub = $doc.getElementById("weaponSubOP");
     if ($weaponSub) $weaponSub.innerText = optionLocale.getConvertStatName($subStat[1].classList[1]);
@@ -343,7 +339,7 @@ function enkaConvertStat() {
     const date = new Date;
     date.setTime(date.getTime() - 60 * date.getTimezoneOffset() * 1000);
     const timeString = date.toISOString().replace("T", " ").substr(0, 19);
-    $doc.getElementById(TIME_STAMP)!.innerText = version + "_" + timeString;
+    $doc.getElementById(myConst.className.TIME_STAMP)!.innerText = myConst.VERSION + "_" + timeString;
 
     // スコア方式選択説明テキスト
     const $scoreSelectInfo = $scoreSelectDiv.children[0];
@@ -425,7 +421,7 @@ window.onload = function () {
 
     // 取得時間
     const $timeStamp = $doc.createElement("div");
-    $timeStamp.id = TIME_STAMP;
+    $timeStamp.id = myConst.className.TIME_STAMP;
     $timeStamp.innerText = "";
     $timeStamp.style.position = "absolute";
     $timeStamp.style.top = "1%";
