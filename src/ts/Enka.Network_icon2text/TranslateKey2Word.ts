@@ -1,6 +1,6 @@
 import type { ILocale } from './types/ILocale';
 import type { localeKeys } from './types/localeKeys';
-import type { TranslateWordSet } from "./types/TranslateWordSet"
+import type { TranslateWordSet } from "./types/TranslateWordSet";
 import { languages } from './types/languages';
 
 type LocaleArray = {
@@ -229,7 +229,7 @@ localeArray["JA"] = {
 } as const;
 
 export class TranslateKey2Word implements ILocale {
-    private language: languages = ""
+    private language: languages = "";
     private localeArray: LocaleArray | undefined;
 
     constructor(language: languages) {
@@ -263,7 +263,7 @@ export class TranslateKey2Word implements ILocale {
             ?? this.localeArray[key as localeKeys]["locale"];
     }
 
-    getConvertStatName(key: string, isSub: boolean = false) {
+    getConvertStatName(key: string, isSub = false) {
         const name = isSub ? this.getLocaleSub(key) : this.getLocale(key);
 
         return name;

@@ -10,18 +10,9 @@
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=shinshin.moe
 // @match        https://enka.network/u/*
 // @grant        none
-// @since        0.44T スコア用クラスを追加 converter配列の要素名を変更 直接クラス名を取得している部分を書き換え
-// @since        0.43T 熟知のスコア計算を追加
-// @since        0.42T require経由だとキャッシュされる様なので削除 class名変更に対応
-// @since        0.41T スコア選択のボタンの配置を変更 防御選択の時、防御%に0.8の補正を掛けるように
-// @since        0.40T enka.networkのアップデートに対応
-// @since        0.31T 聖遺物が5か所 または サブOPが4か所埋まっていないときに正常に表示されない不具合を修正 主人公を選択したとき、好感度部分でエラーが発生する不具合修正
-// @since        0.30T 英語表示対応
-// @since        0.21T URLの修正
-// @since        0.20T コードを整理 オプション値の表示位置を右端に固定 デザインの調整 聖遺物画像のサイズを調整 他のUIDを入力した際、username欄が更新されない不具合を修正
 // ==/UserScript==
 
-(function () {
+(function (exports) {
     'use strict';
 
     /******************************************************************************
@@ -302,52 +293,18 @@
         }
     }
 
-    function fmt(template, values) {
-        return !values
-            ? template
-            : new Function(...Object.keys(values), `return \`${template}\`;`)(...Object.values(values).map(value => value ?? ''));
-    }
-
-    var _scoreType_id, _scoreType_key, _scoreType_correction;
-    class scoreType {
-        constructor(id, key, correction) {
-            _scoreType_id.set(this, void 0);
-            _scoreType_key.set(this, void 0);
-            _scoreType_correction.set(this, void 0);
-            __classPrivateFieldSet(this, _scoreType_id, id, "f");
-            __classPrivateFieldSet(this, _scoreType_key, key, "f");
-            __classPrivateFieldSet(this, _scoreType_correction, correction, "f");
-        }
-        get id() { return __classPrivateFieldGet(this, _scoreType_id, "f"); }
-        get key() { return __classPrivateFieldGet(this, _scoreType_key, "f"); }
-        get correction() { return __classPrivateFieldGet(this, _scoreType_correction, "f"); }
-    }
-    _scoreType_id = new WeakMap(), _scoreType_key = new WeakMap(), _scoreType_correction = new WeakMap();
-    const version = "v0.50";
     const $doc = document;
     const $weapon = $doc.getElementsByClassName("Weapon");
     const $charaStats = $doc.getElementsByClassName("StatsTable");
     const $artifact = $doc.getElementsByClassName("Artifact");
-    let optionLocale = new TranslateKey2Word("EN");
+    const VERSION = "v0.50";
     const BASE_ATK_CLASS = "BASE_ATTACK";
     const TIME_STAMP = "timeStamp";
-    const SCORE_RADIO_NAME = "sSource";
-    let $scoreSelectDiv = null;
-    const SCORE_TYPE = {
-        "HP": new scoreType("H", "HP_PERCENT", 1),
-        "ATTACK": new scoreType("A", "ATTACK_PERCENT", 1),
-        "DEFENSE": new scoreType("D", "DEFENSE_PERCENT", 0.8),
-        "EM": new scoreType("EM", "ELEMENT_MASTERY", 0.25),
-    };
-    let scoreH = SCORE_TYPE.ATTACK.id;
-    function getLanguage() {
-        const $language = $doc.getElementsByClassName("Dropdown-selectedItem")[0];
-        return $language.innerText;
-    }
+
     function getCharacterStats(key) {
-        let index = -1;
         const $statsList = $charaStats[0].children;
-        if ((index = Array.from($statsList).map(stat => stat.classList[1]).indexOf(key)) === -1)
+        const index = Array.from($statsList).map(stat => stat.classList[1]).indexOf(key);
+        if (index === -1)
             return 0;
         const stat = $statsList[index].children[1].children[2].innerText;
         return Number(stat.replace(/[^0-9.]/g, ''));
@@ -361,6 +318,29 @@
         const $separateElement = $doc.createElement("span");
         $separateElement.classList.add("sep");
         return $separateElement;
+    }
+    function getLanguage() {
+        const $language = $doc.getElementsByClassName("Dropdown-selectedItem")[0];
+        return $language.innerText;
+    }
+
+    function fmt(template, values) {
+        if (!values)
+            return template;
+        const format = new Function(...Object.keys(values), `return \`${template}\`;`);
+        return format(...Object.values(values).map((value) => value ?? ""));
+    }
+
+    function getExtraText(ratio, scoreType, avgScore, score) {
+        const ratioFixed = ratio.toFixed(1);
+        const avgScoreFixed = avgScore.toFixed(1);
+        const scoreFixed = score.toFixed(1);
+        return fmt(exports.optionLocale.getConvertStatName("CARD_EXTRA_INFO"), {
+            critRatio: ratioFixed,
+            scoreType: scoreType,
+            avgScore: avgScoreFixed,
+            sumScore: scoreFixed
+        });
     }
     function createConvertTextElements() {
         const $friend = $doc.getElementsByClassName("fren")[0];
@@ -402,16 +382,17 @@
             if (!isEquippingArtifact(i))
                 continue;
             const $mainStat = $artifact[i].getElementsByClassName("mainstat")[0];
-            if (!$doc.getElementById("artifactMain" + i)) {
+            const mainOPId = `artifactMain${i}`;
+            if (!$doc.getElementById(mainOPId)) {
                 const $mainOPName = $statText.cloneNode(true);
-                $mainOPName.id = "artifactMain" + i;
+                $mainOPName.id = mainOPId;
                 $mainStat.prepend(getSeparateElement());
                 $mainStat.prepend($mainOPName);
             }
             const $subStat = $artifact[i].getElementsByClassName("Substat");
             const subLen = $subStat.length;
             for (let j = 0; j < subLen; j++) {
-                const subOPId = "artifactSub" + i + "-" + j;
+                const subOPId = `artifactSub${i}-${j}`;
                 if ($doc.getElementById(subOPId))
                     continue;
                 const $subOPName = $statText.cloneNode(true);
@@ -419,9 +400,10 @@
                 $subStat[j].prepend(getSeparateElement());
                 $subStat[j].prepend($subOPName);
             }
-            if ($doc.getElementById("score" + i) === null) {
+            const scoreId = `score${i}`;
+            if ($doc.getElementById(scoreId) === null) {
                 const $scoreBox = $doc.createElement("div");
-                $scoreBox.id = "score" + i;
+                $scoreBox.id = scoreId;
                 $scoreBox.style.position = "absolute";
                 $scoreBox.style.fontSize = "70%";
                 $scoreBox.style.top = "-0.2em";
@@ -432,6 +414,109 @@
             }
         }
     }
+    function weaponOPIcon2Text() {
+        const $subStat = $weapon[0].getElementsByClassName("Substat");
+        const $baseAtk = $doc.getElementById(BASE_ATK_CLASS);
+        if ($baseAtk)
+            $baseAtk.innerText = exports.optionLocale.getConvertStatName(BASE_ATK_CLASS);
+        const $weaponSub = $doc.getElementById("weaponSubOP");
+        if ($weaponSub)
+            $weaponSub.innerText = exports.optionLocale.getConvertStatName($subStat[1].classList[1]);
+    }
+    function artifactIcon2Text() {
+        for (let i = 0; i < 5; i++) {
+            if (!isEquippingArtifact(i))
+                continue;
+            const $mainStat = $artifact[i].getElementsByClassName("mainstat")[0];
+            $doc.getElementById(`artifactMain${i}`).innerText = exports.optionLocale.getConvertStatName($mainStat.classList[1]);
+            const $subStat = $artifact[i].getElementsByClassName("Substat");
+            const subLen = $subStat.length;
+            for (let j = 0; j < subLen; j++) {
+                const subOPId = `artifactSub${i}-${j}`;
+                if (!$doc.getElementById(subOPId))
+                    continue;
+                $doc.getElementById(subOPId).innerText = exports.optionLocale.getConvertStatName($subStat[j].classList[1], true);
+            }
+        }
+    }
+    function enkaIcon2Text() {
+        weaponOPIcon2Text();
+        artifactIcon2Text();
+        const $friend = $doc.getElementsByClassName("fren")[0];
+        if ($friend) {
+            const friendClassName = "FRIEND";
+            const $friendText = $friend.getElementsByClassName(friendClassName)[0];
+            $friendText.innerText = exports.optionLocale.getConvertStatName(friendClassName);
+        }
+        const date = new Date;
+        date.setTime(date.getTime() - 60 * date.getTimezoneOffset() * 1000);
+        const timeString = date.toISOString().replace("T", " ").substr(0, 19);
+        $doc.getElementById(TIME_STAMP).innerText = VERSION + "_" + timeString;
+        const $scoreSelectInfo = exports.$scoreSelectDiv?.children[0];
+        $scoreSelectInfo.innerText = exports.optionLocale.getConvertStatName($scoreSelectInfo.classList[0]);
+        const $scoreButtons = exports.$scoreSelectDiv?.getElementsByClassName("Button");
+        for (let i = 0; i < $scoreButtons.length; i++) {
+            const $label = $scoreButtons[i];
+            $label.innerText = exports.optionLocale.getConvertStatName($label.classList[0], true);
+        }
+        let sumScore = 0;
+        let avgScore = 0;
+        const $extraText = $doc.getElementById("extraData");
+        for (let i = 0; i < 5; i++) {
+            let score = 0.0;
+            const $scoreBox = $doc.getElementById(`score${i}`);
+            if ($scoreBox === null)
+                continue;
+            $scoreBox.setAttribute("class", "svelte-1ujofp1");
+            if (isEquippingArtifact(i)) {
+                score = calcArtifactScore(i);
+                sumScore += score;
+                $scoreBox.innerText = score.toFixed(1);
+            }
+            else {
+                $scoreBox.innerText = "";
+            }
+        }
+        avgScore = sumScore / 5;
+        const critRate = getCharacterStats("CRITICAL");
+        const critDMG = getCharacterStats("CRITICAL_HURT");
+        const critRatio = critDMG / critRate;
+        let type = "";
+        for (const typeKey in SCORE_TYPE) {
+            const scoreType = SCORE_TYPE[typeKey];
+            if (exports.scoreH != scoreType.id)
+                continue;
+            type = exports.optionLocale.getConvertStatName(scoreType.key, true);
+            break;
+        }
+        $extraText.innerText = getExtraText(critRatio, type, avgScore, sumScore);
+    }
+
+    var _scoreType_id, _scoreType_key, _scoreType_correction;
+    exports.optionLocale = new TranslateKey2Word("EN");
+    class scoreType {
+        constructor(id, key, correction) {
+            _scoreType_id.set(this, void 0);
+            _scoreType_key.set(this, void 0);
+            _scoreType_correction.set(this, void 0);
+            __classPrivateFieldSet(this, _scoreType_id, id, "f");
+            __classPrivateFieldSet(this, _scoreType_key, key, "f");
+            __classPrivateFieldSet(this, _scoreType_correction, correction, "f");
+        }
+        get id() { return __classPrivateFieldGet(this, _scoreType_id, "f"); }
+        get key() { return __classPrivateFieldGet(this, _scoreType_key, "f"); }
+        get correction() { return __classPrivateFieldGet(this, _scoreType_correction, "f"); }
+    }
+    _scoreType_id = new WeakMap(), _scoreType_key = new WeakMap(), _scoreType_correction = new WeakMap();
+    exports.$scoreSelectDiv = null;
+    const SCORE_RADIO_NAME = "sSource";
+    const SCORE_TYPE = {
+        "HP": new scoreType("H", "HP_PERCENT", 1),
+        "ATTACK": new scoreType("A", "ATTACK_PERCENT", 1),
+        "DEFENSE": new scoreType("D", "DEFENSE_PERCENT", 0.8),
+        "EM": new scoreType("EM", "ELEMENT_MASTERY", 0.25),
+    };
+    exports.scoreH = SCORE_TYPE.ATTACK.id;
     function createModeChangeBottom() {
         const $cardToggles = $doc.getElementsByClassName("CardToggles")[0];
         const $rowElement = $cardToggles.getElementsByClassName("row")[0].cloneNode(false);
@@ -443,9 +528,9 @@
         ];
         const $style = $doc.createElement("style");
         $style.innerHTML = radioStyle.join(" ");
-        $doc.querySelector("head").append($style);
-        $scoreSelectDiv = $doc.createElement("div");
-        $scoreSelectDiv.classList.add("Input", "svelte-nsdlaj");
+        $doc.querySelector("head")?.append($style);
+        exports.$scoreSelectDiv = $doc.createElement("div");
+        exports.$scoreSelectDiv.classList.add("Input", "svelte-nsdlaj");
         const scoreSelectClass = "SCORE_SELECT_INFO";
         const $text = $doc.createElement("label");
         $text.classList.add(scoreSelectClass, "svelte-nsdlaj");
@@ -469,42 +554,17 @@
             $scoreModeGroup.appendChild($radio);
             $scoreModeGroup.appendChild($label);
         }
-        $scoreSelectDiv.appendChild($text);
-        $scoreSelectDiv.appendChild($scoreModeGroup);
-        $rowElement.appendChild($scoreSelectDiv);
-        const atkRadioId = $scoreSelectDiv.getElementsByClassName(SCORE_TYPE.ATTACK.key)[0].getAttribute("for");
+        exports.$scoreSelectDiv.appendChild($text);
+        exports.$scoreSelectDiv.appendChild($scoreModeGroup);
+        $rowElement.appendChild(exports.$scoreSelectDiv);
+        const atkRadioId = exports.$scoreSelectDiv.getElementsByClassName(SCORE_TYPE.ATTACK.key)[0].getAttribute("for");
         $doc.getElementById(atkRadioId).toggleAttribute("checked", true);
         $doc.getElementsByName(SCORE_RADIO_NAME).forEach((function (e) {
             e.addEventListener("click", (function () {
-                scoreH = $doc.querySelector(`input:checked[name=${SCORE_RADIO_NAME}]`).value;
-                enkaConvertStat();
+                exports.scoreH = $doc.querySelector(`input:checked[name=${SCORE_RADIO_NAME}]`).value ?? "A";
+                enkaIcon2Text();
             }));
         }));
-    }
-    function weaponOPConvert() {
-        const $subStat = $weapon[0].getElementsByClassName("Substat");
-        const $baseAtk = $doc.getElementById(BASE_ATK_CLASS);
-        if ($baseAtk)
-            $baseAtk.innerText = optionLocale.getConvertStatName(BASE_ATK_CLASS);
-        const $weaponSub = $doc.getElementById("weaponSubOP");
-        if ($weaponSub)
-            $weaponSub.innerText = optionLocale.getConvertStatName($subStat[1].classList[1]);
-    }
-    function artifactConvert() {
-        for (let i = 0; i < 5; i++) {
-            if (!isEquippingArtifact(i))
-                continue;
-            const $mainStat = $artifact[i].getElementsByClassName("mainstat")[0];
-            $doc.getElementById(`artifactMain${i}`).innerText = optionLocale.getConvertStatName($mainStat.classList[1]);
-            const $subStat = $artifact[i].getElementsByClassName("Substat");
-            const subLen = $subStat.length;
-            for (let j = 0; j < subLen; j++) {
-                const subOPId = "artifactSub" + i + "-" + j;
-                if (!$doc.getElementById(subOPId))
-                    continue;
-                $doc.getElementById(subOPId).innerText = optionLocale.getConvertStatName($subStat[j].classList[1], true);
-            }
-        }
     }
     function calcArtifactScore(index) {
         let score = 0;
@@ -528,7 +588,7 @@
                         const scoreType = SCORE_TYPE[typeKey];
                         if (key != scoreType.key)
                             continue;
-                        if (scoreH != scoreType.id)
+                        if (exports.scoreH != scoreType.id)
                             continue;
                         score += Number($subStatAmount[i]) * scoreType.correction;
                         break;
@@ -537,72 +597,8 @@
         }
         return score;
     }
-    function getExtraText(ratio, scoreType, avgScore, score) {
-        const ratioFixed = ratio.toFixed(1);
-        const avgScoreFixed = avgScore.toFixed(1);
-        const scoreFixed = score.toFixed(1);
-        return fmt(optionLocale.getConvertStatName("CARD_EXTRA_INFO"), {
-            critRatio: ratioFixed,
-            scoreType: scoreType,
-            avgScore: avgScoreFixed,
-            sumScore: scoreFixed
-        });
-    }
-    function enkaConvertStat() {
-        weaponOPConvert();
-        artifactConvert();
-        const $friend = $doc.getElementsByClassName("fren")[0];
-        if ($friend) {
-            const friendClassName = "FRIEND";
-            const $friendText = $friend.getElementsByClassName(friendClassName)[0];
-            $friendText.innerText = optionLocale.getConvertStatName(friendClassName);
-        }
-        const date = new Date;
-        date.setTime(date.getTime() - 60 * date.getTimezoneOffset() * 1000);
-        const timeString = date.toISOString().replace("T", " ").substr(0, 19);
-        $doc.getElementById(TIME_STAMP).innerText = version + "_" + timeString;
-        const $scoreSelectInfo = $scoreSelectDiv.children[0];
-        $scoreSelectInfo.innerText = optionLocale.getConvertStatName($scoreSelectInfo.classList[0]);
-        const $scoreButtons = $scoreSelectDiv.getElementsByClassName("Button");
-        for (let i = 0; i < $scoreButtons.length; i++) {
-            const $label = $scoreButtons[i];
-            $label.innerText = optionLocale.getConvertStatName($label.classList[0], true);
-        }
-        let sumScore = 0;
-        let avgScore = 0;
-        const $extraText = $doc.getElementById("extraData");
-        for (let i = 0; i < 5; i++) {
-            let score = 0.0;
-            const $scoreBox = $doc.getElementById("score" + i);
-            if ($scoreBox === null)
-                continue;
-            $scoreBox.setAttribute("class", "svelte-1ujofp1");
-            if (isEquippingArtifact(i)) {
-                score = calcArtifactScore(i);
-                sumScore += score;
-                $scoreBox.innerText = score.toFixed(1);
-            }
-            else {
-                $scoreBox.innerText = "";
-            }
-        }
-        avgScore = sumScore / 5;
-        const critRate = getCharacterStats("CRITICAL");
-        const critDMG = getCharacterStats("CRITICAL_HURT");
-        const critRatio = critDMG / critRate;
-        let type = "";
-        for (const typeKey in SCORE_TYPE) {
-            const scoreType = SCORE_TYPE[typeKey];
-            if (scoreH != scoreType.id)
-                continue;
-            type = optionLocale.getConvertStatName(scoreType.key, true);
-            break;
-        }
-        $extraText.innerText = getExtraText(critRatio, type, avgScore, sumScore);
-    }
-    $doc.addEventListener("DOMContentLoaded", (function () { }));
     window.onload = function () {
-        optionLocale = new TranslateKey2Word(getLanguage());
+        exports.optionLocale = new TranslateKey2Word(getLanguage());
         const $weaponInfo = $weapon[0].getElementsByTagName("content")[0];
         const $weaponName = $weaponInfo.getElementsByTagName("h3")[0];
         $weaponInfo.style.paddingRight = "0px";
@@ -640,7 +636,7 @@
         ];
         const $style = $doc.createElement("style");
         $style.innerHTML = cssStyle.join(" ");
-        $doc.querySelector("head").append($style);
+        $doc.querySelector("head")?.append($style);
         const $cardSection = $doc.getElementsByClassName("section");
         $cardSection[0].style.width = "36%";
         $cardSection[1].style.width = "24%";
@@ -649,17 +645,22 @@
         $cardSection[2].style.height = "97%";
         createConvertTextElements();
         createModeChangeBottom();
-        enkaConvertStat();
+        enkaIcon2Text();
         const $charaName = $doc.getElementsByClassName("name")[0];
         const $language = $doc.getElementsByClassName("Dropdown-selectedItem")[0];
         const observeConf = { childList: true, attributes: true, characterData: true };
-        const observer = new MutationObserver(_mutations => {
-            optionLocale = new TranslateKey2Word(getLanguage());
+        const observer = new MutationObserver(() => {
+            exports.optionLocale = new TranslateKey2Word(getLanguage());
             createConvertTextElements();
-            enkaConvertStat();
+            enkaIcon2Text();
         });
         observer.observe($charaName, observeConf);
         observer.observe($language, observeConf);
     };
 
-})();
+    exports.SCORE_TYPE = SCORE_TYPE;
+    exports.calcArtifactScore = calcArtifactScore;
+
+    return exports;
+
+})({});

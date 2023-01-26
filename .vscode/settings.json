@@ -1,10 +1,17 @@
 {
-	"cSpell.words": [
-		"Anemo",
-		"Cryo",
-		"Dendro",
-		"ELEC",
-		"enka",
-		"Pyro"
-	]
+    "cSpell.words": [
+        "Anemo",
+        "Cryo",
+        "Dendro",
+        "ELEC",
+        "enka",
+        "Pyro"
+    ],
+    "[typescript]": {
+        "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
+        "editor.formatOnPaste": false, // required 
+        "editor.formatOnType": false, // required
+        "editor.formatOnSave": false, // optional 
+        "editor.formatOnSaveMode": "file", // required to format on save
+    },
 }
