@@ -9,6 +9,7 @@
 // @supportURL   https://github.com/takenoko9973/enkaNetworkConvert/issues
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=shinshin.moe
 // @match        https://enka.network/u/*
+// @run-at       document-idle
 // @grant        none
 // ==/UserScript==
 
@@ -287,10 +288,6 @@
             return this.localeArray[key]["subOption"]
                 ?? this.localeArray[key]["locale"];
         }
-        getConvertStatName(key, isSub = false) {
-            const name = isSub ? this.getLocaleSub(key) : this.getLocale(key);
-            return name;
-        }
     }
 
     const $doc = document;
@@ -309,11 +306,6 @@
         const stat = $statsList[index].children[1].children[2].innerText;
         return Number(stat.replace(/[^0-9.]/g, ''));
     }
-    function isEquippingArtifact(index) {
-        if (index < 0 || 4 < index)
-            return false;
-        return Array.from($artifact[index].classList).indexOf("empty") === -1;
-    }
     function getSeparateElement() {
         const $separateElement = $doc.createElement("span");
         $separateElement.classList.add("sep");
@@ -331,11 +323,75 @@
         return format(...Object.values(values).map((value) => value ?? ""));
     }
 
+    const artifacts = document.getElementsByClassName("Artifact");
+    function isEquippingArtifact(index) {
+        if (index < 0 || 4 < index)
+            return false;
+        return Array.from(artifacts[index].classList).indexOf("empty") === -1;
+    }
+    function createStatTextElement() {
+        const statText = document.createElement("div");
+        statText.classList.add("svelte-17qi811");
+        statText.style.fontWeight = "bold";
+        return statText;
+    }
+    function createTextInArtifact() {
+        for (const [i, artifact] of Array.from(artifacts).entries()) {
+            if (artifact.classList.contains("empty"))
+                continue;
+            const mainStat = artifact.getElementsByClassName("mainstat")[0];
+            const mainOPId = `artifactMain${i}`;
+            if (document.getElementById(mainOPId) === null) {
+                const $statIcon = mainStat.children[0];
+                mainStat.removeChild($statIcon);
+                const mainOPText = createStatTextElement();
+                mainOPText.id = mainOPId;
+                mainStat.prepend(mainOPText);
+            }
+            const subStatList = artifact.getElementsByClassName("Substat");
+            for (const [j, subStat] of Array.from(subStatList).entries()) {
+                const subOPId = `artifactSub${i}-${j}`;
+                if (document.getElementById(subOPId))
+                    continue;
+                const subOPText = createStatTextElement();
+                subOPText.id = subOPId;
+                subStat.prepend(getSeparateElement());
+                subStat.prepend(subOPText);
+            }
+            const scoreId = `score${i}`;
+            if (document.getElementById(scoreId) === null) {
+                const scoreBox = document.createElement("div");
+                scoreBox.id = scoreId;
+                scoreBox.style.position = "absolute";
+                scoreBox.style.fontSize = "70%";
+                scoreBox.style.top = "-0.2em";
+                scoreBox.style.right = "0.3em";
+                scoreBox.style.textAlign = "right";
+                scoreBox.style.opacity = "0.6";
+                artifact.appendChild(scoreBox);
+            }
+        }
+    }
+    function artifactsIcon2Text() {
+        for (const artifact of Array.from(artifacts)) {
+            if (artifact.classList.contains("empty"))
+                continue;
+            const mainStat = artifact.getElementsByClassName("mainstat")[0];
+            mainStat.children[0].innerText =
+                exports.optionLocale.getLocale(mainStat.classList[1]);
+            const subStatList = artifact.getElementsByClassName("Substat");
+            for (const $subStat of Array.from(subStatList)) {
+                $subStat.children[0].innerText =
+                    exports.optionLocale.getLocaleSub($subStat.classList[1]);
+            }
+        }
+    }
+
     function getExtraText(ratio, scoreType, avgScore, score) {
         const ratioFixed = ratio.toFixed(1);
         const avgScoreFixed = avgScore.toFixed(1);
         const scoreFixed = score.toFixed(1);
-        return fmt(exports.optionLocale.getConvertStatName("CARD_EXTRA_INFO"), {
+        return fmt(exports.optionLocale.getLocale("CARD_EXTRA_INFO"), {
             critRatio: ratioFixed,
             scoreType: scoreType,
             avgScore: avgScoreFixed,
@@ -378,86 +434,35 @@
                 $subStat[1].prepend($subOPName);
             }
         }
-        for (let i = 0; i < 5; i++) {
-            if (!isEquippingArtifact(i))
-                continue;
-            const $mainStat = $artifact[i].getElementsByClassName("mainstat")[0];
-            const mainOPId = `artifactMain${i}`;
-            if (!$doc.getElementById(mainOPId)) {
-                const $mainOPName = $statText.cloneNode(true);
-                $mainOPName.id = mainOPId;
-                $mainStat.prepend(getSeparateElement());
-                $mainStat.prepend($mainOPName);
-            }
-            const $subStat = $artifact[i].getElementsByClassName("Substat");
-            const subLen = $subStat.length;
-            for (let j = 0; j < subLen; j++) {
-                const subOPId = `artifactSub${i}-${j}`;
-                if ($doc.getElementById(subOPId))
-                    continue;
-                const $subOPName = $statText.cloneNode(true);
-                $subOPName.id = subOPId;
-                $subStat[j].prepend(getSeparateElement());
-                $subStat[j].prepend($subOPName);
-            }
-            const scoreId = `score${i}`;
-            if ($doc.getElementById(scoreId) === null) {
-                const $scoreBox = $doc.createElement("div");
-                $scoreBox.id = scoreId;
-                $scoreBox.style.position = "absolute";
-                $scoreBox.style.fontSize = "70%";
-                $scoreBox.style.top = "-0.2em";
-                $scoreBox.style.right = "0.3em";
-                $scoreBox.style.textAlign = "right";
-                $scoreBox.style.opacity = "0.6";
-                $artifact[i].appendChild($scoreBox);
-            }
-        }
+        createTextInArtifact();
     }
     function weaponOPIcon2Text() {
         const $subStat = $weapon[0].getElementsByClassName("Substat");
         const $baseAtk = $doc.getElementById(BASE_ATK_CLASS);
         if ($baseAtk)
-            $baseAtk.innerText = exports.optionLocale.getConvertStatName(BASE_ATK_CLASS);
+            $baseAtk.innerText = exports.optionLocale.getLocale(BASE_ATK_CLASS);
         const $weaponSub = $doc.getElementById("weaponSubOP");
         if ($weaponSub)
-            $weaponSub.innerText = exports.optionLocale.getConvertStatName($subStat[1].classList[1]);
-    }
-    function artifactIcon2Text() {
-        for (let i = 0; i < 5; i++) {
-            if (!isEquippingArtifact(i))
-                continue;
-            const $mainStat = $artifact[i].getElementsByClassName("mainstat")[0];
-            $doc.getElementById(`artifactMain${i}`).innerText = exports.optionLocale.getConvertStatName($mainStat.classList[1]);
-            const $subStat = $artifact[i].getElementsByClassName("Substat");
-            const subLen = $subStat.length;
-            for (let j = 0; j < subLen; j++) {
-                const subOPId = `artifactSub${i}-${j}`;
-                if (!$doc.getElementById(subOPId))
-                    continue;
-                $doc.getElementById(subOPId).innerText = exports.optionLocale.getConvertStatName($subStat[j].classList[1], true);
-            }
-        }
+            $weaponSub.innerText = exports.optionLocale.getLocale($subStat[1].classList[1]);
     }
     function enkaIcon2Text() {
         weaponOPIcon2Text();
-        artifactIcon2Text();
+        artifactsIcon2Text();
         const $friend = $doc.getElementsByClassName("fren")[0];
         if ($friend) {
             const friendClassName = "FRIEND";
             const $friendText = $friend.getElementsByClassName(friendClassName)[0];
-            $friendText.innerText = exports.optionLocale.getConvertStatName(friendClassName);
+            $friendText.innerText = exports.optionLocale.getLocale(friendClassName);
         }
         const date = new Date;
         date.setTime(date.getTime() - 60 * date.getTimezoneOffset() * 1000);
         const timeString = date.toISOString().replace("T", " ").substr(0, 19);
         $doc.getElementById(TIME_STAMP).innerText = VERSION + "_" + timeString;
         const $scoreSelectInfo = exports.$scoreSelectDiv?.children[0];
-        $scoreSelectInfo.innerText = exports.optionLocale.getConvertStatName($scoreSelectInfo.classList[0]);
+        $scoreSelectInfo.innerText = exports.optionLocale.getLocale($scoreSelectInfo.classList[0]);
         const $scoreButtons = exports.$scoreSelectDiv?.getElementsByClassName("Button");
-        for (let i = 0; i < $scoreButtons.length; i++) {
-            const $label = $scoreButtons[i];
-            $label.innerText = exports.optionLocale.getConvertStatName($label.classList[0], true);
+        for (const $label of Array.from($scoreButtons)) {
+            $label.innerText = exports.optionLocale.getLocaleSub($label.classList[0]);
         }
         let sumScore = 0;
         let avgScore = 0;
@@ -486,7 +491,7 @@
             const scoreType = SCORE_TYPE[typeKey];
             if (exports.scoreH != scoreType.id)
                 continue;
-            type = exports.optionLocale.getConvertStatName(scoreType.key, true);
+            type = exports.optionLocale.getLocaleSub(scoreType.key);
             break;
         }
         $extraText.innerText = getExtraText(critRatio, type, avgScore, sumScore);
@@ -597,7 +602,7 @@
         }
         return score;
     }
-    window.onload = function () {
+    window.addEventListener("load", function () {
         exports.optionLocale = new TranslateKey2Word(getLanguage());
         const $weaponInfo = $weapon[0].getElementsByTagName("content")[0];
         const $weaponName = $weaponInfo.getElementsByTagName("h3")[0];
@@ -631,8 +636,9 @@
             '.Card .Substat.svelte-1ut2kb8.svelte-1ut2kb8 { display: flex; align-items: center; margin-right: 0em; line-height: 95%; font-size: 98%; }',
             '.substats.svelte-17qi811>.Substat { padding-right: 1.0em; }',
             '.Artifact.svelte-17qi811 .ArtifactIcon { top: -37%; left: -6%; width: 28%; }',
-            '.mainstat.svelte-17qi811 > div:nth-child(1) { display: flex; align-items: center; top: 3px; max-height: 100%; font-size: 110%; line-height: 90%; width: auto; height: 50em; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; }',
-            '.mainstat.svelte-17qi811 > div:nth-child(4) { display: flex; align-items: center; margin-left: auto; margin-bottom: -0.3em; }'
+            '.mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(1) { display: flex; align-items: center; top: 5%; font-size: 100%; line-height:0.9; max-height: 25%; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; }',
+            '.mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(2) { padding: 4% 0%; }',
+            '.mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(3) { max-height: 25% }'
         ];
         const $style = $doc.createElement("style");
         $style.innerHTML = cssStyle.join(" ");
@@ -656,7 +662,7 @@
         });
         observer.observe($charaName, observeConf);
         observer.observe($language, observeConf);
-    };
+    });
 
     exports.SCORE_TYPE = SCORE_TYPE;
     exports.calcArtifactScore = calcArtifactScore;

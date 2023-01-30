@@ -1,8 +1,9 @@
 import { TranslateKey2Word } from "./TranslateKey2Word";
 import { localeKeys } from "./types/localeKeys";
 import * as myConst from "./myConst";
-import { createConvertTextElements, enkaIcon2Text } from "./enkaIcon2Text";
-import { getLanguage, isEquippingArtifact } from "./util/enkaUtil";
+import { createConvertTextElements, enkaIcon2Text } from "./enkaIcon2Text/enkaIcon2Text";
+import { getLanguage } from "./util/enkaUtil";
+import { isEquippingArtifact } from "./enkaIcon2Text/artifacts";
 
 export let optionLocale: TranslateKey2Word = new TranslateKey2Word("EN");
 
@@ -140,7 +141,7 @@ export function calcArtifactScore(index: number) {
     return score;
 }
 
-window.onload = function () {
+window.addEventListener("load", function() {
     optionLocale = new TranslateKey2Word(getLanguage());
 
     // 武器
@@ -184,8 +185,9 @@ window.onload = function () {
         '.Card .Substat.svelte-1ut2kb8.svelte-1ut2kb8 { display: flex; align-items: center; margin-right: 0em; line-height: 95%; font-size: 98%; }',  // サブステータスの枠を広げる
         '.substats.svelte-17qi811>.Substat { padding-right: 1.0em; }',  // 聖遺物のサブステータスが右に行きすぎるので調整
         '.Artifact.svelte-17qi811 .ArtifactIcon { top: -37%; left: -6%; width: 28%; }',  // 聖遺物画像の調整
-        '.mainstat.svelte-17qi811 > div:nth-child(1) { display: flex; align-items: center; top: 3px; max-height: 100%; font-size: 110%; line-height: 90%; width: auto; height: 50em; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; }',  // 聖遺物メインステータスの調整
-        '.mainstat.svelte-17qi811 > div:nth-child(4) { display: flex; align-items: center; margin-left: auto; margin-bottom: -0.3em; }'  // 聖遺物メインステータスの調整
+        '.mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(1) { display: flex; align-items: center; top: 5%; font-size: 100%; line-height:0.9; max-height: 25%; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; }',  // 聖遺物メインステータスの調整
+        '.mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(2) { padding: 4% 0%; }',
+        '.mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(3) { max-height: 25% }'
     ];
     const $style = myConst.$doc.createElement("style");
     $style.innerHTML = cssStyle.join(" ");
@@ -218,5 +220,5 @@ window.onload = function () {
     });
     observer.observe($charaName, observeConf); // キャラクター変更時
     observer.observe($language, observeConf); // 言語変更時
-};
+});
 

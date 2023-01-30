@@ -262,10 +262,4 @@ export class TranslateKey2Word implements ILocale {
         return this.localeArray[key as localeKeys]["subOption"]
             ?? this.localeArray[key as localeKeys]["locale"];
     }
-
-    getConvertStatName(key: string, isSub = false) {
-        const name = isSub ? this.getLocaleSub(key) : this.getLocale(key);
-
-        return name;
-    }
 }

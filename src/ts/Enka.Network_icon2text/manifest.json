@@ -9,5 +9,6 @@
     "supportURL": "https://github.com/takenoko9973/enkaNetworkConvert/issues",
     "icon": "https://www.google.com/s2/favicons?sz=64&domain=shinshin.moe",
     "match": "https://enka.network/u/*",
+    "run-at": "document-idle",
     "grant": "none"
 }

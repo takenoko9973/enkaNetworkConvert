@@ -25,14 +25,6 @@ export function getCharacterStats(key: string): number {
     return Number(stat.replace(/[^0-9.]/g, ''));
 }
 
-/**
- * 聖遺物を装備しているかどうか
- */
-export function isEquippingArtifact(index: number): boolean {
-    if (index < 0 || 4 < index) return false;
-
-    return Array.from(myConst.$artifact[index].classList).indexOf("empty") === -1;
-}
 
 // 余白用要素を返す
 export function getSeparateElement(): HTMLSpanElement {
