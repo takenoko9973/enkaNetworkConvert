@@ -1,11 +1,7 @@
-import { TranslateKey2Word } from "./TranslateKey2Word";
 import { localeKeys } from "./types/localeKeys";
 import * as myConst from "./myConst";
 import { createConvertTextElements, enkaIcon2Text } from "./enkaIcon2Text/enkaIcon2Text";
-import { getLanguage } from "./util/enkaUtil";
 import { isEquippingArtifact } from "./enkaIcon2Text/artifacts";
-
-export let optionLocale: TranslateKey2Word = new TranslateKey2Word("EN");
 
 class scoreType {
     #id;
@@ -37,7 +33,7 @@ export let scoreH: string = SCORE_TYPE.ATTACK.id;
 
 
 function createModeChangeBottom() {
-    const $cardToggles = myConst.$doc.getElementsByClassName("CardToggles")[0];
+    const $cardToggles = document.getElementsByClassName("CardToggles")[0];
     const $rowElement = $cardToggles.getElementsByClassName("row")[0].cloneNode(false);
     ($cardToggles.getElementsByClassName("Input")[0].parentNode as HTMLElement).after($rowElement);  // カードオプションの下に作成
 
@@ -46,22 +42,22 @@ function createModeChangeBottom() {
         '.inline_radio label.radbox[type="radio"] { color: rgba(255,255,255,.5);}',  // 普段は薄目
         '.inline_radio input[type="radio"]:checked + label.radbox[type="radio"] { color: rgba(255,255,255,1); border-color: rgba(255,255,255,1); }'  // 選択しているボタンを強調
     ];
-    const $style = myConst.$doc.createElement("style");
+    const $style = document.createElement("style");
     $style.innerHTML = radioStyle.join(" ");
-    myConst.$doc.querySelector("head")?.append($style);
+    document.querySelector("head")?.append($style);
 
     // スコア選択欄を作成
-    $scoreSelectDiv = myConst.$doc.createElement("div");
+    $scoreSelectDiv = document.createElement("div");
     $scoreSelectDiv.classList.add("Input", "svelte-nsdlaj");
 
     // 説明テキストを追加
     const scoreSelectClass: localeKeys = "SCORE_SELECT_INFO";
-    const $text = myConst.$doc.createElement("label");
+    const $text = document.createElement("label");
     $text.classList.add(scoreSelectClass, "svelte-nsdlaj");
     ($text as HTMLElement).style.marginLeft = "0.5em";
 
     // 計算方法変更用ボタン
-    const $scoreModeGroup = myConst.$doc.createElement("group");
+    const $scoreModeGroup = document.createElement("group");
     $scoreModeGroup.classList.add("inline_radio");
 
     // ボタンの作成
@@ -69,14 +65,14 @@ function createModeChangeBottom() {
         const id = `SCORE_${key}_R`;
 
         // ボタン
-        const $radio = myConst.$doc.createElement("input");
+        const $radio = document.createElement("input");
         $radio.id = id;
         $radio.name = SCORE_RADIO_NAME;
         $radio.setAttribute("type", "radio");
         $radio.value = SCORE_TYPE[key].id;
 
         // ラベル (ボタンとリンクさせる)
-        const $label = myConst.$doc.createElement("label");
+        const $label = document.createElement("label");
         $label.setAttribute("for", id);
         $label.setAttribute("type", "radio");
         $label.setAttribute("data-type", "OUTLINE");
@@ -93,12 +89,12 @@ function createModeChangeBottom() {
 
     // 攻撃をデフォルトにする
     const atkRadioId = $scoreSelectDiv.getElementsByClassName(SCORE_TYPE.ATTACK.key)[0].getAttribute("for") as string;
-    (myConst.$doc.getElementById(atkRadioId) as HTMLInputElement).toggleAttribute("checked", true);
+    (document.getElementById(atkRadioId) as HTMLInputElement).toggleAttribute("checked", true);
 
     // スコア評価対象変更時に発火
-    myConst.$doc.getElementsByName(SCORE_RADIO_NAME).forEach((function (e) {
+    document.getElementsByName(SCORE_RADIO_NAME).forEach((function (e) {
         e.addEventListener("click", (function () {
-            scoreH = (myConst.$doc.querySelector(`input:checked[name=${SCORE_RADIO_NAME}]`) as HTMLInputElement).value ?? "A";
+            scoreH = (document.querySelector(`input:checked[name=${SCORE_RADIO_NAME}]`) as HTMLInputElement).value ?? "A";
             enkaIcon2Text();
         }));
     }));
@@ -142,8 +138,6 @@ export function calcArtifactScore(index: number) {
 }
 
 window.addEventListener("load", function() {
-    optionLocale = new TranslateKey2Word(getLanguage());
-
     // 武器
     const $weaponInfo = myConst.$weapon[0].getElementsByTagName("content")[0] as HTMLElement;
     const $weaponName = $weaponInfo.getElementsByTagName("h3")[0] as HTMLElement;
@@ -152,10 +146,10 @@ window.addEventListener("load", function() {
     (myConst.$weapon[0].children[0] as HTMLElement).style.width = "30%";  // 武器画像
 
     // ###### キャラカードのデザイン変更 ######
-    const $charaCard = myConst.$doc.getElementsByClassName("card-host")[0];
+    const $charaCard = document.getElementsByClassName("card-host")[0];
 
     // その他情報を表示する枠
-    const $exParam = myConst.$doc.createElement("div");
+    const $exParam = document.createElement("div");
     $exParam.id = "extraData";
     $exParam.innerText = "";
     $exParam.style.position = "absolute";
@@ -167,7 +161,7 @@ window.addEventListener("load", function() {
     $charaCard.appendChild($exParam);
 
     // 取得時間
-    const $timeStamp = myConst.$doc.createElement("div");
+    const $timeStamp = document.createElement("div");
     $timeStamp.id = myConst.TIME_STAMP;
     $timeStamp.innerText = "";
     $timeStamp.style.position = "absolute";
@@ -189,12 +183,12 @@ window.addEventListener("load", function() {
         '.mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(2) { padding: 4% 0%; }',
         '.mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(3) { max-height: 25% }'
     ];
-    const $style = myConst.$doc.createElement("style");
+    const $style = document.createElement("style");
     $style.innerHTML = cssStyle.join(" ");
-    myConst.$doc.querySelector("head")?.append($style);
+    document.querySelector("head")?.append($style);
 
     // 全体の配置の変更
-    const $cardSection = myConst.$doc.getElementsByClassName("section") as HTMLCollectionOf<HTMLElement>;
+    const $cardSection = document.getElementsByClassName("section") as HTMLCollectionOf<HTMLElement>;
     // 左
     $cardSection[0].style.width = "36%";
     // 中央
@@ -209,12 +203,11 @@ window.addEventListener("load", function() {
 
     enkaIcon2Text();
 
-    const $charaName = myConst.$doc.getElementsByClassName("name")[0];
-    const $language = myConst.$doc.getElementsByClassName("Dropdown-selectedItem")[0];
+    const $charaName = document.getElementsByClassName("name")[0];
+    const $language = document.getElementsByClassName("Dropdown-selectedItem")[0];
     // 言語やキャラクター変更時に再翻訳
     const observeConf = { childList: true, attributes: true, characterData: true };
     const observer = new MutationObserver(() => {
-        optionLocale = new TranslateKey2Word(getLanguage());
         createConvertTextElements();
         enkaIcon2Text();
     });

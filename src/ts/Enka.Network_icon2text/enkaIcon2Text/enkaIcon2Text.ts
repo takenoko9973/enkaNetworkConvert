@@ -1,11 +1,11 @@
 import { getCharacterStats, getSeparateElement } from "../util/enkaUtil";
-import { $scoreSelectDiv, SCORE_TYPE, calcArtifactScore, optionLocale, scoreH } from "../main";
-import * as myConst from "../myConst";
+import { $scoreSelectDiv, SCORE_TYPE, calcArtifactScore, scoreH } from "../main";
+import { $weapon, BASE_ATK_CLASS, TIME_STAMP, VERSION, optionLocale } from "../myConst";
 import { localeKeys } from "../types/localeKeys";
 import { fmt } from "../util/fmt";
 import { artifactsIcon2Text, createTextInArtifact, isEquippingArtifact } from "./artifacts";
 
-function getExtraText(ratio: number, scoreType: string, avgScore: number, score: number) {
+function getExtraText(ratio: number, scoreType: string, avgScore: number, score: number): string {
     const ratioFixed = ratio.toFixed(1);
     const avgScoreFixed = avgScore.toFixed(1);
     const scoreFixed = score.toFixed(1);
@@ -18,10 +18,9 @@ function getExtraText(ratio: number, scoreType: string, avgScore: number, score:
     });
 }
 
-
 export function createConvertTextElements() {
     // 好感度
-    const $friend = myConst.$doc.getElementsByClassName("fren")[0];
+    const $friend = document.getElementsByClassName("fren")[0];
     if ($friend) {
         // アイコン用の隙間を削除
         const $icon = $friend.getElementsByClassName("ShadedSvgIcon")[0] as HTMLElement;
@@ -29,7 +28,7 @@ export function createConvertTextElements() {
 
         const friendClassName: localeKeys = "FRIEND";
         if (!$friend.getElementsByClassName(friendClassName)[0]) {
-            const $friendText = myConst.$doc.createElement("span");
+            const $friendText = document.createElement("span");
             $friendText.classList.add(friendClassName, "svelte-1cfvxg7");
             $friendText.style.width = "auto";
             $friendText.style.height = "auto";
@@ -40,25 +39,25 @@ export function createConvertTextElements() {
     }
 
     // サブステータス用のテキスト欄の作成
-    const $statText = myConst.$doc.createElement("div");
+    const $statText = document.createElement("div");
     $statText.classList.add("svelte-1ut2kb8");
     $statText.style.fontWeight = "bold";
 
     // 武器
-    const $weaponInfo = myConst.$weapon[0].getElementsByTagName("content")[0];
+    const $weaponInfo = $weapon[0].getElementsByTagName("content")[0];
     const $subStat = $weaponInfo.getElementsByClassName("Substat");
 
-    if (!myConst.$doc.getElementById(myConst.BASE_ATK_CLASS)) {
+    if (!document.getElementById(BASE_ATK_CLASS)) {
         const $baseAtk = $statText.cloneNode(true) as HTMLElement;
-        $baseAtk.id = myConst.BASE_ATK_CLASS;
-        $baseAtk.classList.add(myConst.BASE_ATK_CLASS);
+        $baseAtk.id = BASE_ATK_CLASS;
+        $baseAtk.classList.add(BASE_ATK_CLASS);
         $subStat[0].prepend(getSeparateElement());
         $subStat[0].prepend($baseAtk);
     }
 
     // サブステがあるかどうか判定
     if ($subStat[1]) {
-        if (!myConst.$doc.getElementById("weaponSubOP")) {
+        if (!document.getElementById("weaponSubOP")) {
             const $subOPName = $statText.cloneNode(true) as HTMLElement;
             $subOPName.id = "weaponSubOP";
             $subStat[1].prepend(getSeparateElement());
@@ -71,12 +70,12 @@ export function createConvertTextElements() {
 
 // 武器オプションの日本語化
 function weaponOPIcon2Text() {
-    const $subStat = myConst.$weapon[0].getElementsByClassName("Substat");
+    const $subStat = $weapon[0].getElementsByClassName("Substat");
 
-    const $baseAtk = myConst.$doc.getElementById(myConst.BASE_ATK_CLASS);
-    if ($baseAtk) $baseAtk.innerText = optionLocale.getLocale(myConst.BASE_ATK_CLASS);
+    const $baseAtk = document.getElementById(BASE_ATK_CLASS);
+    if ($baseAtk) $baseAtk.innerText = optionLocale.getLocale(BASE_ATK_CLASS);
 
-    const $weaponSub = myConst.$doc.getElementById("weaponSubOP");
+    const $weaponSub = document.getElementById("weaponSubOP");
     if ($weaponSub) $weaponSub.innerText = optionLocale.getLocale($subStat[1].classList[1]);
 }
 
@@ -85,7 +84,7 @@ export function enkaIcon2Text() {
     artifactsIcon2Text();
 
     // 好感度
-    const $friend = myConst.$doc.getElementsByClassName("fren")[0];
+    const $friend = document.getElementsByClassName("fren")[0];
     if ($friend) {
         const friendClassName: localeKeys = "FRIEND";
         const $friendText = $friend.getElementsByClassName(friendClassName)[0] as HTMLElement;
@@ -96,7 +95,7 @@ export function enkaIcon2Text() {
     const date = new Date;
     date.setTime(date.getTime() - 60 * date.getTimezoneOffset() * 1000);
     const timeString = date.toISOString().replace("T", " ").substr(0, 19);
-    (myConst.$doc.getElementById(myConst.TIME_STAMP) as HTMLElement).innerText = myConst.VERSION + "_" + timeString;
+    (document.getElementById(TIME_STAMP) as HTMLElement).innerText = VERSION + "_" + timeString;
 
     // スコア方式選択説明テキスト
     const $scoreSelectInfo = $scoreSelectDiv?.children[0] as HTMLElement;
@@ -110,13 +109,13 @@ export function enkaIcon2Text() {
     // ------ 追加情報
     let sumScore = 0;
     let avgScore = 0;
-    const $extraText = myConst.$doc.getElementById("extraData");
+    const $extraText = document.getElementById("extraData");
 
     // スコア計算
     for (let i = 0; i < 5; i++) {
         let score = 0.0;
 
-        const $scoreBox = myConst.$doc.getElementById(`score${i}`);
+        const $scoreBox = document.getElementById(`score${i}`);
         if ($scoreBox === null) continue;
 
         $scoreBox.setAttribute("class", "svelte-1ujofp1");

@@ -1,4 +1,4 @@
-import * as myConst from "../myConst";
+import { $charaStats } from "../myConst";
 import { languages } from "../types/languages";
 
 /**
@@ -7,7 +7,7 @@ import { languages } from "../types/languages";
 export function getPlayerInfo(): [string, string] {
     const pathname = location.pathname.split("/")[2] ?? "";
     const playerUID = pathname.split("/")[2]; // urlからUIDを取得
-    const $playerInfo = myConst.$doc.getElementsByClassName("PlayerInfo")[0];
+    const $playerInfo = document.getElementsByClassName("PlayerInfo")[0];
     const playerName = $playerInfo.getElementsByTagName("h1")[0].innerText; // プレイヤー名を取得
 
     return [playerUID, playerName];
@@ -17,7 +17,7 @@ export function getPlayerInfo(): [string, string] {
  * キャラクターの合計ステータスを取得
  */
 export function getCharacterStats(key: string): number {
-    const $statsList = myConst.$charaStats[0].children;
+    const $statsList = $charaStats[0].children;
     const index = Array.from($statsList).map(stat => stat.classList[1]).indexOf(key);
     if (index === -1) return 0;
 
@@ -28,13 +28,13 @@ export function getCharacterStats(key: string): number {
 
 // 余白用要素を返す
 export function getSeparateElement(): HTMLSpanElement {
-    const $separateElement = myConst.$doc.createElement("span");
+    const $separateElement = document.createElement("span");
     $separateElement.classList.add("sep");
 
     return $separateElement;
 }
 
 export function getLanguage(): languages {
-    const $language = myConst.$doc.getElementsByClassName("Dropdown-selectedItem")[0] as HTMLElement;
+    const $language = document.getElementsByClassName("Dropdown-selectedItem")[0] as HTMLElement;
     return $language.innerText as languages;
 }

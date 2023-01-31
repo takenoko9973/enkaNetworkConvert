@@ -1,11 +1,13 @@
+import { TranslateKey2Word } from "./enkaIcon2Text/TranslateKey2Word";
 import { localeKeys } from "./types/localeKeys";
 
-export const $doc = document;
-export const $weapon = $doc.getElementsByClassName("Weapon");
-export const $charaStats = $doc.getElementsByClassName("StatsTable");
-export const $artifact = $doc.getElementsByClassName("Artifact");
+export const $weapon = document.getElementsByClassName("Weapon");
+export const $charaStats = document.getElementsByClassName("StatsTable");
+export const $artifact = document.getElementsByClassName("Artifact");
 
 export const VERSION = "v0.50";
 
 export const BASE_ATK_CLASS: localeKeys = "BASE_ATTACK";
 export const TIME_STAMP = "timeStamp";
+
+export const optionLocale: TranslateKey2Word = TranslateKey2Word.instance;

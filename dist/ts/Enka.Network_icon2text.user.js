@@ -44,6 +44,24 @@
         return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
     }
 
+    function getCharacterStats(key) {
+        const $statsList = $charaStats[0].children;
+        const index = Array.from($statsList).map(stat => stat.classList[1]).indexOf(key);
+        if (index === -1)
+            return 0;
+        const stat = $statsList[index].children[1].children[2].innerText;
+        return Number(stat.replace(/[^0-9.]/g, ''));
+    }
+    function getSeparateElement() {
+        const $separateElement = document.createElement("span");
+        $separateElement.classList.add("sep");
+        return $separateElement;
+    }
+    function getLanguage() {
+        const $language = document.getElementsByClassName("Dropdown-selectedItem")[0];
+        return $language.innerText;
+    }
+
     const localeArray = {
         "": undefined,
         DE: undefined,
@@ -60,261 +78,250 @@
         JA: undefined,
         KO: undefined,
         "ZH-CH": undefined,
-        "ZH-TW": undefined
+        "ZH-TW": undefined,
     };
     localeArray["EN"] = {
-        "BASE_ATTACK": {
-            "locale": "Base ATK",
-            "subOption": undefined
+        BASE_ATTACK: {
+            locale: "Base ATK",
+            subOption: undefined,
         },
-        "HP": {
-            "locale": "HP",
-            "subOption": undefined
+        HP: {
+            locale: "HP",
+            subOption: undefined,
         },
-        "ATTACK": {
-            "locale": "ATK",
-            "subOption": undefined
+        ATTACK: {
+            locale: "ATK",
+            subOption: undefined,
         },
-        "DEFENSE": {
-            "locale": "DEF",
-            "subOption": undefined
+        DEFENSE: {
+            locale: "DEF",
+            subOption: undefined,
         },
-        "HP_PERCENT": {
-            "locale": "HP",
-            "subOption": undefined
+        HP_PERCENT: {
+            locale: "HP",
+            subOption: undefined,
         },
-        "ATTACK_PERCENT": {
-            "locale": "ATK",
-            "subOption": undefined
+        ATTACK_PERCENT: {
+            locale: "ATK",
+            subOption: undefined,
         },
-        "DEFENSE_PERCENT": {
-            "locale": "DEF",
-            "subOption": undefined
+        DEFENSE_PERCENT: {
+            locale: "DEF",
+            subOption: undefined,
         },
-        "CRITICAL": {
-            "locale": "Crit Rate",
-            "subOption": undefined
+        CRITICAL: {
+            locale: "Crit Rate",
+            subOption: undefined,
         },
-        "CRITICAL_HURT": {
-            "locale": "Crit DMG",
-            "subOption": undefined
+        CRITICAL_HURT: {
+            locale: "Crit DMG",
+            subOption: undefined,
         },
-        "CHARGE_EFFICIENCY": {
-            "locale": "Energy Recharge",
-            "subOption": "ER"
+        CHARGE_EFFICIENCY: {
+            locale: "Energy Recharge",
+            subOption: "ER",
         },
-        "HEAL_ADD": {
-            "locale": "Healing Bonus",
-            "subOption": undefined
+        HEAL_ADD: {
+            locale: "Healing Bonus",
+            subOption: undefined,
         },
-        "ELEMENT_MASTERY": {
-            "locale": "Elemental Mastery",
-            "subOption": "EM"
+        ELEMENT_MASTERY: {
+            locale: "Elemental Mastery",
+            subOption: "EM",
         },
-        "PHYSICAL_ADD_HURT": {
-            "locale": "Physical DMG Bonus",
-            "subOption": undefined
+        PHYSICAL_ADD_HURT: {
+            locale: "Physical DMG\nBonus",
+            subOption: undefined,
         },
-        "FIRE_ADD_HURT": {
-            "locale": "Pyro DMG Bonus",
-            "subOption": undefined
+        FIRE_ADD_HURT: {
+            locale: "Pyro DMG\nBonus",
+            subOption: undefined,
         },
-        "ELEC_ADD_HURT": {
-            "locale": "Electro DMG Bonus",
-            "subOption": undefined
+        ELEC_ADD_HURT: {
+            locale: "Electro DMG\nBonus",
+            subOption: undefined,
         },
-        "WATER_ADD_HURT": {
-            "locale": "Hydro DMG Bonus",
-            "subOption": undefined
+        WATER_ADD_HURT: {
+            locale: "Hydro DMG\nBonus",
+            subOption: undefined,
         },
-        "WIND_ADD_HURT": {
-            "locale": "Anemo DMG Bonus",
-            "subOption": undefined
+        WIND_ADD_HURT: {
+            locale: "Anemo DMG\nBonus",
+            subOption: undefined,
         },
-        "ICE_ADD_HURT": {
-            "locale": "Cryo DMG Bonus",
-            "subOption": undefined
+        ICE_ADD_HURT: {
+            locale: "Cryo DMG\nBonus",
+            subOption: undefined,
         },
-        "ROCK_ADD_HURT": {
-            "locale": "Geo DMG Bonus",
-            "subOption": undefined
+        ROCK_ADD_HURT: {
+            locale: "Geo DMG\nBonus",
+            subOption: undefined,
         },
-        "GRASS_ADD_HURT": {
-            "locale": "Dendro DMG Bonus",
-            "subOption": undefined
+        GRASS_ADD_HURT: {
+            locale: "Dendro DMG\nBonus",
+            subOption: undefined,
         },
-        "FRIEND": {
-            "locale": "Friendship",
-            "subOption": undefined
+        FRIEND: {
+            locale: "Friendship",
+            subOption: undefined,
         },
-        "SCORE_SELECT_INFO": {
-            "locale": "Score type",
-            "subOption": undefined
+        SCORE_SELECT_INFO: {
+            locale: "Score type",
+            subOption: undefined,
         },
-        "CARD_EXTRA_INFO": {
-            "locale": "Crit Ratio 1:${critRatio} / Score(${scoreType}) Avg. ${avgScore} Total ${sumScore}",
-            "subOption": undefined
+        CARD_EXTRA_INFO: {
+            locale: "Crit Ratio 1:${critRatio} / Score(${scoreType}) Avg. ${avgScore} Total ${sumScore}",
+            subOption: undefined,
         },
-        "UNKNOWN": {
-            "locale": "Unknown",
-            "subOption": undefined
+        UNKNOWN: {
+            locale: "Unknown",
+            subOption: undefined,
         },
     };
     localeArray["JA"] = {
-        "BASE_ATTACK": {
-            "locale": "基礎攻撃力",
-            "subOption": undefined
+        BASE_ATTACK: {
+            locale: "基礎攻撃力",
+            subOption: undefined,
         },
-        "HP": {
-            "locale": "HP",
-            "subOption": undefined
+        HP: {
+            locale: "HP",
+            subOption: undefined,
         },
-        "ATTACK": {
-            "locale": "攻撃力",
-            "subOption": undefined
+        ATTACK: {
+            locale: "攻撃力",
+            subOption: undefined,
         },
-        "DEFENSE": {
-            "locale": "防御力",
-            "subOption": undefined
+        DEFENSE: {
+            locale: "防御力",
+            subOption: undefined,
         },
-        "HP_PERCENT": {
-            "locale": "HP",
-            "subOption": undefined
+        HP_PERCENT: {
+            locale: "HP",
+            subOption: undefined,
         },
-        "ATTACK_PERCENT": {
-            "locale": "攻撃力",
-            "subOption": undefined
+        ATTACK_PERCENT: {
+            locale: "攻撃力",
+            subOption: undefined,
         },
-        "DEFENSE_PERCENT": {
-            "locale": "防御力",
-            "subOption": undefined
+        DEFENSE_PERCENT: {
+            locale: "防御力",
+            subOption: undefined,
         },
-        "CRITICAL": {
-            "locale": "会心率",
-            "subOption": undefined
+        CRITICAL: {
+            locale: "会心率",
+            subOption: undefined,
         },
-        "CRITICAL_HURT": {
-            "locale": "会心ダメージ",
-            "subOption": "会心ダメ"
+        CRITICAL_HURT: {
+            locale: "会心ダメージ",
+            subOption: "会心ダメ",
         },
-        "CHARGE_EFFICIENCY": {
-            "locale": "元素チャージ効率",
-            "subOption": "元チャ"
+        CHARGE_EFFICIENCY: {
+            locale: "元素チャージ効率",
+            subOption: "元チャ",
         },
-        "HEAL_ADD": {
-            "locale": "与える治癒効果",
-            "subOption": "与治癒"
+        HEAL_ADD: {
+            locale: "与える治癒効果",
+            subOption: "与治癒",
         },
-        "ELEMENT_MASTERY": {
-            "locale": "元素熟知",
-            "subOption": undefined
+        ELEMENT_MASTERY: {
+            locale: "元素熟知",
+            subOption: undefined,
         },
-        "PHYSICAL_ADD_HURT": {
-            "locale": "物理ダメージ",
-            "subOption": undefined
+        PHYSICAL_ADD_HURT: {
+            locale: "物理ダメージ",
+            subOption: undefined,
         },
-        "FIRE_ADD_HURT": {
-            "locale": "炎元素ダメージ",
-            "subOption": undefined
+        FIRE_ADD_HURT: {
+            locale: "炎元素ダメージ",
+            subOption: undefined,
         },
-        "ELEC_ADD_HURT": {
-            "locale": "雷元素ダメージ",
-            "subOption": undefined
+        ELEC_ADD_HURT: {
+            locale: "雷元素ダメージ",
+            subOption: undefined,
         },
-        "WATER_ADD_HURT": {
-            "locale": "水元素ダメージ",
-            "subOption": undefined
+        WATER_ADD_HURT: {
+            locale: "水元素ダメージ",
+            subOption: undefined,
         },
-        "WIND_ADD_HURT": {
-            "locale": "風元素ダメージ",
-            "subOption": undefined
+        WIND_ADD_HURT: {
+            locale: "風元素ダメージ",
+            subOption: undefined,
         },
-        "ICE_ADD_HURT": {
-            "locale": "氷元素ダメージ",
-            "subOption": undefined
+        ICE_ADD_HURT: {
+            locale: "氷元素ダメージ",
+            subOption: undefined,
         },
-        "ROCK_ADD_HURT": {
-            "locale": "岩元素ダメージ",
-            "subOption": undefined
+        ROCK_ADD_HURT: {
+            locale: "岩元素ダメージ",
+            subOption: undefined,
         },
-        "GRASS_ADD_HURT": {
-            "locale": "草元素ダメージ",
-            "subOption": undefined
+        GRASS_ADD_HURT: {
+            locale: "草元素ダメージ",
+            subOption: undefined,
         },
-        "FRIEND": {
-            "locale": "好感度",
-            "subOption": undefined
+        FRIEND: {
+            locale: "好感度",
+            subOption: undefined,
         },
-        "SCORE_SELECT_INFO": {
-            "locale": "スコア計算方法",
-            "subOption": undefined
+        SCORE_SELECT_INFO: {
+            locale: "スコア計算方法",
+            subOption: undefined,
         },
-        "CARD_EXTRA_INFO": {
-            "locale": "会心率ダメ比 1:${critRatio} / 聖遺物スコア(${scoreType}) 平均:${avgScore} 合計:${sumScore}",
-            "subOption": undefined
+        CARD_EXTRA_INFO: {
+            locale: "会心率ダメ比 1:${critRatio} / 聖遺物スコア(${scoreType}) 平均:${avgScore} 合計:${sumScore}",
+            subOption: undefined,
         },
-        "UNKNOWN": {
-            "locale": "不明",
-            "subOption": undefined
+        UNKNOWN: {
+            locale: "不明",
+            subOption: undefined,
         },
     };
     class TranslateKey2Word {
-        constructor(language) {
-            this.language = "";
-            this.language = language;
-            this.localeArray = localeArray[this.language];
-            if (this.localeArray === undefined) {
-                console.warn(`"${this.language}" is undefined. Set language "EN"`);
-                this.localeArray = localeArray["EN"];
+        constructor() { }
+        static get instance() {
+            if (!this._instance) {
+                this._instance = new TranslateKey2Word();
+            }
+            return this._instance;
+        }
+        updatedLocate() {
+            const locale = getLanguage();
+            this.translateArray = localeArray[locale];
+            if (this.translateArray === undefined) {
+                this.translateArray = localeArray["EN"];
             }
         }
         isKey(checkKey) {
-            if (this.localeArray === undefined)
+            if (this.translateArray === undefined)
                 return false;
-            return checkKey in this.localeArray;
+            return checkKey in this.translateArray;
         }
         getLocale(key) {
-            if (this.localeArray === undefined)
+            this.updatedLocate();
+            if (this.translateArray === undefined)
                 return "";
             if (!this.isKey(key))
-                return this.localeArray["UNKNOWN"]["locale"];
-            return this.localeArray[key]["locale"];
+                return this.translateArray["UNKNOWN"]["locale"];
+            return this.translateArray[key]["locale"];
         }
         getLocaleSub(key) {
-            if (this.localeArray === undefined)
+            this.updatedLocate();
+            if (this.translateArray === undefined)
                 return "";
             if (!this.isKey(key))
-                return this.localeArray["UNKNOWN"]["locale"];
-            return this.localeArray[key]["subOption"]
-                ?? this.localeArray[key]["locale"];
+                return this.translateArray["UNKNOWN"]["locale"];
+            return (this.translateArray[key]["subOption"] ??
+                this.translateArray[key]["locale"]);
         }
     }
 
-    const $doc = document;
-    const $weapon = $doc.getElementsByClassName("Weapon");
-    const $charaStats = $doc.getElementsByClassName("StatsTable");
-    const $artifact = $doc.getElementsByClassName("Artifact");
+    const $weapon = document.getElementsByClassName("Weapon");
+    const $charaStats = document.getElementsByClassName("StatsTable");
+    const $artifact = document.getElementsByClassName("Artifact");
     const VERSION = "v0.50";
     const BASE_ATK_CLASS = "BASE_ATTACK";
     const TIME_STAMP = "timeStamp";
-
-    function getCharacterStats(key) {
-        const $statsList = $charaStats[0].children;
-        const index = Array.from($statsList).map(stat => stat.classList[1]).indexOf(key);
-        if (index === -1)
-            return 0;
-        const stat = $statsList[index].children[1].children[2].innerText;
-        return Number(stat.replace(/[^0-9.]/g, ''));
-    }
-    function getSeparateElement() {
-        const $separateElement = $doc.createElement("span");
-        $separateElement.classList.add("sep");
-        return $separateElement;
-    }
-    function getLanguage() {
-        const $language = $doc.getElementsByClassName("Dropdown-selectedItem")[0];
-        return $language.innerText;
-    }
+    const optionLocale = TranslateKey2Word.instance;
 
     function fmt(template, values) {
         if (!values)
@@ -378,11 +385,11 @@
                 continue;
             const mainStat = artifact.getElementsByClassName("mainstat")[0];
             mainStat.children[0].innerText =
-                exports.optionLocale.getLocale(mainStat.classList[1]);
+                optionLocale.getLocale(mainStat.classList[1]);
             const subStatList = artifact.getElementsByClassName("Substat");
             for (const $subStat of Array.from(subStatList)) {
                 $subStat.children[0].innerText =
-                    exports.optionLocale.getLocaleSub($subStat.classList[1]);
+                    optionLocale.getLocaleSub($subStat.classList[1]);
             }
         }
     }
@@ -391,7 +398,7 @@
         const ratioFixed = ratio.toFixed(1);
         const avgScoreFixed = avgScore.toFixed(1);
         const scoreFixed = score.toFixed(1);
-        return fmt(exports.optionLocale.getLocale("CARD_EXTRA_INFO"), {
+        return fmt(optionLocale.getLocale("CARD_EXTRA_INFO"), {
             critRatio: ratioFixed,
             scoreType: scoreType,
             avgScore: avgScoreFixed,
@@ -399,13 +406,13 @@
         });
     }
     function createConvertTextElements() {
-        const $friend = $doc.getElementsByClassName("fren")[0];
+        const $friend = document.getElementsByClassName("fren")[0];
         if ($friend) {
             const $icon = $friend.getElementsByClassName("ShadedSvgIcon")[0];
             $icon.style.width = "0";
             const friendClassName = "FRIEND";
             if (!$friend.getElementsByClassName(friendClassName)[0]) {
-                const $friendText = $doc.createElement("span");
+                const $friendText = document.createElement("span");
                 $friendText.classList.add(friendClassName, "svelte-1cfvxg7");
                 $friendText.style.width = "auto";
                 $friendText.style.height = "auto";
@@ -414,12 +421,12 @@
                 $friend.prepend($friendText);
             }
         }
-        const $statText = $doc.createElement("div");
+        const $statText = document.createElement("div");
         $statText.classList.add("svelte-1ut2kb8");
         $statText.style.fontWeight = "bold";
         const $weaponInfo = $weapon[0].getElementsByTagName("content")[0];
         const $subStat = $weaponInfo.getElementsByClassName("Substat");
-        if (!$doc.getElementById(BASE_ATK_CLASS)) {
+        if (!document.getElementById(BASE_ATK_CLASS)) {
             const $baseAtk = $statText.cloneNode(true);
             $baseAtk.id = BASE_ATK_CLASS;
             $baseAtk.classList.add(BASE_ATK_CLASS);
@@ -427,7 +434,7 @@
             $subStat[0].prepend($baseAtk);
         }
         if ($subStat[1]) {
-            if (!$doc.getElementById("weaponSubOP")) {
+            if (!document.getElementById("weaponSubOP")) {
                 const $subOPName = $statText.cloneNode(true);
                 $subOPName.id = "weaponSubOP";
                 $subStat[1].prepend(getSeparateElement());
@@ -438,38 +445,38 @@
     }
     function weaponOPIcon2Text() {
         const $subStat = $weapon[0].getElementsByClassName("Substat");
-        const $baseAtk = $doc.getElementById(BASE_ATK_CLASS);
+        const $baseAtk = document.getElementById(BASE_ATK_CLASS);
         if ($baseAtk)
-            $baseAtk.innerText = exports.optionLocale.getLocale(BASE_ATK_CLASS);
-        const $weaponSub = $doc.getElementById("weaponSubOP");
+            $baseAtk.innerText = optionLocale.getLocale(BASE_ATK_CLASS);
+        const $weaponSub = document.getElementById("weaponSubOP");
         if ($weaponSub)
-            $weaponSub.innerText = exports.optionLocale.getLocale($subStat[1].classList[1]);
+            $weaponSub.innerText = optionLocale.getLocale($subStat[1].classList[1]);
     }
     function enkaIcon2Text() {
         weaponOPIcon2Text();
         artifactsIcon2Text();
-        const $friend = $doc.getElementsByClassName("fren")[0];
+        const $friend = document.getElementsByClassName("fren")[0];
         if ($friend) {
             const friendClassName = "FRIEND";
             const $friendText = $friend.getElementsByClassName(friendClassName)[0];
-            $friendText.innerText = exports.optionLocale.getLocale(friendClassName);
+            $friendText.innerText = optionLocale.getLocale(friendClassName);
         }
         const date = new Date;
         date.setTime(date.getTime() - 60 * date.getTimezoneOffset() * 1000);
         const timeString = date.toISOString().replace("T", " ").substr(0, 19);
-        $doc.getElementById(TIME_STAMP).innerText = VERSION + "_" + timeString;
+        document.getElementById(TIME_STAMP).innerText = VERSION + "_" + timeString;
         const $scoreSelectInfo = exports.$scoreSelectDiv?.children[0];
-        $scoreSelectInfo.innerText = exports.optionLocale.getLocale($scoreSelectInfo.classList[0]);
+        $scoreSelectInfo.innerText = optionLocale.getLocale($scoreSelectInfo.classList[0]);
         const $scoreButtons = exports.$scoreSelectDiv?.getElementsByClassName("Button");
         for (const $label of Array.from($scoreButtons)) {
-            $label.innerText = exports.optionLocale.getLocaleSub($label.classList[0]);
+            $label.innerText = optionLocale.getLocaleSub($label.classList[0]);
         }
         let sumScore = 0;
         let avgScore = 0;
-        const $extraText = $doc.getElementById("extraData");
+        const $extraText = document.getElementById("extraData");
         for (let i = 0; i < 5; i++) {
             let score = 0.0;
-            const $scoreBox = $doc.getElementById(`score${i}`);
+            const $scoreBox = document.getElementById(`score${i}`);
             if ($scoreBox === null)
                 continue;
             $scoreBox.setAttribute("class", "svelte-1ujofp1");
@@ -491,14 +498,13 @@
             const scoreType = SCORE_TYPE[typeKey];
             if (exports.scoreH != scoreType.id)
                 continue;
-            type = exports.optionLocale.getLocaleSub(scoreType.key);
+            type = optionLocale.getLocaleSub(scoreType.key);
             break;
         }
         $extraText.innerText = getExtraText(critRatio, type, avgScore, sumScore);
     }
 
     var _scoreType_id, _scoreType_key, _scoreType_correction;
-    exports.optionLocale = new TranslateKey2Word("EN");
     class scoreType {
         constructor(id, key, correction) {
             _scoreType_id.set(this, void 0);
@@ -523,7 +529,7 @@
     };
     exports.scoreH = SCORE_TYPE.ATTACK.id;
     function createModeChangeBottom() {
-        const $cardToggles = $doc.getElementsByClassName("CardToggles")[0];
+        const $cardToggles = document.getElementsByClassName("CardToggles")[0];
         const $rowElement = $cardToggles.getElementsByClassName("row")[0].cloneNode(false);
         $cardToggles.getElementsByClassName("Input")[0].parentNode.after($rowElement);
         const radioStyle = [
@@ -531,25 +537,25 @@
             '.inline_radio label.radbox[type="radio"] { color: rgba(255,255,255,.5);}',
             '.inline_radio input[type="radio"]:checked + label.radbox[type="radio"] { color: rgba(255,255,255,1); border-color: rgba(255,255,255,1); }'
         ];
-        const $style = $doc.createElement("style");
+        const $style = document.createElement("style");
         $style.innerHTML = radioStyle.join(" ");
-        $doc.querySelector("head")?.append($style);
-        exports.$scoreSelectDiv = $doc.createElement("div");
+        document.querySelector("head")?.append($style);
+        exports.$scoreSelectDiv = document.createElement("div");
         exports.$scoreSelectDiv.classList.add("Input", "svelte-nsdlaj");
         const scoreSelectClass = "SCORE_SELECT_INFO";
-        const $text = $doc.createElement("label");
+        const $text = document.createElement("label");
         $text.classList.add(scoreSelectClass, "svelte-nsdlaj");
         $text.style.marginLeft = "0.5em";
-        const $scoreModeGroup = $doc.createElement("group");
+        const $scoreModeGroup = document.createElement("group");
         $scoreModeGroup.classList.add("inline_radio");
         for (const key in SCORE_TYPE) {
             const id = `SCORE_${key}_R`;
-            const $radio = $doc.createElement("input");
+            const $radio = document.createElement("input");
             $radio.id = id;
             $radio.name = SCORE_RADIO_NAME;
             $radio.setAttribute("type", "radio");
             $radio.value = SCORE_TYPE[key].id;
-            const $label = $doc.createElement("label");
+            const $label = document.createElement("label");
             $label.setAttribute("for", id);
             $label.setAttribute("type", "radio");
             $label.setAttribute("data-type", "OUTLINE");
@@ -563,10 +569,10 @@
         exports.$scoreSelectDiv.appendChild($scoreModeGroup);
         $rowElement.appendChild(exports.$scoreSelectDiv);
         const atkRadioId = exports.$scoreSelectDiv.getElementsByClassName(SCORE_TYPE.ATTACK.key)[0].getAttribute("for");
-        $doc.getElementById(atkRadioId).toggleAttribute("checked", true);
-        $doc.getElementsByName(SCORE_RADIO_NAME).forEach((function (e) {
+        document.getElementById(atkRadioId).toggleAttribute("checked", true);
+        document.getElementsByName(SCORE_RADIO_NAME).forEach((function (e) {
             e.addEventListener("click", (function () {
-                exports.scoreH = $doc.querySelector(`input:checked[name=${SCORE_RADIO_NAME}]`).value ?? "A";
+                exports.scoreH = document.querySelector(`input:checked[name=${SCORE_RADIO_NAME}]`).value ?? "A";
                 enkaIcon2Text();
             }));
         }));
@@ -603,14 +609,13 @@
         return score;
     }
     window.addEventListener("load", function () {
-        exports.optionLocale = new TranslateKey2Word(getLanguage());
         const $weaponInfo = $weapon[0].getElementsByTagName("content")[0];
         const $weaponName = $weaponInfo.getElementsByTagName("h3")[0];
         $weaponInfo.style.paddingRight = "0px";
         $weaponName.style.fontWeight = "bold";
         $weapon[0].children[0].style.width = "30%";
-        const $charaCard = $doc.getElementsByClassName("card-host")[0];
-        const $exParam = $doc.createElement("div");
+        const $charaCard = document.getElementsByClassName("card-host")[0];
+        const $exParam = document.createElement("div");
         $exParam.id = "extraData";
         $exParam.innerText = "";
         $exParam.style.position = "absolute";
@@ -620,7 +625,7 @@
         $exParam.style.fontSize = "80%";
         $exParam.classList.add("svelte-1ujofp1");
         $charaCard.appendChild($exParam);
-        const $timeStamp = $doc.createElement("div");
+        const $timeStamp = document.createElement("div");
         $timeStamp.id = TIME_STAMP;
         $timeStamp.innerText = "";
         $timeStamp.style.position = "absolute";
@@ -640,10 +645,10 @@
             '.mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(2) { padding: 4% 0%; }',
             '.mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(3) { max-height: 25% }'
         ];
-        const $style = $doc.createElement("style");
+        const $style = document.createElement("style");
         $style.innerHTML = cssStyle.join(" ");
-        $doc.querySelector("head")?.append($style);
-        const $cardSection = $doc.getElementsByClassName("section");
+        document.querySelector("head")?.append($style);
+        const $cardSection = document.getElementsByClassName("section");
         $cardSection[0].style.width = "36%";
         $cardSection[1].style.width = "24%";
         $cardSection[1].style.left = "34%";
@@ -652,11 +657,10 @@
         createConvertTextElements();
         createModeChangeBottom();
         enkaIcon2Text();
-        const $charaName = $doc.getElementsByClassName("name")[0];
-        const $language = $doc.getElementsByClassName("Dropdown-selectedItem")[0];
+        const $charaName = document.getElementsByClassName("name")[0];
+        const $language = document.getElementsByClassName("Dropdown-selectedItem")[0];
         const observeConf = { childList: true, attributes: true, characterData: true };
         const observer = new MutationObserver(() => {
-            exports.optionLocale = new TranslateKey2Word(getLanguage());
             createConvertTextElements();
             enkaIcon2Text();
         });

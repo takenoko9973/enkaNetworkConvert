@@ -1,4 +1,4 @@
-import { optionLocale } from "../main";
+import { optionLocale } from "../myConst";
 import { getSeparateElement } from "../util/enkaUtil";
 
 const artifacts = document.getElementsByClassName("Artifact");
