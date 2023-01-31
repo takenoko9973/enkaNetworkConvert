@@ -61,6 +61,9 @@
         const $language = document.getElementsByClassName("Dropdown-selectedItem")[0];
         return $language.innerText;
     }
+    function getScoreType() {
+        return document.querySelector(`input:checked[name=${SCORE_RADIO_NAME}]`).value ?? "A";
+    }
 
     const localeArray = {
         "": undefined,
@@ -321,6 +324,8 @@
     const VERSION = "v0.50";
     const BASE_ATK_CLASS = "BASE_ATTACK";
     const TIME_STAMP = "timeStamp";
+    const SCORE_SELECT_DIV = "scoreSelectDiv";
+    const SCORE_RADIO_NAME = "sSource";
     const optionLocale = TranslateKey2Word.instance;
 
     function fmt(template, values) {
@@ -465,9 +470,10 @@
         date.setTime(date.getTime() - 60 * date.getTimezoneOffset() * 1000);
         const timeString = date.toISOString().replace("T", " ").substr(0, 19);
         document.getElementById(TIME_STAMP).innerText = VERSION + "_" + timeString;
-        const $scoreSelectInfo = exports.$scoreSelectDiv?.children[0];
+        const $scoreSelectDiv = document.getElementById(SCORE_SELECT_DIV);
+        const $scoreSelectInfo = $scoreSelectDiv?.children[0];
         $scoreSelectInfo.innerText = optionLocale.getLocale($scoreSelectInfo.classList[0]);
-        const $scoreButtons = exports.$scoreSelectDiv?.getElementsByClassName("Button");
+        const $scoreButtons = $scoreSelectDiv?.getElementsByClassName("Button");
         for (const $label of Array.from($scoreButtons)) {
             $label.innerText = optionLocale.getLocaleSub($label.classList[0]);
         }
@@ -494,9 +500,10 @@
         const critDMG = getCharacterStats("CRITICAL_HURT");
         const critRatio = critDMG / critRate;
         let type = "";
+        const scoreH = getScoreType();
         for (const typeKey in SCORE_TYPE) {
             const scoreType = SCORE_TYPE[typeKey];
-            if (exports.scoreH != scoreType.id)
+            if (scoreH != scoreType.id)
                 continue;
             type = optionLocale.getLocaleSub(scoreType.key);
             break;
@@ -514,34 +521,41 @@
             __classPrivateFieldSet(this, _scoreType_key, key, "f");
             __classPrivateFieldSet(this, _scoreType_correction, correction, "f");
         }
-        get id() { return __classPrivateFieldGet(this, _scoreType_id, "f"); }
-        get key() { return __classPrivateFieldGet(this, _scoreType_key, "f"); }
-        get correction() { return __classPrivateFieldGet(this, _scoreType_correction, "f"); }
+        get id() {
+            return __classPrivateFieldGet(this, _scoreType_id, "f");
+        }
+        get key() {
+            return __classPrivateFieldGet(this, _scoreType_key, "f");
+        }
+        get correction() {
+            return __classPrivateFieldGet(this, _scoreType_correction, "f");
+        }
     }
     _scoreType_id = new WeakMap(), _scoreType_key = new WeakMap(), _scoreType_correction = new WeakMap();
-    exports.$scoreSelectDiv = null;
-    const SCORE_RADIO_NAME = "sSource";
     const SCORE_TYPE = {
-        "HP": new scoreType("H", "HP_PERCENT", 1),
-        "ATTACK": new scoreType("A", "ATTACK_PERCENT", 1),
-        "DEFENSE": new scoreType("D", "DEFENSE_PERCENT", 0.8),
-        "EM": new scoreType("EM", "ELEMENT_MASTERY", 0.25),
+        HP: new scoreType("H", "HP_PERCENT", 1),
+        ATTACK: new scoreType("A", "ATTACK_PERCENT", 1),
+        DEFENSE: new scoreType("D", "DEFENSE_PERCENT", 0.8),
+        EM: new scoreType("EM", "ELEMENT_MASTERY", 0.25),
     };
-    exports.scoreH = SCORE_TYPE.ATTACK.id;
     function createModeChangeBottom() {
         const $cardToggles = document.getElementsByClassName("CardToggles")[0];
-        const $rowElement = $cardToggles.getElementsByClassName("row")[0].cloneNode(false);
-        $cardToggles.getElementsByClassName("Input")[0].parentNode.after($rowElement);
+        const $rowElement = $cardToggles
+            .getElementsByClassName("row")[0]
+            .cloneNode(false);
+        $cardToggles.getElementsByClassName("Input")[0]
+            .parentNode.after($rowElement);
         const radioStyle = [
             '.inline_radio input[type="radio"] { position: absolute; opacity: 0; }',
             '.inline_radio label.radbox[type="radio"] { color: rgba(255,255,255,.5);}',
-            '.inline_radio input[type="radio"]:checked + label.radbox[type="radio"] { color: rgba(255,255,255,1); border-color: rgba(255,255,255,1); }'
+            '.inline_radio input[type="radio"]:checked + label.radbox[type="radio"] { color: rgba(255,255,255,1); border-color: rgba(255,255,255,1); }',
         ];
         const $style = document.createElement("style");
         $style.innerHTML = radioStyle.join(" ");
         document.querySelector("head")?.append($style);
-        exports.$scoreSelectDiv = document.createElement("div");
-        exports.$scoreSelectDiv.classList.add("Input", "svelte-nsdlaj");
+        const $scoreSelectDiv = document.createElement("div");
+        $scoreSelectDiv.id = SCORE_SELECT_DIV;
+        $scoreSelectDiv.classList.add("Input", "svelte-nsdlaj");
         const scoreSelectClass = "SCORE_SELECT_INFO";
         const $text = document.createElement("label");
         $text.classList.add(scoreSelectClass, "svelte-nsdlaj");
@@ -565,26 +579,28 @@
             $scoreModeGroup.appendChild($radio);
             $scoreModeGroup.appendChild($label);
         }
-        exports.$scoreSelectDiv.appendChild($text);
-        exports.$scoreSelectDiv.appendChild($scoreModeGroup);
-        $rowElement.appendChild(exports.$scoreSelectDiv);
-        const atkRadioId = exports.$scoreSelectDiv.getElementsByClassName(SCORE_TYPE.ATTACK.key)[0].getAttribute("for");
+        $scoreSelectDiv.appendChild($text);
+        $scoreSelectDiv.appendChild($scoreModeGroup);
+        $rowElement.appendChild($scoreSelectDiv);
+        const atkRadioId = $scoreSelectDiv
+            .getElementsByClassName(SCORE_TYPE.ATTACK.key)[0]
+            .getAttribute("for");
         document.getElementById(atkRadioId).toggleAttribute("checked", true);
-        document.getElementsByName(SCORE_RADIO_NAME).forEach((function (e) {
-            e.addEventListener("click", (function () {
-                exports.scoreH = document.querySelector(`input:checked[name=${SCORE_RADIO_NAME}]`).value ?? "A";
+        document.getElementsByName(SCORE_RADIO_NAME).forEach(function (e) {
+            e.addEventListener("click", function () {
                 enkaIcon2Text();
-            }));
-        }));
+            });
+        });
     }
     function calcArtifactScore(index) {
         let score = 0;
         if (!isEquippingArtifact(index))
             return score;
         const $subStat = Array.from($artifact[index].getElementsByClassName("Substat"));
-        const $subStatName = $subStat.map(sub => sub.classList[1]);
-        const $subStatAmount = $subStat.map(sub => sub.lastChild.innerText.replace(/[^0-9.]/g, ''));
+        const $subStatName = $subStat.map((sub) => sub.classList[1]);
+        const $subStatAmount = $subStat.map((sub) => sub.lastChild.innerText.replace(/[^0-9.]/g, ""));
         const subLen = $subStat.length;
+        const scoreH = getScoreType();
         for (let i = 0; i < subLen; i++) {
             const key = $subStatName[i];
             switch (key) {
@@ -599,7 +615,7 @@
                         const scoreType = SCORE_TYPE[typeKey];
                         if (key != scoreType.key)
                             continue;
-                        if (exports.scoreH != scoreType.id)
+                        if (scoreH != scoreType.id)
                             continue;
                         score += Number($subStatAmount[i]) * scoreType.correction;
                         break;
@@ -636,14 +652,14 @@
         $exParam.classList.add("svelte-1ujofp1");
         $charaCard.appendChild($timeStamp);
         const cssStyle = [
-            '.Card .Icon{ display:none !important }',
-            '.stats.svelte-gp6viv .Substat { padding-top: 4%; }',
-            '.Card .Substat.svelte-1ut2kb8.svelte-1ut2kb8 { display: flex; align-items: center; margin-right: 0em; line-height: 95%; font-size: 98%; }',
-            '.substats.svelte-17qi811>.Substat { padding-right: 1.0em; }',
-            '.Artifact.svelte-17qi811 .ArtifactIcon { top: -37%; left: -6%; width: 28%; }',
-            '.mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(1) { display: flex; align-items: center; top: 5%; font-size: 100%; line-height:0.9; max-height: 25%; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; }',
-            '.mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(2) { padding: 4% 0%; }',
-            '.mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(3) { max-height: 25% }'
+            ".Card .Icon{ display:none !important }",
+            ".stats.svelte-gp6viv .Substat { padding-top: 4%; }",
+            ".Card .Substat.svelte-1ut2kb8.svelte-1ut2kb8 { display: flex; align-items: center; margin-right: 0em; line-height: 95%; font-size: 98%; }",
+            ".substats.svelte-17qi811>.Substat { padding-right: 1.0em; }",
+            ".Artifact.svelte-17qi811 .ArtifactIcon { top: -37%; left: -6%; width: 28%; }",
+            ".mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(1) { display: flex; align-items: center; top: 5%; font-size: 100%; line-height:0.9; max-height: 25%; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; }",
+            ".mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(2) { padding: 4% 0%; }",
+            ".mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(3) { max-height: 25% }",
         ];
         const $style = document.createElement("style");
         $style.innerHTML = cssStyle.join(" ");
@@ -659,7 +675,11 @@
         enkaIcon2Text();
         const $charaName = document.getElementsByClassName("name")[0];
         const $language = document.getElementsByClassName("Dropdown-selectedItem")[0];
-        const observeConf = { childList: true, attributes: true, characterData: true };
+        const observeConf = {
+            childList: true,
+            attributes: true,
+            characterData: true,
+        };
         const observer = new MutationObserver(() => {
             createConvertTextElements();
             enkaIcon2Text();

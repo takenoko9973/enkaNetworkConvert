@@ -1,6 +1,6 @@
-import { getCharacterStats, getSeparateElement } from "../util/enkaUtil";
-import { $scoreSelectDiv, SCORE_TYPE, calcArtifactScore, scoreH } from "../main";
-import { $weapon, BASE_ATK_CLASS, TIME_STAMP, VERSION, optionLocale } from "../myConst";
+import { getCharacterStats, getScoreType, getSeparateElement } from "../util/enkaUtil";
+import { SCORE_TYPE, calcArtifactScore } from "../main";
+import { $weapon, BASE_ATK_CLASS, SCORE_SELECT_DIV, TIME_STAMP, VERSION, optionLocale } from "../myConst";
 import { localeKeys } from "../types/localeKeys";
 import { fmt } from "../util/fmt";
 import { artifactsIcon2Text, createTextInArtifact, isEquippingArtifact } from "./artifacts";
@@ -98,6 +98,7 @@ export function enkaIcon2Text() {
     (document.getElementById(TIME_STAMP) as HTMLElement).innerText = VERSION + "_" + timeString;
 
     // スコア方式選択説明テキスト
+    const $scoreSelectDiv = document.getElementById(SCORE_SELECT_DIV);
     const $scoreSelectInfo = $scoreSelectDiv?.children[0] as HTMLElement;
     $scoreSelectInfo.innerText = optionLocale.getLocale($scoreSelectInfo.classList[0]);
     // スコア方式選択ボタン
@@ -137,6 +138,7 @@ export function enkaIcon2Text() {
     const critRatio = critDMG / critRate;
 
     let type = "";
+    const scoreH = getScoreType();
     for (const typeKey in SCORE_TYPE) {
         const scoreType = SCORE_TYPE[typeKey];
         if (scoreH != scoreType.id) continue;

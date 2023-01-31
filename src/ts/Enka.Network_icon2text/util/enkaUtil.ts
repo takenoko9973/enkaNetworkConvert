@@ -1,4 +1,4 @@
-import { $charaStats } from "../myConst";
+import { $charaStats, SCORE_RADIO_NAME } from "../myConst";
 import { languages } from "../types/languages";
 
 /**
@@ -37,4 +37,8 @@ export function getSeparateElement(): HTMLSpanElement {
 export function getLanguage(): languages {
     const $language = document.getElementsByClassName("Dropdown-selectedItem")[0] as HTMLElement;
     return $language.innerText as languages;
+}
+
+export function getScoreType(): string {
+    return (document.querySelector(`input:checked[name=${SCORE_RADIO_NAME}]`) as HTMLInputElement).value ?? "A";
 }

@@ -2,6 +2,7 @@ import { localeKeys } from "./types/localeKeys";
 import * as myConst from "./myConst";
 import { createConvertTextElements, enkaIcon2Text } from "./enkaIcon2Text/enkaIcon2Text";
 import { isEquippingArtifact } from "./enkaIcon2Text/artifacts";
+import { getScoreType } from "./util/enkaUtil";
 
 class scoreType {
     #id;
@@ -14,40 +15,47 @@ class scoreType {
         this.#correction = correction;
     }
 
-    get id() { return this.#id; }
-    get key() { return this.#key; }
-    get correction() { return this.#correction; }
+    get id() {
+        return this.#id;
+    }
+    get key() {
+        return this.#key;
+    }
+    get correction() {
+        return this.#correction;
+    }
 }
 
-
 // スコア計算基準指定 H:HP, A:攻撃力, D:防御力
-export let $scoreSelectDiv: HTMLDivElement | null = null;
-const SCORE_RADIO_NAME = "sSource";
 export const SCORE_TYPE: { [key: string]: scoreType } = {
-    "HP": new scoreType("H", "HP_PERCENT", 1),
-    "ATTACK": new scoreType("A", "ATTACK_PERCENT", 1),
-    "DEFENSE": new scoreType("D", "DEFENSE_PERCENT", 0.8),
-    "EM": new scoreType("EM", "ELEMENT_MASTERY", 0.25),
+    HP: new scoreType("H", "HP_PERCENT", 1),
+    ATTACK: new scoreType("A", "ATTACK_PERCENT", 1),
+    DEFENSE: new scoreType("D", "DEFENSE_PERCENT", 0.8),
+    EM: new scoreType("EM", "ELEMENT_MASTERY", 0.25),
 };
-export let scoreH: string = SCORE_TYPE.ATTACK.id;
-
 
 function createModeChangeBottom() {
     const $cardToggles = document.getElementsByClassName("CardToggles")[0];
-    const $rowElement = $cardToggles.getElementsByClassName("row")[0].cloneNode(false);
-    ($cardToggles.getElementsByClassName("Input")[0].parentNode as HTMLElement).after($rowElement);  // カードオプションの下に作成
+    const $rowElement = $cardToggles
+        .getElementsByClassName("row")[0]
+        .cloneNode(false);
+    (
+        $cardToggles.getElementsByClassName("Input")[0]
+            .parentNode as HTMLElement
+    ).after($rowElement); // カードオプションの下に作成
 
     const radioStyle = [
-        '.inline_radio input[type="radio"] { position: absolute; opacity: 0; }',  // チェックボックスを隠す
-        '.inline_radio label.radbox[type="radio"] { color: rgba(255,255,255,.5);}',  // 普段は薄目
-        '.inline_radio input[type="radio"]:checked + label.radbox[type="radio"] { color: rgba(255,255,255,1); border-color: rgba(255,255,255,1); }'  // 選択しているボタンを強調
+        '.inline_radio input[type="radio"] { position: absolute; opacity: 0; }', // チェックボックスを隠す
+        '.inline_radio label.radbox[type="radio"] { color: rgba(255,255,255,.5);}', // 普段は薄目
+        '.inline_radio input[type="radio"]:checked + label.radbox[type="radio"] { color: rgba(255,255,255,1); border-color: rgba(255,255,255,1); }', // 選択しているボタンを強調
     ];
     const $style = document.createElement("style");
     $style.innerHTML = radioStyle.join(" ");
     document.querySelector("head")?.append($style);
 
     // スコア選択欄を作成
-    $scoreSelectDiv = document.createElement("div");
+    const $scoreSelectDiv = document.createElement("div");
+    $scoreSelectDiv.id = myConst.SCORE_SELECT_DIV;
     $scoreSelectDiv.classList.add("Input", "svelte-nsdlaj");
 
     // 説明テキストを追加
@@ -67,7 +75,7 @@ function createModeChangeBottom() {
         // ボタン
         const $radio = document.createElement("input");
         $radio.id = id;
-        $radio.name = SCORE_RADIO_NAME;
+        $radio.name = myConst.SCORE_RADIO_NAME;
         $radio.setAttribute("type", "radio");
         $radio.value = SCORE_TYPE[key].id;
 
@@ -78,7 +86,13 @@ function createModeChangeBottom() {
         $label.setAttribute("data-type", "OUTLINE");
         $label.setAttribute("data-variant", "HALF");
         $label.style.marginTop = "0em";
-        $label.classList.add(SCORE_TYPE[key].key, "radbox", "Button", "svelte-1dpa14o", "label");
+        $label.classList.add(
+            SCORE_TYPE[key].key,
+            "radbox",
+            "Button",
+            "svelte-1dpa14o",
+            "label"
+        );
 
         $scoreModeGroup.appendChild($radio);
         $scoreModeGroup.appendChild($label);
@@ -88,30 +102,39 @@ function createModeChangeBottom() {
     $rowElement.appendChild($scoreSelectDiv);
 
     // 攻撃をデフォルトにする
-    const atkRadioId = $scoreSelectDiv.getElementsByClassName(SCORE_TYPE.ATTACK.key)[0].getAttribute("for") as string;
-    (document.getElementById(atkRadioId) as HTMLInputElement).toggleAttribute("checked", true);
+    const atkRadioId = $scoreSelectDiv
+        .getElementsByClassName(SCORE_TYPE.ATTACK.key)[0]
+        .getAttribute("for") as string;
+    (document.getElementById(atkRadioId) as HTMLInputElement).toggleAttribute(
+        "checked",
+        true
+    );
 
     // スコア評価対象変更時に発火
-    document.getElementsByName(SCORE_RADIO_NAME).forEach((function (e) {
-        e.addEventListener("click", (function () {
-            scoreH = (document.querySelector(`input:checked[name=${SCORE_RADIO_NAME}]`) as HTMLInputElement).value ?? "A";
+    document.getElementsByName(myConst.SCORE_RADIO_NAME).forEach(function (e) {
+        e.addEventListener("click", function () {
             enkaIcon2Text();
-        }));
-    }));
+        });
+    });
 }
 
 /**
-* 聖遺物のスコアを計算
-*/
+ * 聖遺物のスコアを計算
+ */
 export function calcArtifactScore(index: number) {
     let score = 0;
     if (!isEquippingArtifact(index)) return score;
 
-    const $subStat = Array.from(myConst.$artifact[index].getElementsByClassName("Substat"));
-    const $subStatName = $subStat.map(sub => sub.classList[1]);
-    const $subStatAmount = $subStat.map(sub => (sub.lastChild as HTMLElement).innerText.replace(/[^0-9.]/g, ''));
+    const $subStat = Array.from(
+        myConst.$artifact[index].getElementsByClassName("Substat")
+    );
+    const $subStatName = $subStat.map((sub) => sub.classList[1]);
+    const $subStatAmount = $subStat.map((sub) =>
+        (sub.lastChild as HTMLElement).innerText.replace(/[^0-9.]/g, "")
+    );
     const subLen = $subStat.length;
 
+    const scoreH = getScoreType();
     for (let i = 0; i < subLen; i++) {
         const key = $subStatName[i] as localeKeys;
         switch (key) {
@@ -137,13 +160,17 @@ export function calcArtifactScore(index: number) {
     return score;
 }
 
-window.addEventListener("load", function() {
+window.addEventListener("load", function () {
     // 武器
-    const $weaponInfo = myConst.$weapon[0].getElementsByTagName("content")[0] as HTMLElement;
-    const $weaponName = $weaponInfo.getElementsByTagName("h3")[0] as HTMLElement;
+    const $weaponInfo = myConst.$weapon[0].getElementsByTagName(
+        "content"
+    )[0] as HTMLElement;
+    const $weaponName = $weaponInfo.getElementsByTagName(
+        "h3"
+    )[0] as HTMLElement;
     $weaponInfo.style.paddingRight = "0px";
     $weaponName.style.fontWeight = "bold";
-    (myConst.$weapon[0].children[0] as HTMLElement).style.width = "30%";  // 武器画像
+    (myConst.$weapon[0].children[0] as HTMLElement).style.width = "30%"; // 武器画像
 
     // ###### キャラカードのデザイン変更 ######
     const $charaCard = document.getElementsByClassName("card-host")[0];
@@ -174,21 +201,23 @@ window.addEventListener("load", function() {
 
     // cssの全面的な変更
     const cssStyle = [
-        '.Card .Icon{ display:none !important }',  // アイコンの削除
-        '.stats.svelte-gp6viv .Substat { padding-top: 4%; }',  // 武器ステータスの枠を大きく
-        '.Card .Substat.svelte-1ut2kb8.svelte-1ut2kb8 { display: flex; align-items: center; margin-right: 0em; line-height: 95%; font-size: 98%; }',  // サブステータスの枠を広げる
-        '.substats.svelte-17qi811>.Substat { padding-right: 1.0em; }',  // 聖遺物のサブステータスが右に行きすぎるので調整
-        '.Artifact.svelte-17qi811 .ArtifactIcon { top: -37%; left: -6%; width: 28%; }',  // 聖遺物画像の調整
-        '.mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(1) { display: flex; align-items: center; top: 5%; font-size: 100%; line-height:0.9; max-height: 25%; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; }',  // 聖遺物メインステータスの調整
-        '.mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(2) { padding: 4% 0%; }',
-        '.mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(3) { max-height: 25% }'
+        ".Card .Icon{ display:none !important }", // アイコンの削除
+        ".stats.svelte-gp6viv .Substat { padding-top: 4%; }", // 武器ステータスの枠を大きく
+        ".Card .Substat.svelte-1ut2kb8.svelte-1ut2kb8 { display: flex; align-items: center; margin-right: 0em; line-height: 95%; font-size: 98%; }", // サブステータスの枠を広げる
+        ".substats.svelte-17qi811>.Substat { padding-right: 1.0em; }", // 聖遺物のサブステータスが右に行きすぎるので調整
+        ".Artifact.svelte-17qi811 .ArtifactIcon { top: -37%; left: -6%; width: 28%; }", // 聖遺物画像の調整
+        ".mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(1) { display: flex; align-items: center; top: 5%; font-size: 100%; line-height:0.9; max-height: 25%; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; }", // 聖遺物メインステータスの調整
+        ".mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(2) { padding: 4% 0%; }",
+        ".mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(3) { max-height: 25% }",
     ];
     const $style = document.createElement("style");
     $style.innerHTML = cssStyle.join(" ");
     document.querySelector("head")?.append($style);
 
     // 全体の配置の変更
-    const $cardSection = document.getElementsByClassName("section") as HTMLCollectionOf<HTMLElement>;
+    const $cardSection = document.getElementsByClassName(
+        "section"
+    ) as HTMLCollectionOf<HTMLElement>;
     // 左
     $cardSection[0].style.width = "36%";
     // 中央
@@ -204,9 +233,15 @@ window.addEventListener("load", function() {
     enkaIcon2Text();
 
     const $charaName = document.getElementsByClassName("name")[0];
-    const $language = document.getElementsByClassName("Dropdown-selectedItem")[0];
+    const $language = document.getElementsByClassName(
+        "Dropdown-selectedItem"
+    )[0];
     // 言語やキャラクター変更時に再翻訳
-    const observeConf = { childList: true, attributes: true, characterData: true };
+    const observeConf = {
+        childList: true,
+        attributes: true,
+        characterData: true,
+    };
     const observer = new MutationObserver(() => {
         createConvertTextElements();
         enkaIcon2Text();
@@ -214,4 +249,3 @@ window.addEventListener("load", function() {
     observer.observe($charaName, observeConf); // キャラクター変更時
     observer.observe($language, observeConf); // 言語変更時
 });
-
