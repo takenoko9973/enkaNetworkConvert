@@ -38,37 +38,37 @@ export function enkaIcon2Text() {
     (document.getElementById(TIME_STAMP) as HTMLElement).innerText = VERSION + "_" + timeString;
 
     // スコア方式選択説明テキスト
-    const $scoreSelectDiv = document.getElementById(SCORE_SELECT_DIV);
-    const $scoreSelectInfo = $scoreSelectDiv?.children[0] as HTMLElement;
-    $scoreSelectInfo.innerText = optionLocale.getLocale($scoreSelectInfo.classList[0]);
+    const scoreSelectDiv = document.getElementById(SCORE_SELECT_DIV);
+    const scoreSelectInfo = scoreSelectDiv?.children[0] as HTMLElement;
+    scoreSelectInfo.innerText = optionLocale.getLocale(scoreSelectInfo.classList[0]);
     // スコア方式選択ボタン
-    const $scoreButtons = $scoreSelectDiv?.getElementsByClassName("Button") as HTMLCollectionOf<HTMLElement>;
-    for (const $label of Array.from($scoreButtons)) {
-        $label.innerText = optionLocale.getLocaleSub($label.classList[0]);
+    const scoreButtons = scoreSelectDiv?.getElementsByClassName("Button") as HTMLCollectionOf<HTMLElement>;
+    for (const label of Array.from(scoreButtons)) {
+        label.innerText = optionLocale.getLocaleSub(label.classList[0]);
     }
 
     // ------ 追加情報
     let sumScore = 0;
     let avgScore = 0;
-    const $extraText = document.getElementById("extraData") as HTMLElement;
+    const extraText = document.getElementById("extraData") as HTMLElement;
 
     // スコア計算
     for (let i = 0; i < 5; i++) {
         let score = 0.0;
 
-        const $scoreBox = document.getElementById(`score${i}`);
-        if ($scoreBox === null) continue;
+        const scoreBox = document.getElementById(`score${i}`);
+        if (scoreBox === null) continue;
 
-        $scoreBox.setAttribute("class", "svelte-1ujofp1");
+        scoreBox.setAttribute("class", "svelte-1ujofp1");
 
         // 聖遺物を付けている場合、計算
         if (isEquippingArtifact(i)) {
             score = calcArtifactScore(i);
             sumScore += score;
 
-            $scoreBox.innerText = score.toFixed(1);
+            scoreBox.innerText = score.toFixed(1);
         } else {
-            $scoreBox.innerText = "";
+            scoreBox.innerText = "";
         }
     }
     avgScore = sumScore / 5;
@@ -87,5 +87,5 @@ export function enkaIcon2Text() {
         break;
     }
 
-    $extraText.innerText = getExtraText(critRatio, type, avgScore, sumScore);
+    extraText.innerText = getExtraText(critRatio, type, avgScore, sumScore);
 }

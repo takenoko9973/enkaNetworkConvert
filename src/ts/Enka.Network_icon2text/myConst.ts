@@ -1,9 +1,9 @@
 import { TranslateKey2Word } from "./enkaIcon2Text/TranslateKey2Word";
 import { localeKeys } from "./types/localeKeys";
 
-export const $weapon = document.getElementsByClassName("Weapon");
-export const $charaStats = document.getElementsByClassName("StatsTable");
-export const $artifact = document.getElementsByClassName("Artifact");
+export const weapon = document.getElementsByClassName("Weapon");
+export const charaStats = document.getElementsByClassName("StatsTable");
+export const artifact = document.getElementsByClassName("Artifact");
 
 export const VERSION = "v0.50";
 
