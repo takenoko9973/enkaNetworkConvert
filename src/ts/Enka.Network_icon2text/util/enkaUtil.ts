@@ -58,8 +58,11 @@ export function getScoreType(): string {
 /**
  * 親要素から、適切なステータステキスト要素を生成
  */
-export function createStatTextElement(parentElement: HTMLElement): HTMLElement {
-    const className = parentElement.classList[2] ?? "";
+export function createStatTextElement(parentElement: Element): Element {
+    const className =
+        Array.from(parentElement.classList).filter((val) =>
+            val.match(/svelte/)
+        )[0] ?? "";
     const tag = parentElement.lastElementChild?.tagName ?? "div";
 
     const statText = document.createElement(tag);
@@ -70,14 +73,25 @@ export function createStatTextElement(parentElement: HTMLElement): HTMLElement {
     return statText;
 }
 
-export function addStatTextElement(parentElement: HTMLElement) {
-    if (parentElement.getElementsByClassName("statText").length >= 1) return;
+/**
+ * statTextを設置してIconを消す
+ * @param parentElement 設置したい親要素
+ * @param addSep 分割要素を追加するか (default: true)
+ * @returns 設置したstatText
+ */
+export function addStatTextElement(parentElement: Element, addSep = true): Element | null {
+    if (parentElement.getElementsByClassName("statText").length >= 1)
+        return null;
 
-    const $icon = parentElement.getElementsByClassName("Icon")[0];
+    const icon =
+        parentElement.getElementsByClassName("ShadedSvgIcon")[0] ?? // 影付きアイコン
+        parentElement.getElementsByClassName("Icon")[0];
 
-    const $statText = createStatTextElement(parentElement);
-    $icon.after(getSeparateElement());
-    $icon.after($statText);
+    const statText = createStatTextElement(parentElement);
+    if (addSep) icon.after(getSeparateElement());
+    icon.after(statText);
 
-    parentElement.removeChild($icon);
+    parentElement.removeChild(icon);
+
+    return statText;
 }
