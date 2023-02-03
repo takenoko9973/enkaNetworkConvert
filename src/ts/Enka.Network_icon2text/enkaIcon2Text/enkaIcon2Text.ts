@@ -1,10 +1,10 @@
 import { getCharacterStats, getScoreType } from "../util/enkaUtil";
 import { SCORE_TYPE, calcArtifactScore } from "../main";
 import { SCORE_SELECT_DIV, TIME_STAMP, VERSION, optionLocale } from "../myConst";
-import { localeKeys } from "../types/localeKeys";
 import { fmt } from "../util/fmt";
 import { artifactsIcon2Text, createTextInArtifact, isEquippingArtifact } from "./artifacts";
 import { createTextInWeapon, weaponOPIcon2Text } from "./weapon";
+import { createTextInFriend, friendIcon2Text } from "./friend";
 
 function getExtraText(ratio: number, scoreType: string, avgScore: number, score: number): string {
     const ratioFixed = ratio.toFixed(1);
@@ -20,25 +20,7 @@ function getExtraText(ratio: number, scoreType: string, avgScore: number, score:
 }
 
 export function createConvertTextElements() {
-    // 好感度
-    const $friend = document.getElementsByClassName("fren")[0];
-    if ($friend) {
-        // アイコン用の隙間を削除
-        const $icon = $friend.getElementsByClassName("ShadedSvgIcon")[0] as HTMLElement;
-        $icon.style.width = "0";
-
-        const friendClassName: localeKeys = "FRIEND";
-        if (!$friend.getElementsByClassName(friendClassName)[0]) {
-            const $friendText = document.createElement("span");
-            $friendText.classList.add(friendClassName, "svelte-1cfvxg7");
-            $friendText.style.width = "auto";
-            $friendText.style.height = "auto";
-            $friendText.style.fontSize = "1em";
-            $friendText.style.fontWeight = "bold";
-            $friend.prepend($friendText);
-        }
-    }
-
+    createTextInFriend();
     createTextInWeapon();
     createTextInArtifact();
 }
@@ -47,14 +29,7 @@ export function createConvertTextElements() {
 export function enkaIcon2Text() {
     weaponOPIcon2Text();
     artifactsIcon2Text();
-
-    // 好感度
-    const $friend = document.getElementsByClassName("fren")[0];
-    if ($friend) {
-        const friendClassName: localeKeys = "FRIEND";
-        const $friendText = $friend.getElementsByClassName(friendClassName)[0] as HTMLElement;
-        $friendText.innerText = optionLocale.getLocale(friendClassName);
-    }
+    friendIcon2Text();
 
     // 情報取得日時を表示
     const date = new Date;
@@ -75,7 +50,7 @@ export function enkaIcon2Text() {
     // ------ 追加情報
     let sumScore = 0;
     let avgScore = 0;
-    const $extraText = document.getElementById("extraData");
+    const $extraText = document.getElementById("extraData") as HTMLElement;
 
     // スコア計算
     for (let i = 0; i < 5; i++) {
@@ -112,5 +87,5 @@ export function enkaIcon2Text() {
         break;
     }
 
-    ($extraText as HTMLElement).innerText = getExtraText(critRatio, type, avgScore, sumScore);
+    $extraText.innerText = getExtraText(critRatio, type, avgScore, sumScore);
 }
