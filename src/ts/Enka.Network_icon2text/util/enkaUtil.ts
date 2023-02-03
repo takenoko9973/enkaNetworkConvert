@@ -18,15 +18,19 @@ export function getPlayerInfo(): [string, string] {
  */
 export function getCharacterStats(key: string): number {
     const $statsList = $charaStats[0].children;
-    const index = Array.from($statsList).map(stat => stat.classList[1]).indexOf(key);
+    const index = Array.from($statsList)
+        .map((stat) => stat.classList[1])
+        .indexOf(key);
     if (index === -1) return 0;
 
-    const stat = ($statsList[index].children[1].children[2] as HTMLElement).innerText;
-    return Number(stat.replace(/[^0-9.]/g, ''));
+    const stat = ($statsList[index].children[1].children[2] as HTMLElement)
+        .innerText;
+    return Number(stat.replace(/[^0-9.]/g, ""));
 }
 
-
-// 余白用要素を返す
+/**
+ * 余白用要素を返す
+ */
 export function getSeparateElement(): HTMLSpanElement {
     const $separateElement = document.createElement("span");
     $separateElement.classList.add("sep");
@@ -35,10 +39,45 @@ export function getSeparateElement(): HTMLSpanElement {
 }
 
 export function getLanguage(): languages {
-    const $language = document.getElementsByClassName("Dropdown-selectedItem")[0] as HTMLElement;
+    const $language = document.getElementsByClassName(
+        "Dropdown-selectedItem"
+    )[0] as HTMLElement;
     return $language.innerText as languages;
 }
 
 export function getScoreType(): string {
-    return (document.querySelector(`input:checked[name=${SCORE_RADIO_NAME}]`) as HTMLInputElement).value ?? "A";
+    return (
+        (
+            document.querySelector(
+                `input:checked[name=${SCORE_RADIO_NAME}]`
+            ) as HTMLInputElement
+        ).value ?? "A"
+    );
+}
+
+/**
+ * 親要素から、適切なステータステキスト要素を生成
+ */
+export function createStatTextElement(parentElement: HTMLElement): HTMLElement {
+    const className = parentElement.classList[2] ?? "";
+    const tag = parentElement.lastElementChild?.tagName ?? "div";
+
+    const statText = document.createElement(tag);
+    statText.classList.add("statText");
+    statText.classList.add(className);
+    statText.style.fontWeight = "bold";
+
+    return statText;
+}
+
+export function addStatTextElement(parentElement: HTMLElement) {
+    if (parentElement.getElementsByClassName("statText").length >= 1) return;
+
+    const $icon = parentElement.getElementsByClassName("Icon")[0];
+
+    const $statText = createStatTextElement(parentElement);
+    $icon.after(getSeparateElement());
+    $icon.after($statText);
+
+    parentElement.removeChild($icon);
 }

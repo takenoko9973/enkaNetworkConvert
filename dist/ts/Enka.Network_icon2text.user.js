@@ -46,11 +46,14 @@
 
     function getCharacterStats(key) {
         const $statsList = $charaStats[0].children;
-        const index = Array.from($statsList).map(stat => stat.classList[1]).indexOf(key);
+        const index = Array.from($statsList)
+            .map((stat) => stat.classList[1])
+            .indexOf(key);
         if (index === -1)
             return 0;
-        const stat = $statsList[index].children[1].children[2].innerText;
-        return Number(stat.replace(/[^0-9.]/g, ''));
+        const stat = $statsList[index].children[1].children[2]
+            .innerText;
+        return Number(stat.replace(/[^0-9.]/g, ""));
     }
     function getSeparateElement() {
         const $separateElement = document.createElement("span");
@@ -62,7 +65,25 @@
         return $language.innerText;
     }
     function getScoreType() {
-        return document.querySelector(`input:checked[name=${SCORE_RADIO_NAME}]`).value ?? "A";
+        return (document.querySelector(`input:checked[name=${SCORE_RADIO_NAME}]`).value ?? "A");
+    }
+    function createStatTextElement$1(parentElement) {
+        const className = parentElement.classList[2] ?? "";
+        const tag = parentElement.lastElementChild?.tagName ?? "div";
+        const statText = document.createElement(tag);
+        statText.classList.add("statText");
+        statText.classList.add(className);
+        statText.style.fontWeight = "bold";
+        return statText;
+    }
+    function addStatTextElement(parentElement) {
+        if (parentElement.getElementsByClassName("statText").length >= 1)
+            return;
+        const $icon = parentElement.getElementsByClassName("Icon")[0];
+        const $statText = createStatTextElement$1(parentElement);
+        $icon.after(getSeparateElement());
+        $icon.after($statText);
+        parentElement.removeChild($icon);
     }
 
     const localeArray = {
@@ -399,6 +420,28 @@
         }
     }
 
+    function createTextInWeapon() {
+        const $weaponInfo = $weapon[0].getElementsByTagName("content")[0];
+        const $subStat = $weaponInfo.getElementsByClassName("Substat");
+        addStatTextElement($subStat[0]);
+        if (!$subStat[1])
+            return;
+        addStatTextElement($subStat[1]);
+    }
+    function weaponOPIcon2Text() {
+        const $subStat = $weapon[0].getElementsByClassName("Substat");
+        const $baseAtk = $subStat[0].getElementsByClassName("statText")[0];
+        if ($baseAtk) {
+            $baseAtk.innerText = optionLocale.getLocale(BASE_ATK_CLASS);
+        }
+        if (!$subStat[1])
+            return;
+        const $weaponSub = $subStat[1].getElementsByClassName("statText")[0];
+        if ($weaponSub) {
+            $weaponSub.innerText = optionLocale.getLocale($subStat[1].classList[1]);
+        }
+    }
+
     function getExtraText(ratio, scoreType, avgScore, score) {
         const ratioFixed = ratio.toFixed(1);
         const avgScoreFixed = avgScore.toFixed(1);
@@ -426,36 +469,8 @@
                 $friend.prepend($friendText);
             }
         }
-        const $statText = document.createElement("div");
-        $statText.classList.add("svelte-1ut2kb8");
-        $statText.style.fontWeight = "bold";
-        const $weaponInfo = $weapon[0].getElementsByTagName("content")[0];
-        const $subStat = $weaponInfo.getElementsByClassName("Substat");
-        if (!document.getElementById(BASE_ATK_CLASS)) {
-            const $baseAtk = $statText.cloneNode(true);
-            $baseAtk.id = BASE_ATK_CLASS;
-            $baseAtk.classList.add(BASE_ATK_CLASS);
-            $subStat[0].prepend(getSeparateElement());
-            $subStat[0].prepend($baseAtk);
-        }
-        if ($subStat[1]) {
-            if (!document.getElementById("weaponSubOP")) {
-                const $subOPName = $statText.cloneNode(true);
-                $subOPName.id = "weaponSubOP";
-                $subStat[1].prepend(getSeparateElement());
-                $subStat[1].prepend($subOPName);
-            }
-        }
+        createTextInWeapon();
         createTextInArtifact();
-    }
-    function weaponOPIcon2Text() {
-        const $subStat = $weapon[0].getElementsByClassName("Substat");
-        const $baseAtk = document.getElementById(BASE_ATK_CLASS);
-        if ($baseAtk)
-            $baseAtk.innerText = optionLocale.getLocale(BASE_ATK_CLASS);
-        const $weaponSub = document.getElementById("weaponSubOP");
-        if ($weaponSub)
-            $weaponSub.innerText = optionLocale.getLocale($subStat[1].classList[1]);
     }
     function enkaIcon2Text() {
         weaponOPIcon2Text();

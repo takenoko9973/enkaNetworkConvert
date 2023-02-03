@@ -1,9 +1,10 @@
-import { getCharacterStats, getScoreType, getSeparateElement } from "../util/enkaUtil";
+import { getCharacterStats, getScoreType } from "../util/enkaUtil";
 import { SCORE_TYPE, calcArtifactScore } from "../main";
-import { $weapon, BASE_ATK_CLASS, SCORE_SELECT_DIV, TIME_STAMP, VERSION, optionLocale } from "../myConst";
+import { SCORE_SELECT_DIV, TIME_STAMP, VERSION, optionLocale } from "../myConst";
 import { localeKeys } from "../types/localeKeys";
 import { fmt } from "../util/fmt";
 import { artifactsIcon2Text, createTextInArtifact, isEquippingArtifact } from "./artifacts";
+import { createTextInWeapon, weaponOPIcon2Text } from "./weapon";
 
 function getExtraText(ratio: number, scoreType: string, avgScore: number, score: number): string {
     const ratioFixed = ratio.toFixed(1);
@@ -38,46 +39,10 @@ export function createConvertTextElements() {
         }
     }
 
-    // サブステータス用のテキスト欄の作成
-    const $statText = document.createElement("div");
-    $statText.classList.add("svelte-1ut2kb8");
-    $statText.style.fontWeight = "bold";
-
-    // 武器
-    const $weaponInfo = $weapon[0].getElementsByTagName("content")[0];
-    const $subStat = $weaponInfo.getElementsByClassName("Substat");
-
-    if (!document.getElementById(BASE_ATK_CLASS)) {
-        const $baseAtk = $statText.cloneNode(true) as HTMLElement;
-        $baseAtk.id = BASE_ATK_CLASS;
-        $baseAtk.classList.add(BASE_ATK_CLASS);
-        $subStat[0].prepend(getSeparateElement());
-        $subStat[0].prepend($baseAtk);
-    }
-
-    // サブステがあるかどうか判定
-    if ($subStat[1]) {
-        if (!document.getElementById("weaponSubOP")) {
-            const $subOPName = $statText.cloneNode(true) as HTMLElement;
-            $subOPName.id = "weaponSubOP";
-            $subStat[1].prepend(getSeparateElement());
-            $subStat[1].prepend($subOPName);
-        }
-    }
-
+    createTextInWeapon();
     createTextInArtifact();
 }
 
-// 武器オプションの日本語化
-function weaponOPIcon2Text() {
-    const $subStat = $weapon[0].getElementsByClassName("Substat");
-
-    const $baseAtk = document.getElementById(BASE_ATK_CLASS);
-    if ($baseAtk) $baseAtk.innerText = optionLocale.getLocale(BASE_ATK_CLASS);
-
-    const $weaponSub = document.getElementById("weaponSubOP");
-    if ($weaponSub) $weaponSub.innerText = optionLocale.getLocale($subStat[1].classList[1]);
-}
 
 export function enkaIcon2Text() {
     weaponOPIcon2Text();
