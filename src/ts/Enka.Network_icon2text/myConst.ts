@@ -1,4 +1,4 @@
-import { TranslateKey2Word } from "./enkaIcon2Text/TranslateKey2Word";
+import { TranslateKey2Word } from "./enkaIcon2Text/translateKey2Word";
 import { localeKeys } from "./types/localeKeys";
 
 export const weapon = document.getElementsByClassName("Weapon");

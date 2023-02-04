@@ -2,7 +2,7 @@ import type { ILocale } from "../types/ILocale";
 import type { localeKeys } from "../types/localeKeys";
 import type { TranslateWordSet } from "../types/TranslateWordSet";
 import { languages } from "../types/languages";
-import { getLanguage as getLocale } from "../util/enkaUtil";
+import { getLocale } from "../util/enkaUtil";
 
 type TranslateArray = {
     [option in localeKeys]: TranslateWordSet;
