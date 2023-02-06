@@ -32,8 +32,16 @@ const localeArray: LanguageArray = {
 };
 
 localeArray["EN"] = {
+    BASE_HP: {
+        locale: "Base HP",
+        subOption: undefined,
+    },
     BASE_ATTACK: {
         locale: "Base ATK",
+        subOption: undefined,
+    },
+    BASE_DEFENSE: {
+        locale: "Base DEF",
         subOption: undefined,
     },
     HP: {
@@ -131,8 +139,16 @@ localeArray["EN"] = {
 } as const;
 
 localeArray["JA"] = {
+    BASE_HP: {
+        locale: "基礎HP",
+        subOption: undefined,
+    },
     BASE_ATTACK: {
         locale: "基礎攻撃力",
+        subOption: undefined,
+    },
+    BASE_DEFENSE: {
+        locale: "基礎防御力",
         subOption: undefined,
     },
     HP: {

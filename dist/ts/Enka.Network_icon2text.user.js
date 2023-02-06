@@ -66,8 +66,16 @@
         "ZH-TW": undefined,
     };
     localeArray["EN"] = {
+        BASE_HP: {
+            locale: "Base HP",
+            subOption: undefined,
+        },
         BASE_ATTACK: {
             locale: "Base ATK",
+            subOption: undefined,
+        },
+        BASE_DEFENSE: {
+            locale: "Base DEF",
             subOption: undefined,
         },
         HP: {
@@ -164,8 +172,16 @@
         },
     };
     localeArray["JA"] = {
+        BASE_HP: {
+            locale: "基礎HP",
+            subOption: undefined,
+        },
         BASE_ATTACK: {
             locale: "基礎攻撃力",
+            subOption: undefined,
+        },
+        BASE_DEFENSE: {
+            locale: "基礎防御力",
             subOption: undefined,
         },
         HP: {
@@ -301,7 +317,6 @@
     }
 
     const weapon = document.getElementsByClassName("Weapon");
-    const charaStats = document.getElementsByClassName("StatsTable");
     const artifact = document.getElementsByClassName("Artifact");
     const VERSION = "v0.50";
     const BASE_ATK_CLASS = "BASE_ATTACK";
@@ -468,16 +483,36 @@
         return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
     }
 
-    function characterStats(key) {
-        const statsList = charaStats[0].children;
-        const index = Array.from(statsList)
-            .map((stat) => stat.classList[1])
-            .indexOf(key);
+    function characterStats() {
+        const characterStatsTable = document.getElementsByClassName("StatsTable")[0];
+        const statsList = Array.from(characterStatsTable.children).filter((row) => Array.from(row.classList).indexOf("row") !== -1);
+        return statsList;
+    }
+    function characterStatRow(key) {
+        const statsList = characterStats();
+        const index = statsList.map((stat) => stat.classList[1]).indexOf(key);
         if (index === -1)
+            return null;
+        return statsList[index];
+    }
+    function characterStat(key) {
+        const statRow = characterStatRow(key);
+        if (!statRow)
             return 0;
-        const stat = statsList[index].children[1].children[2]
+        const stat = statRow.children[1].children[2].innerText;
+        return Number(stat.replace(/[^0-9.-]/g, ""));
+    }
+    function characterBaseStat(key) {
+        const key2 = key.replace(/BASE_/g, "");
+        const statRow = characterStatRow(key2);
+        if (!statRow)
+            return [0, 0];
+        const stat = statRow.children[2].children[0].children[1]
             .innerText;
-        return Number(stat.replace(/[^0-9.]/g, ""));
+        const statArray = stat
+            .split("+", 2)
+            .map((stat) => Number(stat.replace(/[^0-9.-]/g, "")));
+        return [statArray[0], statArray[1]];
     }
 
     function fmt(template, values) {
@@ -602,8 +637,8 @@
                 }
             }
             avgScore = sumScore / 5;
-            const critRate = characterStats("CRITICAL");
-            const critDMG = characterStats("CRITICAL_HURT");
+            const critRate = characterStat("CRITICAL");
+            const critDMG = characterStat("CRITICAL_HURT");
             const critRatio = critDMG / critRate;
             let type = "";
             const scoreH = this.getScoreType();
@@ -790,6 +825,7 @@
         observer.observe(language, observeConf);
         document.getElementsByName(SCORE_RADIO_NAME).forEach(function (e) {
             e.addEventListener("click", function () {
+                console.log(characterBaseStat("BASE_ATTACK"));
                 cwManager.writeText();
                 enkaIcon2Text();
             });

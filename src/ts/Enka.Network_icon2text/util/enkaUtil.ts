@@ -1,3 +1,5 @@
+import { characterBaseStatKey } from "../types/characterBaseStatKey";
+import { characterStatKey } from "../types/characterStatKey";
 import { languages } from "../types/languages";
 
 /**
@@ -68,4 +70,11 @@ export function addStatTextElement(parentElement: Element, addSep = true): Eleme
     parentElement.removeChild(icon);
 
     return statText;
+}
+
+/**
+ * BaseStat用Keyを通常ステータスKeyに変換
+ */
+export function baseKey2Normal(key: characterBaseStatKey): characterStatKey {
+    return key.replace(/BASE_/g, "") as characterStatKey;
 }

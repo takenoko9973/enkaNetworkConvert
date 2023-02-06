@@ -1,7 +1,7 @@
 import { isEquippingArtifact } from "../enkaIcon2Text/artifacts";
 import { SCORE_RADIO_NAME, artifact, optionLocale } from "../myConst";
 import { localeKeys } from "../types/localeKeys";
-import { characterStats } from "../util/characterStat";
+import { characterStat } from "../util/characterStat";
 import { fmt } from "../util/fmt";
 import { CreateWriteRoutine } from "./createWriteRoutine";
 
@@ -163,8 +163,8 @@ export class ArtifactScoring implements CreateWriteRoutine {
         }
         avgScore = sumScore / 5;
 
-        const critRate = characterStats("CRITICAL");
-        const critDMG = characterStats("CRITICAL_HURT");
+        const critRate = characterStat("CRITICAL");
+        const critDMG = characterStat("CRITICAL_HURT");
         const critRatio = critDMG / critRate;
 
         let type = "";
