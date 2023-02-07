@@ -781,9 +781,9 @@
         weapon[0].children[0].style.width = "30%";
         const cssStyle = [
             ".Card .Icon{ display:none !important }",
-            ".stats.svelte-gp6viv .Substat { padding-top: 4%; }",
+            ".stats.svelte-j8ec66 .Substat { display: flex; margin-right: 0em; }",
             ".Card .Substat.svelte-1ut2kb8.svelte-1ut2kb8 { display: flex; align-items: center; margin-right: 0em; line-height: 95%; font-size: 98%; }",
-            ".substats.svelte-17qi811>.Substat { padding-right: 1.0em; }",
+            ".substats.svelte-17qi811>.Substat { display: flex; align-items: center; padding-right: 1.0em; }",
             ".Artifact.svelte-17qi811 .ArtifactIcon { top: -37%; left: -6%; width: 28%; }",
             ".mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(1) { display: flex; align-items: center; top: 5%; font-size: 100%; line-height:0.9; max-height: 25%; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; }",
             ".mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(2) { padding: 4% 0%; }",
