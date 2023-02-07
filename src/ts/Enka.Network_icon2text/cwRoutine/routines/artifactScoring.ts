@@ -118,7 +118,7 @@ export class ArtifactScoring implements CreateWriteRoutine {
                 scoreBox = document.createElement("div");
                 scoreBox.classList.add("artifactScoreText", "svelte-1ujofp1");
                 scoreBox.style.position = "absolute";
-                scoreBox.style.fontSize = "70%";
+                scoreBox.style.fontSize = "0.7em";
                 scoreBox.style.top = "-0.2em";
                 scoreBox.style.right = "0.3em";
                 scoreBox.style.textAlign = "right";
@@ -129,15 +129,18 @@ export class ArtifactScoring implements CreateWriteRoutine {
 
         // その他情報を表示する枠
         if (document.getElementById("extraData")) return;
+
+        const artifactSection = document.getElementsByClassName("section")[2];
+        if (!artifactSection) return;
+
         const exParam = document.createElement("div");
         exParam.id = "extraData";
-        exParam.style.position = "absolute";
-        exParam.style.bottom = "0.2%";
-        exParam.style.right = "1.3%";
+        exParam.style.right = "0.3em";
+        exParam.style.marginTop = "-0.5em";
         exParam.style.textAlign = "right";
-        exParam.style.fontSize = "80%";
-        exParam.classList.add("svelte-1ujofp1");
-        charaCard.appendChild(exParam);
+        exParam.style.fontSize = "0.8em";
+        exParam.classList.add("svelte-17qi811");
+        artifactSection.appendChild(exParam);
     }
 
     writeText() {

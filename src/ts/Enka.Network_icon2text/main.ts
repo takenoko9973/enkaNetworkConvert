@@ -48,7 +48,6 @@ function main() {
     cardSection[1].style.left = "34%";
     // 右
     cardSection[2].style.width = "43%";
-    cardSection[2].style.height = "97%";
 
     cwManager.init();
     cwManager.createText();

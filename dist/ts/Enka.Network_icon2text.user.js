@@ -324,6 +324,26 @@
     const SCORE_RADIO_NAME = "sSource";
     const optionLocale = TranslateKey2Word.instance;
 
+    function getFormattedDate(date, format) {
+        const symbol = {
+            M: date.getMonth() + 1,
+            d: date.getDate(),
+            h: date.getHours(),
+            m: date.getMinutes(),
+            s: date.getSeconds(),
+        };
+        const formatted = format.replace(/(M+|d+|h+|m+|s+)/g, (v) => {
+            const num = symbol[v.slice(-1)].toString();
+            if (v.length > 1) {
+                return ("0" + num).slice(-2);
+            }
+            else {
+                return num;
+            }
+        });
+        return formatted.replace(/(y+)/g, (v) => date.getFullYear().toString().slice(-v.length));
+    }
+
     class DateText {
         static get instance() {
             if (!this._instance) {
@@ -334,22 +354,24 @@
         createText() {
             if (document.getElementById(TIME_STAMP))
                 return;
-            const charaCard = document.getElementsByClassName("card-host")[0];
-            const timeStamp = document.createElement("span");
+            const charaSection = document.getElementsByClassName("section")[0];
+            if (!charaSection)
+                return;
+            const timeStamp = document.createElement("div");
             timeStamp.id = TIME_STAMP;
             timeStamp.innerText = "";
-            timeStamp.style.position = "absolute";
-            timeStamp.style.top = "1%";
-            timeStamp.style.left = "2%";
             timeStamp.style.fontSize = "60%";
             timeStamp.style.opacity = "0.4";
-            charaCard.appendChild(timeStamp);
+            charaSection.firstChild?.after(timeStamp);
+            charaSection.style.paddingTop = "0.8%";
         }
         writeText() {
-            const date = new Date;
-            date.setTime(date.getTime() - 60 * date.getTimezoneOffset() * 1000);
-            const timeString = date.toISOString().replace("T", " ").substr(0, 19);
-            document.getElementById(TIME_STAMP).innerText = VERSION + "_" + timeString;
+            const timeStamp = document.getElementById(TIME_STAMP);
+            if (!timeStamp)
+                return;
+            const date = new Date();
+            const timeString = getFormattedDate(date, "yyyy-MM-dd hh:mm:ss");
+            timeStamp.textContent = VERSION + "_" + timeString;
         }
     }
 
@@ -587,7 +609,7 @@
             });
         }
         createText() {
-            const charaCard = document.getElementsByClassName("card-host")[0];
+            document.getElementsByClassName("card-host")[0];
             const artifacts = document.getElementsByClassName("Artifact");
             for (const artifact of Array.from(artifacts)) {
                 let scoreBox = artifact.getElementsByClassName("artifactScoreText")[0];
@@ -595,7 +617,7 @@
                     scoreBox = document.createElement("div");
                     scoreBox.classList.add("artifactScoreText", "svelte-1ujofp1");
                     scoreBox.style.position = "absolute";
-                    scoreBox.style.fontSize = "70%";
+                    scoreBox.style.fontSize = "0.7em";
                     scoreBox.style.top = "-0.2em";
                     scoreBox.style.right = "0.3em";
                     scoreBox.style.textAlign = "right";
@@ -605,15 +627,17 @@
             }
             if (document.getElementById("extraData"))
                 return;
+            const artifactSection = document.getElementsByClassName("section")[2];
+            if (!artifactSection)
+                return;
             const exParam = document.createElement("div");
             exParam.id = "extraData";
-            exParam.style.position = "absolute";
-            exParam.style.bottom = "0.2%";
-            exParam.style.right = "1.3%";
+            exParam.style.right = "0.3em";
+            exParam.style.marginTop = "-0.5em";
             exParam.style.textAlign = "right";
-            exParam.style.fontSize = "80%";
-            exParam.classList.add("svelte-1ujofp1");
-            charaCard.appendChild(exParam);
+            exParam.style.fontSize = "0.8em";
+            exParam.classList.add("svelte-17qi811");
+            artifactSection.appendChild(exParam);
         }
         writeText() {
             let sumScore = 0;
@@ -812,7 +836,6 @@
         cardSection[1].style.width = "24%";
         cardSection[1].style.left = "34%";
         cardSection[2].style.width = "43%";
-        cardSection[2].style.height = "97%";
         cwManager.init();
         cwManager.createText();
         cwManager.writeText();
