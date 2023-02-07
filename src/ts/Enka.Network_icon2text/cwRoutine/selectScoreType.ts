@@ -35,9 +35,6 @@ export const SCORE_TYPE: { [key: string]: scoreType } = {
 export class SelectScoreType implements CreateWriteRoutine {
     private static _instance: SelectScoreType;
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    private constructor() {}
-
     public static get instance(): SelectScoreType {
         if (!this._instance) {
             this._instance = new SelectScoreType();

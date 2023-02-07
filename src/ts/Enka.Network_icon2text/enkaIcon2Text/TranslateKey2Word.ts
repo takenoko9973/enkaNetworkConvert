@@ -249,9 +249,6 @@ export class TranslateKey2Word implements ILocale {
     private static _instance: TranslateKey2Word;
     private translateArray: TranslateArray | undefined;
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    private constructor() {}
-
     public static get instance(): TranslateKey2Word {
         if (!this._instance) {
             this._instance = new TranslateKey2Word();

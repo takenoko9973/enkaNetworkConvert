@@ -7,9 +7,6 @@ export class CreateWriteManager implements CreateWriteRoutine {
     private static _instance: CreateWriteManager;
     private createList: CreateWriteRoutine[] = [];
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    private constructor() {}
-
     public static get instance(): CreateWriteManager {
         if (!this._instance) {
             this._instance = new CreateWriteManager();

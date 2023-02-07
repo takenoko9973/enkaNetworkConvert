@@ -7,9 +7,6 @@ import { CreateWriteRoutine } from "./createWriteRoutine";
 export class DateText implements CreateWriteRoutine {
     private static _instance: DateText;
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    private constructor() {}
-
     public static get instance(): DateText {
         if (!this._instance) {
             this._instance = new DateText();

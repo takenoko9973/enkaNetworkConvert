@@ -278,7 +278,6 @@
         },
     };
     class TranslateKey2Word {
-        constructor() { }
         static get instance() {
             if (!this._instance) {
                 this._instance = new TranslateKey2Word();
@@ -428,7 +427,6 @@
     }
 
     class DateText {
-        constructor() { }
         static get instance() {
             if (!this._instance) {
                 this._instance = new DateText();
@@ -538,7 +536,6 @@
         EM: new scoreType$1("EM", "ELEMENT_MASTERY", 0.25),
     };
     class ArtifactScoring {
-        constructor() { }
         static get instance() {
             if (!this._instance) {
                 this._instance = new ArtifactScoring();
@@ -669,7 +666,6 @@
         EM: new scoreType("EM", "ELEMENT_MASTERY", 0.25),
     };
     class SelectScoreType {
-        constructor() { }
         static get instance() {
             if (!this._instance) {
                 this._instance = new SelectScoreType();

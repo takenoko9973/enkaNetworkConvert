@@ -38,9 +38,6 @@ export const SCORE_TYPE: { [key: string]: scoreType } = {
 export class ArtifactScoring implements CreateWriteRoutine {
     private static _instance: ArtifactScoring;
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    private constructor() {}
-
     public static get instance(): ArtifactScoring {
         if (!this._instance) {
             this._instance = new ArtifactScoring();
