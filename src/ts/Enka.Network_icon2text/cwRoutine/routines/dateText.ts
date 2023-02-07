@@ -1,4 +1,5 @@
 import { TIME_STAMP, VERSION } from "../../myConst";
+import { getFormattedDate } from "../../util/getFormattedDate";
 import { CreateWriteRoutine } from "../createWriteRoutine";
 
 /**
@@ -18,25 +19,25 @@ export class DateText implements CreateWriteRoutine {
     createText() {
         if (document.getElementById(TIME_STAMP)) return;
 
-        const charaCard = document.getElementsByClassName("card-host")[0];
+        const charaSection = document.getElementsByClassName("section")[0];
+        if (!charaSection) return;
 
-        const timeStamp = document.createElement("span");
+        const timeStamp = document.createElement("div");
         timeStamp.id = TIME_STAMP;
         timeStamp.innerText = "";
-        timeStamp.style.position = "absolute";
-        timeStamp.style.top = "1%";
-        timeStamp.style.left = "2%";
         timeStamp.style.fontSize = "60%";
         timeStamp.style.opacity = "0.4";
-        charaCard.appendChild(timeStamp);
+
+        charaSection.firstChild?.after(timeStamp);
+        (charaSection as HTMLElement).style.paddingTop = "0.8%";
     }
 
     writeText() {
-        // 情報取得日時を表示
-        const date = new Date;
-        date.setTime(date.getTime() - 60 * date.getTimezoneOffset() * 1000);
+        const timeStamp = document.getElementById(TIME_STAMP);
+        if (!timeStamp) return;
 
-        const timeString = date.toISOString().replace("T", " ").substr(0, 19);
-        (document.getElementById(TIME_STAMP) as HTMLElement).innerText = VERSION + "_" + timeString;
+        const date = new Date();
+        const timeString = getFormattedDate(date, "yyyy-MM-dd hh:mm:ss");
+        timeStamp.textContent = VERSION + "_" + timeString;
     }
 }
