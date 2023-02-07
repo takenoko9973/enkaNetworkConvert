@@ -535,15 +535,112 @@
         DEFENSE: new scoreType$1("D", "DEFENSE_PERCENT", 0.8),
         EM: new scoreType$1("EM", "ELEMENT_MASTERY", 0.25),
     };
+    class SelectScoreType {
+        static get instance() {
+            if (!this._instance) {
+                this._instance = new SelectScoreType();
+            }
+            return this._instance;
+        }
+        getScoreType() {
+            const checkedRadio = document.querySelector(`input:checked[name=${SCORE_RADIO_NAME}]`);
+            return checkedRadio?.value ?? SCORE_TYPE$1.ATTACK.key;
+        }
+        createText() {
+            const cardToggles = document.getElementsByClassName("CardToggles")[0];
+            if (document.getElementById("scoreSelectRow"))
+                return;
+            const rowElement = cardToggles
+                .getElementsByClassName("row")[0]
+                .cloneNode(false);
+            rowElement.id = "scoreSelectRow";
+            cardToggles.getElementsByTagName("header")[2].before(rowElement);
+            const scoreSelectClass = "SCORE_SELECT_INFO";
+            const infoText = document.createElement("label");
+            infoText.classList.add(scoreSelectClass, "svelte-1jzchrt");
+            const scoreSelectDiv = document.createElement("div");
+            scoreSelectDiv.id = SCORE_SELECT_DIV;
+            scoreSelectDiv.classList.add("Input", "svelte-1jzchrt");
+            const scoreModeGroup = document.createElement("group");
+            scoreModeGroup.classList.add("inline_radio");
+            for (const key in SCORE_TYPE$1) {
+                const id = `SCORE_${key}_R`;
+                const radio = document.createElement("input");
+                radio.id = id;
+                radio.name = SCORE_RADIO_NAME;
+                radio.setAttribute("type", "radio");
+                radio.value = SCORE_TYPE$1[key].id;
+                const label = document.createElement("label");
+                label.setAttribute("for", id);
+                label.setAttribute("type", "radio");
+                label.setAttribute("data-type", "OUTLINE");
+                label.style.marginTop = "0em";
+                label.classList.add(SCORE_TYPE$1[key].key, "radbox", "Button", "label", "svelte-1gbd2i6");
+                scoreModeGroup.appendChild(radio);
+                scoreModeGroup.appendChild(label);
+            }
+            scoreSelectDiv.appendChild(infoText);
+            scoreSelectDiv.appendChild(scoreModeGroup);
+            rowElement.appendChild(scoreSelectDiv);
+            const atkRadioId = scoreSelectDiv
+                .getElementsByClassName(SCORE_TYPE$1.ATTACK.key)[0]
+                .getAttribute("for");
+            document.getElementById(atkRadioId)?.toggleAttribute("checked", true);
+            const radioStyle = [
+                '.inline_radio input[type="radio"] { position: absolute; opacity: 0; }',
+                '.inline_radio label.radbox[type="radio"] { color: rgba(255,255,255,.5); }',
+                '.inline_radio input[type="radio"]:checked + label.radbox[type="radio"] { color: rgba(255,255,255,1); }',
+            ].join(" ");
+            const style = document.createElement("style");
+            style.innerHTML = radioStyle;
+            document.querySelector("head")?.append(style);
+        }
+        writeText() {
+            const scoreSelectDiv = document.getElementById(SCORE_SELECT_DIV);
+            if (!scoreSelectDiv)
+                return;
+            const scoreSelectInfo = scoreSelectDiv.children[0];
+            scoreSelectInfo.innerText = optionLocale.getLocale(scoreSelectInfo.classList[0]);
+            const scoreButtons = scoreSelectDiv.getElementsByClassName("Button");
+            for (const label of Array.from(scoreButtons)) {
+                label.innerText = optionLocale.getLocaleSub(label.classList[0]);
+            }
+        }
+    }
+
+    var _scoreType_id, _scoreType_key, _scoreType_correction;
+    class scoreType {
+        constructor(id, key, correction) {
+            _scoreType_id.set(this, void 0);
+            _scoreType_key.set(this, void 0);
+            _scoreType_correction.set(this, void 0);
+            __classPrivateFieldSet(this, _scoreType_id, id, "f");
+            __classPrivateFieldSet(this, _scoreType_key, key, "f");
+            __classPrivateFieldSet(this, _scoreType_correction, correction, "f");
+        }
+        get id() {
+            return __classPrivateFieldGet(this, _scoreType_id, "f");
+        }
+        get key() {
+            return __classPrivateFieldGet(this, _scoreType_key, "f");
+        }
+        get correction() {
+            return __classPrivateFieldGet(this, _scoreType_correction, "f");
+        }
+    }
+    _scoreType_id = new WeakMap(), _scoreType_key = new WeakMap(), _scoreType_correction = new WeakMap();
+    const SCORE_TYPE = {
+        HP: new scoreType("H", "HP_PERCENT", 1),
+        ATTACK: new scoreType("A", "ATTACK_PERCENT", 1),
+        DEFENSE: new scoreType("D", "DEFENSE_PERCENT", 0.8),
+        EM: new scoreType("EM", "ELEMENT_MASTERY", 0.25),
+    };
     class ArtifactScoring {
         static get instance() {
             if (!this._instance) {
                 this._instance = new ArtifactScoring();
             }
             return this._instance;
-        }
-        getScoreType() {
-            return (document.querySelector(`input:checked[name=${SCORE_RADIO_NAME}]`).value ?? "A");
         }
         calcArtifactScore(index) {
             let score = 0;
@@ -553,7 +650,7 @@
             const subStatName = subStat.map((sub) => sub.classList[1]);
             const subStatAmount = subStat.map((sub) => sub.lastChild.innerText.replace(/[^0-9.]/g, ""));
             const subLen = subStat.length;
-            const scoreH = this.getScoreType();
+            const scoreH = SelectScoreType.instance.getScoreType();
             for (let i = 0; i < subLen; i++) {
                 const key = subStatName[i];
                 switch (key) {
@@ -564,8 +661,8 @@
                         score += Number(subStatAmount[i]);
                         break;
                     default:
-                        for (const typeKey in SCORE_TYPE$1) {
-                            const scoreType = SCORE_TYPE$1[typeKey];
+                        for (const typeKey in SCORE_TYPE) {
+                            const scoreType = SCORE_TYPE[typeKey];
                             if (key != scoreType.key)
                                 continue;
                             if (scoreH != scoreType.id)
@@ -626,111 +723,15 @@
             const critDMG = characterStat("CRITICAL_HURT");
             const critRatio = critDMG / critRate;
             let type = "";
-            const scoreH = this.getScoreType();
-            for (const typeKey in SCORE_TYPE$1) {
-                const scoreType = SCORE_TYPE$1[typeKey];
+            const scoreH = SelectScoreType.instance.getScoreType();
+            for (const typeKey in SCORE_TYPE) {
+                const scoreType = SCORE_TYPE[typeKey];
                 if (scoreH != scoreType.id)
                     continue;
                 type = optionLocale.getLocaleSub(scoreType.key);
                 break;
             }
             extraText.innerText = this.getExtraText(critRatio, type, avgScore, sumScore);
-        }
-    }
-
-    var _scoreType_id, _scoreType_key, _scoreType_correction;
-    class scoreType {
-        constructor(id, key, correction) {
-            _scoreType_id.set(this, void 0);
-            _scoreType_key.set(this, void 0);
-            _scoreType_correction.set(this, void 0);
-            __classPrivateFieldSet(this, _scoreType_id, id, "f");
-            __classPrivateFieldSet(this, _scoreType_key, key, "f");
-            __classPrivateFieldSet(this, _scoreType_correction, correction, "f");
-        }
-        get id() {
-            return __classPrivateFieldGet(this, _scoreType_id, "f");
-        }
-        get key() {
-            return __classPrivateFieldGet(this, _scoreType_key, "f");
-        }
-        get correction() {
-            return __classPrivateFieldGet(this, _scoreType_correction, "f");
-        }
-    }
-    _scoreType_id = new WeakMap(), _scoreType_key = new WeakMap(), _scoreType_correction = new WeakMap();
-    const SCORE_TYPE = {
-        HP: new scoreType("H", "HP_PERCENT", 1),
-        ATTACK: new scoreType("A", "ATTACK_PERCENT", 1),
-        DEFENSE: new scoreType("D", "DEFENSE_PERCENT", 0.8),
-        EM: new scoreType("EM", "ELEMENT_MASTERY", 0.25),
-    };
-    class SelectScoreType {
-        static get instance() {
-            if (!this._instance) {
-                this._instance = new SelectScoreType();
-            }
-            return this._instance;
-        }
-        createText() {
-            const cardToggles = document.getElementsByClassName("CardToggles")[0];
-            if (document.getElementById("scoreSelectRow"))
-                return;
-            const rowElement = cardToggles
-                .getElementsByClassName("row")[0]
-                .cloneNode(false);
-            rowElement.id = "scoreSelectRow";
-            cardToggles.getElementsByTagName("header")[2].before(rowElement);
-            const scoreSelectClass = "SCORE_SELECT_INFO";
-            const infoText = document.createElement("label");
-            infoText.classList.add(scoreSelectClass, "svelte-1jzchrt");
-            const scoreSelectDiv = document.createElement("div");
-            scoreSelectDiv.id = SCORE_SELECT_DIV;
-            scoreSelectDiv.classList.add("Input", "svelte-1jzchrt");
-            const scoreModeGroup = document.createElement("group");
-            scoreModeGroup.classList.add("inline_radio");
-            for (const key in SCORE_TYPE) {
-                const id = `SCORE_${key}_R`;
-                const radio = document.createElement("input");
-                radio.id = id;
-                radio.name = SCORE_RADIO_NAME;
-                radio.setAttribute("type", "radio");
-                radio.value = SCORE_TYPE[key].id;
-                const label = document.createElement("label");
-                label.setAttribute("for", id);
-                label.setAttribute("type", "radio");
-                label.setAttribute("data-type", "OUTLINE");
-                label.style.marginTop = "0em";
-                label.classList.add(SCORE_TYPE[key].key, "radbox", "Button", "label", "svelte-1gbd2i6");
-                scoreModeGroup.appendChild(radio);
-                scoreModeGroup.appendChild(label);
-            }
-            scoreSelectDiv.appendChild(infoText);
-            scoreSelectDiv.appendChild(scoreModeGroup);
-            rowElement.appendChild(scoreSelectDiv);
-            const atkRadioId = scoreSelectDiv
-                .getElementsByClassName(SCORE_TYPE.ATTACK.key)[0]
-                .getAttribute("for");
-            document.getElementById(atkRadioId)?.toggleAttribute("checked", true);
-            const radioStyle = [
-                '.inline_radio input[type="radio"] { position: absolute; opacity: 0; }',
-                '.inline_radio label.radbox[type="radio"] { color: rgba(255,255,255,.5); }',
-                '.inline_radio input[type="radio"]:checked + label.radbox[type="radio"] { color: rgba(255,255,255,1); }',
-            ].join(" ");
-            const style = document.createElement("style");
-            style.innerHTML = radioStyle;
-            document.querySelector("head")?.append(style);
-        }
-        writeText() {
-            const scoreSelectDiv = document.getElementById(SCORE_SELECT_DIV);
-            if (!scoreSelectDiv)
-                return;
-            const scoreSelectInfo = scoreSelectDiv.children[0];
-            scoreSelectInfo.innerText = optionLocale.getLocale(scoreSelectInfo.classList[0]);
-            const scoreButtons = scoreSelectDiv?.getElementsByClassName("Button");
-            for (const label of Array.from(scoreButtons)) {
-                label.innerText = optionLocale.getLocaleSub(label.classList[0]);
-            }
         }
     }
 

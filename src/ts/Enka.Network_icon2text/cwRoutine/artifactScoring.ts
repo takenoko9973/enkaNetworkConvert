@@ -1,9 +1,10 @@
 import { isEquippingArtifact } from "../enkaIcon2Text/artifacts";
-import { SCORE_RADIO_NAME, artifact, optionLocale } from "../myConst";
+import { artifact, optionLocale } from "../myConst";
 import { localeKeys } from "../types/localeKeys";
 import { characterStat } from "../util/characterStat";
 import { fmt } from "../util/fmt";
 import { CreateWriteRoutine } from "./createWriteRoutine";
+import { SelectScoreType } from "./selectScoreType";
 
 class scoreType {
     #id;
@@ -46,16 +47,6 @@ export class ArtifactScoring implements CreateWriteRoutine {
         return this._instance;
     }
 
-    getScoreType(): string {
-        return (
-            (
-                document.querySelector(
-                    `input:checked[name=${SCORE_RADIO_NAME}]`
-                ) as HTMLInputElement
-            ).value ?? "A"
-        );
-    }
-
     /**
      * 聖遺物のスコアを計算
      */
@@ -72,7 +63,7 @@ export class ArtifactScoring implements CreateWriteRoutine {
         );
         const subLen = subStat.length;
 
-        const scoreH = this.getScoreType();
+        const scoreH = SelectScoreType.instance.getScoreType();
         for (let i = 0; i < subLen; i++) {
             const key = subStatName[i] as localeKeys;
             switch (key) {
@@ -165,7 +156,7 @@ export class ArtifactScoring implements CreateWriteRoutine {
         const critRatio = critDMG / critRate;
 
         let type = "";
-        const scoreH = this.getScoreType();
+        const scoreH = SelectScoreType.instance.getScoreType();
         for (const typeKey in SCORE_TYPE) {
             const scoreType = SCORE_TYPE[typeKey];
             if (scoreH != scoreType.id) continue;

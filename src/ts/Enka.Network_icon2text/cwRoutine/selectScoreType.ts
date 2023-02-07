@@ -43,15 +43,23 @@ export class SelectScoreType implements CreateWriteRoutine {
         return this._instance;
     }
 
+    getScoreType(): string {
+        const checkedRadio = document.querySelector(
+            `input:checked[name=${SCORE_RADIO_NAME}]`
+        ) as HTMLInputElement;
+        return checkedRadio?.value ?? SCORE_TYPE.ATTACK.key;
+    }
+
     createText() {
         const cardToggles = document.getElementsByClassName("CardToggles")[0];
         if (document.getElementById("scoreSelectRow")) return;
 
+        // カードオプション枠に作成
         const rowElement = cardToggles
             .getElementsByClassName("row")[0]
             .cloneNode(false) as HTMLElement;
         rowElement.id = "scoreSelectRow";
-        cardToggles.getElementsByTagName("header")[2].before(rowElement); // カードオプション枠に作成
+        cardToggles.getElementsByTagName("header")[2].before(rowElement);
 
         // 説明テキストを追加
         const scoreSelectClass: localeKeys = "SCORE_SELECT_INFO";
@@ -113,17 +121,17 @@ export class SelectScoreType implements CreateWriteRoutine {
     }
 
     writeText() {
-        // スコア方式選択説明テキスト
         const scoreSelectDiv = document.getElementById(SCORE_SELECT_DIV);
         if (!scoreSelectDiv) return;
 
+        // スコア方式選択説明テキスト
         const scoreSelectInfo = scoreSelectDiv.children[0] as HTMLElement;
         scoreSelectInfo.innerText = optionLocale.getLocale(
             scoreSelectInfo.classList[0]
         );
 
         // スコア方式選択ボタン
-        const scoreButtons = scoreSelectDiv?.getElementsByClassName(
+        const scoreButtons = scoreSelectDiv.getElementsByClassName(
             "Button"
         ) as HTMLCollectionOf<HTMLElement>;
         for (const label of Array.from(scoreButtons)) {
