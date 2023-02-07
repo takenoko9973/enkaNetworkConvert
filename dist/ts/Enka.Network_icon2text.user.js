@@ -332,6 +332,8 @@
             return this._instance;
         }
         createText() {
+            if (document.getElementById(TIME_STAMP))
+                return;
             const charaCard = document.getElementsByClassName("card-host")[0];
             const timeStamp = document.createElement("span");
             timeStamp.id = TIME_STAMP;
@@ -601,6 +603,8 @@
                     artifact.appendChild(scoreBox);
                 }
             }
+            if (document.getElementById("extraData"))
+                return;
             const exParam = document.createElement("div");
             exParam.id = "extraData";
             exParam.style.position = "absolute";

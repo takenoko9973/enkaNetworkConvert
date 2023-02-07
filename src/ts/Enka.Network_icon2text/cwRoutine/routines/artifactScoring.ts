@@ -128,6 +128,7 @@ export class ArtifactScoring implements CreateWriteRoutine {
         }
 
         // その他情報を表示する枠
+        if (document.getElementById("extraData")) return;
         const exParam = document.createElement("div");
         exParam.id = "extraData";
         exParam.style.position = "absolute";

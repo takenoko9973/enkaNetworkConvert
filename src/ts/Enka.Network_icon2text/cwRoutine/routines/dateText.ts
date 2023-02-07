@@ -16,6 +16,8 @@ export class DateText implements CreateWriteRoutine {
     }
 
     createText() {
+        if (document.getElementById(TIME_STAMP)) return;
+
         const charaCard = document.getElementsByClassName("card-host")[0];
 
         const timeStamp = document.createElement("span");
