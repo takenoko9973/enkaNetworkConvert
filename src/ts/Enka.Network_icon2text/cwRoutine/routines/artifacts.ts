@@ -1,4 +1,3 @@
-import { optionLocale } from "../../myConst";
 import { addStatTextElement } from "../../util/enkaUtil";
 import { innerOptionText } from "../../util/innerOptionText";
 import { CreateWriteRoutine } from "../createWriteRoutine";

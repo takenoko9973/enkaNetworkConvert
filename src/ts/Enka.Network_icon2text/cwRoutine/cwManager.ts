@@ -3,6 +3,7 @@ import { DateText } from "./routines/dateText";
 import { ArtifactScoring } from "./routines/artifactScoring";
 import { SelectScoreType } from "./routines/selectScoreType";
 import { Artifact } from "./routines/artifacts";
+import { Weapon } from "./routines/weapon";
 
 export class CreateWriteManager implements CreateWriteRoutine {
     private static _instance: CreateWriteManager;
@@ -19,6 +20,7 @@ export class CreateWriteManager implements CreateWriteRoutine {
     init() {
         this.createList.push(DateText.instance);
         this.createList.push(SelectScoreType.instance);
+        this.createList.push(Weapon.instance);
         this.createList.push(Artifact.instance);
         this.createList.push(ArtifactScoring.instance);
     }

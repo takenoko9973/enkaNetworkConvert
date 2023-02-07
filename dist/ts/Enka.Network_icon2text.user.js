@@ -324,28 +324,6 @@
     const SCORE_RADIO_NAME = "sSource";
     const optionLocale = TranslateKey2Word.instance;
 
-    function createTextInWeapon() {
-        const weaponInfo = weapon[0].getElementsByTagName("content")[0];
-        const subStat = weaponInfo.getElementsByClassName("Substat");
-        addStatTextElement(subStat[0]);
-        if (!subStat[1])
-            return;
-        addStatTextElement(subStat[1]);
-    }
-    function weaponOPIcon2Text() {
-        const subStat = weapon[0].getElementsByClassName("Substat");
-        const baseAtk = subStat[0].getElementsByClassName("statText")[0];
-        if (baseAtk) {
-            baseAtk.innerText = optionLocale.getLocale(BASE_ATK_CLASS);
-        }
-        if (!subStat[1])
-            return;
-        const weaponSub = subStat[1].getElementsByClassName("statText")[0];
-        if (weaponSub) {
-            weaponSub.innerText = optionLocale.getLocale(subStat[1].classList[1]);
-        }
-    }
-
     function createTextInFriend() {
         const friend = document.getElementsByClassName("fren")[0];
         if (!friend)
@@ -368,10 +346,8 @@
 
     function createConvertTextElements() {
         createTextInFriend();
-        createTextInWeapon();
     }
     function enkaIcon2Text() {
-        weaponOPIcon2Text();
         friendIcon2Text();
     }
 
@@ -695,6 +671,17 @@
         }
     }
 
+    function innerOptionText(statElement, isSub = false) {
+        const statText = statElement?.getElementsByClassName("statText")[0];
+        if (!statText)
+            return null;
+        const optionKey = statElement?.classList[1];
+        statText.innerText = (isSub)
+            ? optionLocale.getLocaleSub(optionKey)
+            : optionLocale.getLocale(optionKey);
+        return statText;
+    }
+
     class Artifact {
         constructor() {
             this.artifacts = document.getElementsByClassName("Artifact");
@@ -704,15 +691,6 @@
                 this._instance = new Artifact();
             }
             return this._instance;
-        }
-        innerOptionText(statElement, isSub = false) {
-            const statText = statElement.getElementsByClassName("statText")[0];
-            if (!statText)
-                return;
-            const optionKey = statElement.classList[1];
-            statText.innerText = (isSub)
-                ? optionLocale.getLocaleSub(optionKey)
-                : optionLocale.getLocale(optionKey);
         }
         createText() {
             for (const artifact of Array.from(this.artifacts)) {
@@ -731,12 +709,42 @@
                 if (artifact.classList.contains("empty"))
                     continue;
                 const mainStat = artifact.getElementsByClassName("mainstat")[0];
-                this.innerOptionText(mainStat);
+                innerOptionText(mainStat);
                 const subStatList = artifact.getElementsByClassName("Substat");
                 for (const subStat of Array.from(subStatList)) {
-                    this.innerOptionText(subStat, true);
+                    innerOptionText(subStat, true);
                 }
             }
+        }
+    }
+
+    class Weapon {
+        constructor() {
+            this.weapon = document.getElementsByClassName("Weapon");
+        }
+        static get instance() {
+            if (!this._instance) {
+                this._instance = new Weapon();
+            }
+            return this._instance;
+        }
+        createText() {
+            const weaponInfo = this.weapon[0].getElementsByTagName("content")[0];
+            const subStat = weaponInfo.getElementsByClassName("Substat");
+            addStatTextElement(subStat[0]);
+            if (!subStat[1])
+                return;
+            addStatTextElement(subStat[1]);
+        }
+        writeText() {
+            const subStat = this.weapon[0].getElementsByClassName("Substat");
+            const statText = innerOptionText(subStat[0]);
+            if (!statText)
+                return;
+            statText.innerHTML = optionLocale.getLocale(BASE_ATK_CLASS);
+            if (!subStat[1])
+                return;
+            innerOptionText(subStat[1]);
         }
     }
 
@@ -753,6 +761,7 @@
         init() {
             this.createList.push(DateText.instance);
             this.createList.push(SelectScoreType.instance);
+            this.createList.push(Weapon.instance);
             this.createList.push(Artifact.instance);
             this.createList.push(ArtifactScoring.instance);
         }
