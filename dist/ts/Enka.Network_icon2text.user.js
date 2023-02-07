@@ -324,33 +324,6 @@
     const SCORE_RADIO_NAME = "sSource";
     const optionLocale = TranslateKey2Word.instance;
 
-    function createTextInFriend() {
-        const friend = document.getElementsByClassName("fren")[0];
-        if (!friend)
-            return;
-        const statText = addStatTextElement(friend, false);
-        if (statText) {
-            statText.style.marginRight = "0.3em";
-        }
-    }
-    function friendIcon2Text() {
-        const friend = document.getElementsByClassName("fren")[0];
-        if (!friend)
-            return;
-        const friendClassName = "FRIEND";
-        const friendText = friend.getElementsByClassName("statText")[0];
-        if (friendText) {
-            friendText.innerText = optionLocale.getLocale(friendClassName);
-        }
-    }
-
-    function createConvertTextElements() {
-        createTextInFriend();
-    }
-    function enkaIcon2Text() {
-        friendIcon2Text();
-    }
-
     class DateText {
         static get instance() {
             if (!this._instance) {
@@ -748,6 +721,34 @@
         }
     }
 
+    class Friend {
+        static get instance() {
+            if (!this._instance) {
+                this._instance = new Friend();
+            }
+            return this._instance;
+        }
+        createText() {
+            const friend = document.getElementsByClassName("fren")[0];
+            if (!friend)
+                return;
+            const friendText = addStatTextElement(friend, false);
+            if (!friendText)
+                return;
+            friendText.style.marginRight = "0.3em";
+        }
+        writeText() {
+            const friend = document.getElementsByClassName("fren")[0];
+            if (!friend)
+                return;
+            const friendClassName = "FRIEND";
+            const friendText = innerOptionText(friend);
+            if (!friendText)
+                return;
+            friendText.innerText = optionLocale.getLocale(friendClassName);
+        }
+    }
+
     class CreateWriteManager {
         constructor() {
             this.createList = [];
@@ -760,6 +761,7 @@
         }
         init() {
             this.createList.push(DateText.instance);
+            this.createList.push(Friend.instance);
             this.createList.push(SelectScoreType.instance);
             this.createList.push(Weapon.instance);
             this.createList.push(Artifact.instance);
@@ -809,9 +811,7 @@
         cardSection[2].style.height = "97%";
         cwManager.init();
         cwManager.createText();
-        createConvertTextElements();
         cwManager.writeText();
-        enkaIcon2Text();
         const charaName = document.getElementsByClassName("name")[0];
         const language = document.getElementsByClassName("Dropdown-selectedItem")[0];
         const observeConf = {
@@ -821,16 +821,13 @@
         };
         const observer = new MutationObserver(() => {
             cwManager.createText();
-            createConvertTextElements();
             cwManager.writeText();
-            enkaIcon2Text();
         });
         observer.observe(charaName, observeConf);
         observer.observe(language, observeConf);
         document.getElementsByName(SCORE_RADIO_NAME).forEach(function (e) {
             e.addEventListener("click", function () {
                 cwManager.writeText();
-                enkaIcon2Text();
             });
         });
     }

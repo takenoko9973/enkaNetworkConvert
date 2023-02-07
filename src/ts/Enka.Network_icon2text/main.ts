@@ -1,8 +1,4 @@
 import * as myConst from "./myConst";
-import {
-    createConvertTextElements,
-    enkaIcon2Text,
-} from "./enkaIcon2Text/enkaIcon2Text";
 import { CreateWriteManager } from "./cwRoutine/cwManager";
 
 const cwManager = CreateWriteManager.instance;
@@ -56,10 +52,8 @@ function main() {
 
     cwManager.init();
     cwManager.createText();
-    createConvertTextElements();
 
     cwManager.writeText();
-    enkaIcon2Text();
 
     const charaName = document.getElementsByClassName("name")[0];
     const language = document.getElementsByClassName(
@@ -73,9 +67,7 @@ function main() {
     };
     const observer = new MutationObserver(() => {
         cwManager.createText();
-        createConvertTextElements();
         cwManager.writeText();
-        enkaIcon2Text();
     });
     observer.observe(charaName, observeConf); // キャラクター変更時
     observer.observe(language, observeConf); // 言語変更時
@@ -84,7 +76,6 @@ function main() {
     document.getElementsByName(myConst.SCORE_RADIO_NAME).forEach(function (e) {
         e.addEventListener("click", function () {
             cwManager.writeText();
-            enkaIcon2Text();
         });
     });
 }
