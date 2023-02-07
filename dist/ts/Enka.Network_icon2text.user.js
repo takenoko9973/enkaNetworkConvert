@@ -484,8 +484,8 @@
     }
 
     function characterStats() {
-        const characterStatsTable = document.getElementsByClassName("StatsTable")[0];
-        const statsList = Array.from(characterStatsTable.children).filter((row) => Array.from(row.classList).indexOf("row") !== -1);
+        const charaStatsTable = document.getElementsByClassName("StatsTable")[0];
+        const statsList = Array.from(charaStatsTable.children).filter((row) => Array.from(row.classList).indexOf("row") !== -1);
         return statsList;
     }
     function characterStatRow(key) {
@@ -501,18 +501,6 @@
             return 0;
         const stat = statRow.children[1].children[2].innerText;
         return Number(stat.replace(/[^0-9.-]/g, ""));
-    }
-    function characterBaseStat(key) {
-        const key2 = key.replace(/BASE_/g, "");
-        const statRow = characterStatRow(key2);
-        if (!statRow)
-            return [0, 0];
-        const stat = statRow.children[2].children[0].children[1]
-            .innerText;
-        const statArray = stat
-            .split("+", 2)
-            .map((stat) => Number(stat.replace(/[^0-9.-]/g, "")));
-        return [statArray[0], statArray[1]];
     }
 
     function fmt(template, values) {
@@ -778,7 +766,14 @@
     }
 
     const cwManager = CreateWriteManager.instance;
-    window.addEventListener("load", function () {
+    const cardBase = document.getElementsByClassName("CharacterList")[0].parentElement;
+    const observer = new MutationObserver(hoge);
+    observer.observe(cardBase, { attributes: true, childList: true, subtree: true });
+    function hoge() {
+        observer.disconnect();
+        main();
+    }
+    function main() {
         const weaponInfo = weapon[0].getElementsByTagName("content")[0];
         const weaponName = weaponInfo.getElementsByTagName("h3")[0];
         weaponInfo.style.paddingRight = "0px";
@@ -825,11 +820,10 @@
         observer.observe(language, observeConf);
         document.getElementsByName(SCORE_RADIO_NAME).forEach(function (e) {
             e.addEventListener("click", function () {
-                console.log(characterBaseStat("BASE_ATTACK"));
                 cwManager.writeText();
                 enkaIcon2Text();
             });
         });
-    });
+    }
 
 })();
