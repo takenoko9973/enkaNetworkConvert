@@ -1,5 +1,6 @@
 import { optionLocale } from "../../myConst";
 import { addStatTextElement } from "../../util/enkaUtil";
+import { innerOptionText } from "../../util/innerOptionText";
 import { CreateWriteRoutine } from "../createWriteRoutine";
 
 export class Artifact implements CreateWriteRoutine {
@@ -12,19 +13,6 @@ export class Artifact implements CreateWriteRoutine {
         }
 
         return this._instance;
-    }
-
-    private innerOptionText(statElement: Element, isSub = false) {
-        const statText = statElement?.getElementsByClassName(
-            "statText"
-        )[0] as HTMLElement;
-
-        if (!statText) return;
-
-        const optionKey = statElement?.classList[1];
-        statText.innerText = (isSub)
-            ? optionLocale.getLocaleSub(optionKey)
-            : optionLocale.getLocale(optionKey);
     }
 
     createText() {
@@ -49,12 +37,12 @@ export class Artifact implements CreateWriteRoutine {
 
             // メインOP
             const mainStat = artifact.getElementsByClassName("mainstat")[0];
-            this.innerOptionText(mainStat);
+            innerOptionText(mainStat);
 
             // サブOP
             const subStatList = artifact.getElementsByClassName("Substat");
             for (const subStat of Array.from(subStatList)) {
-                this.innerOptionText(subStat, true);
+                innerOptionText(subStat, true);
             }
         }
     }
