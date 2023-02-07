@@ -324,38 +324,6 @@
     const SCORE_RADIO_NAME = "sSource";
     const optionLocale = TranslateKey2Word.instance;
 
-    const artifacts = document.getElementsByClassName("Artifact");
-    function createTextInArtifact() {
-        for (const artifact of Array.from(artifacts)) {
-            if (artifact.classList.contains("empty"))
-                continue;
-            const mainStat = artifact.getElementsByClassName("mainstat")[0];
-            addStatTextElement(mainStat, false);
-            const subStatList = artifact.getElementsByClassName("Substat");
-            for (const subStat of Array.from(subStatList)) {
-                addStatTextElement(subStat);
-            }
-        }
-    }
-    function artifactsIcon2Text() {
-        for (const artifact of Array.from(artifacts)) {
-            if (artifact.classList.contains("empty"))
-                continue;
-            const mainStat = artifact.getElementsByClassName("mainstat")[0];
-            const mainStatText = mainStat.getElementsByClassName("statText")[0];
-            if (mainStatText) {
-                mainStatText.innerText = optionLocale.getLocale(mainStat.classList[1]);
-            }
-            const subStatList = artifact.getElementsByClassName("Substat");
-            for (const subStat of Array.from(subStatList)) {
-                const subStatText = subStat.getElementsByClassName("statText")[0];
-                if (subStatText) {
-                    subStatText.innerText = optionLocale.getLocaleSub(subStat.classList[1]);
-                }
-            }
-        }
-    }
-
     function createTextInWeapon() {
         const weaponInfo = weapon[0].getElementsByTagName("content")[0];
         const subStat = weaponInfo.getElementsByClassName("Substat");
@@ -401,11 +369,9 @@
     function createConvertTextElements() {
         createTextInFriend();
         createTextInWeapon();
-        createTextInArtifact();
     }
     function enkaIcon2Text() {
         weaponOPIcon2Text();
-        artifactsIcon2Text();
         friendIcon2Text();
     }
 
@@ -729,6 +695,51 @@
         }
     }
 
+    class Artifact {
+        constructor() {
+            this.artifacts = document.getElementsByClassName("Artifact");
+        }
+        static get instance() {
+            if (!this._instance) {
+                this._instance = new Artifact();
+            }
+            return this._instance;
+        }
+        innerOptionText(statElement, isSub = false) {
+            const statText = statElement.getElementsByClassName("statText")[0];
+            if (!statText)
+                return;
+            const optionKey = statElement.classList[1];
+            statText.innerText = (isSub)
+                ? optionLocale.getLocaleSub(optionKey)
+                : optionLocale.getLocale(optionKey);
+        }
+        createText() {
+            for (const artifact of Array.from(this.artifacts)) {
+                if (artifact.classList.contains("empty"))
+                    continue;
+                const mainStat = artifact.getElementsByClassName("mainstat")[0];
+                addStatTextElement(mainStat, false);
+                const subStatList = artifact.getElementsByClassName("Substat");
+                for (const subStat of Array.from(subStatList)) {
+                    addStatTextElement(subStat);
+                }
+            }
+        }
+        writeText() {
+            for (const artifact of Array.from(this.artifacts)) {
+                if (artifact.classList.contains("empty"))
+                    continue;
+                const mainStat = artifact.getElementsByClassName("mainstat")[0];
+                this.innerOptionText(mainStat);
+                const subStatList = artifact.getElementsByClassName("Substat");
+                for (const subStat of Array.from(subStatList)) {
+                    this.innerOptionText(subStat, true);
+                }
+            }
+        }
+    }
+
     class CreateWriteManager {
         constructor() {
             this.createList = [];
@@ -742,6 +753,7 @@
         init() {
             this.createList.push(DateText.instance);
             this.createList.push(SelectScoreType.instance);
+            this.createList.push(Artifact.instance);
             this.createList.push(ArtifactScoring.instance);
         }
         createText() {
