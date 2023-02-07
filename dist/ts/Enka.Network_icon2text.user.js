@@ -316,7 +316,7 @@
     }
 
     const weapon = document.getElementsByClassName("Weapon");
-    const artifact = document.getElementsByClassName("Artifact");
+    document.getElementsByClassName("Artifact");
     const VERSION = "v0.50";
     const BASE_ATK_CLASS = "BASE_ATTACK";
     const TIME_STAMP = "timeStamp";
@@ -325,13 +325,8 @@
     const optionLocale = TranslateKey2Word.instance;
 
     const artifacts = document.getElementsByClassName("Artifact");
-    function isEquippingArtifact(index) {
-        if (index < 0 || 4 < index)
-            return false;
-        return Array.from(artifacts[index].classList).indexOf("empty") === -1;
-    }
     function createTextInArtifact() {
-        for (const [i, artifact] of Array.from(artifacts).entries()) {
+        for (const artifact of Array.from(artifacts)) {
             if (artifact.classList.contains("empty"))
                 continue;
             const mainStat = artifact.getElementsByClassName("mainstat")[0];
@@ -339,18 +334,6 @@
             const subStatList = artifact.getElementsByClassName("Substat");
             for (const subStat of Array.from(subStatList)) {
                 addStatTextElement(subStat);
-            }
-            const scoreId = `score${i}`;
-            if (document.getElementById(scoreId) === null) {
-                const scoreBox = document.createElement("div");
-                scoreBox.id = scoreId;
-                scoreBox.style.position = "absolute";
-                scoreBox.style.fontSize = "70%";
-                scoreBox.style.top = "-0.2em";
-                scoreBox.style.right = "0.3em";
-                scoreBox.style.textAlign = "right";
-                scoreBox.style.opacity = "0.6";
-                artifact.appendChild(scoreBox);
             }
         }
     }
@@ -642,11 +625,11 @@
             }
             return this._instance;
         }
-        calcArtifactScore(index) {
+        calcArtifactScore(artifact) {
             let score = 0;
-            if (!isEquippingArtifact(index))
+            if (artifact.classList.contains("empty"))
                 return score;
-            const subStat = Array.from(artifact[index].getElementsByClassName("Substat"));
+            const subStat = Array.from(artifact.getElementsByClassName("Substat"));
             const subStatName = subStat.map((sub) => sub.classList[1]);
             const subStatAmount = subStat.map((sub) => sub.lastChild.innerText.replace(/[^0-9.]/g, ""));
             const subLen = subStat.length;
@@ -688,9 +671,23 @@
         }
         createText() {
             const charaCard = document.getElementsByClassName("card-host")[0];
+            const artifacts = document.getElementsByClassName("Artifact");
+            for (const artifact of Array.from(artifacts)) {
+                let scoreBox = artifact.getElementsByClassName("artifactScoreText")[0];
+                if (!scoreBox) {
+                    scoreBox = document.createElement("div");
+                    scoreBox.classList.add("artifactScoreText", "svelte-1ujofp1");
+                    scoreBox.style.position = "absolute";
+                    scoreBox.style.fontSize = "70%";
+                    scoreBox.style.top = "-0.2em";
+                    scoreBox.style.right = "0.3em";
+                    scoreBox.style.textAlign = "right";
+                    scoreBox.style.opacity = "0.6";
+                    artifact.appendChild(scoreBox);
+                }
+            }
             const exParam = document.createElement("div");
             exParam.id = "extraData";
-            exParam.innerText = "";
             exParam.style.position = "absolute";
             exParam.style.bottom = "0.2%";
             exParam.style.right = "1.3%";
@@ -702,21 +699,16 @@
         writeText() {
             let sumScore = 0;
             let avgScore = 0;
+            const scoreBoxes = document.getElementsByClassName("artifactScoreText");
             const extraText = document.getElementById("extraData");
-            for (let i = 0; i < 5; i++) {
+            for (const scoreBox of Array.from(scoreBoxes)) {
                 let score = 0.0;
-                const scoreBox = document.getElementById(`score${i}`);
-                if (scoreBox === null)
+                const artifact = scoreBox.parentElement;
+                if (!artifact)
                     continue;
-                scoreBox.setAttribute("class", "svelte-1ujofp1");
-                if (isEquippingArtifact(i)) {
-                    score = this.calcArtifactScore(i);
-                    sumScore += score;
-                    scoreBox.innerText = score.toFixed(1);
-                }
-                else {
-                    scoreBox.innerText = "";
-                }
+                score = this.calcArtifactScore(artifact);
+                scoreBox.textContent = score.toFixed(1);
+                sumScore += score;
             }
             avgScore = sumScore / 5;
             const critRate = characterStat("CRITICAL");
@@ -731,7 +723,9 @@
                 type = optionLocale.getLocaleSub(scoreType.key);
                 break;
             }
-            extraText.innerText = this.getExtraText(critRatio, type, avgScore, sumScore);
+            if (!extraText)
+                return;
+            extraText.textContent = this.getExtraText(critRatio, type, avgScore, sumScore);
         }
     }
 

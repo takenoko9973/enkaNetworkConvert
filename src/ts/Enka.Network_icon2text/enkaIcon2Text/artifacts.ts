@@ -14,7 +14,7 @@ export function isEquippingArtifact(index: number): boolean {
 
 // 聖遺物のテキスト枠を生成
 export function createTextInArtifact() {
-    for (const [i, artifact] of Array.from(artifacts).entries()) {
+    for (const artifact of Array.from(artifacts)) {
         if (artifact.classList.contains("empty")) continue;
 
         // メインOP
@@ -25,20 +25,6 @@ export function createTextInArtifact() {
         const subStatList = artifact.getElementsByClassName("Substat");
         for (const subStat of Array.from(subStatList)) {
             addStatTextElement(subStat);
-        }
-
-        // スコア表示
-        const scoreId = `score${i}`;
-        if (document.getElementById(scoreId) === null) {
-            const scoreBox = document.createElement("div");
-            scoreBox.id = scoreId;
-            scoreBox.style.position = "absolute";
-            scoreBox.style.fontSize = "70%";
-            scoreBox.style.top = "-0.2em";
-            scoreBox.style.right = "0.3em";
-            scoreBox.style.textAlign = "right";
-            scoreBox.style.opacity = "0.6";
-            artifact.appendChild(scoreBox);
         }
     }
 }

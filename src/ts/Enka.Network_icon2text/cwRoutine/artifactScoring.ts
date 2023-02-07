@@ -1,5 +1,4 @@
-import { isEquippingArtifact } from "../enkaIcon2Text/artifacts";
-import { artifact, optionLocale } from "../myConst";
+import { optionLocale } from "../myConst";
 import { localeKeys } from "../types/localeKeys";
 import { characterStat } from "../util/characterStat";
 import { fmt } from "../util/fmt";
@@ -50,13 +49,11 @@ export class ArtifactScoring implements CreateWriteRoutine {
     /**
      * 聖遺物のスコアを計算
      */
-    private calcArtifactScore(index: number) {
+    private calcArtifactScore(artifact: Element): number {
         let score = 0;
-        if (!isEquippingArtifact(index)) return score;
+        if (artifact.classList.contains("empty")) return score;
 
-        const subStat = Array.from(
-            artifact[index].getElementsByClassName("Substat")
-        );
+        const subStat = Array.from(artifact.getElementsByClassName("Substat"));
         const subStatName = subStat.map((sub) => sub.classList[1]);
         const subStatAmount = subStat.map((sub) =>
             (sub.lastChild as HTMLElement).innerText.replace(/[^0-9.]/g, "")
@@ -110,11 +107,29 @@ export class ArtifactScoring implements CreateWriteRoutine {
 
     createText() {
         const charaCard = document.getElementsByClassName("card-host")[0];
+        const artifacts = document.getElementsByClassName("Artifact");
+
+        for (const artifact of Array.from(artifacts)) {
+            // スコア表示
+            let scoreBox = artifact.getElementsByClassName(
+                "artifactScoreText"
+            )[0] as HTMLElement;
+            if (!scoreBox) {
+                scoreBox = document.createElement("div");
+                scoreBox.classList.add("artifactScoreText", "svelte-1ujofp1");
+                scoreBox.style.position = "absolute";
+                scoreBox.style.fontSize = "70%";
+                scoreBox.style.top = "-0.2em";
+                scoreBox.style.right = "0.3em";
+                scoreBox.style.textAlign = "right";
+                scoreBox.style.opacity = "0.6";
+                artifact.appendChild(scoreBox);
+            }
+        }
 
         // その他情報を表示する枠
         const exParam = document.createElement("div");
         exParam.id = "extraData";
-        exParam.innerText = "";
         exParam.style.position = "absolute";
         exParam.style.bottom = "0.2%";
         exParam.style.right = "1.3%";
@@ -125,29 +140,21 @@ export class ArtifactScoring implements CreateWriteRoutine {
     }
 
     writeText() {
-        // ------ 追加情報
         let sumScore = 0;
         let avgScore = 0;
-        const extraText = document.getElementById("extraData") as HTMLElement;
+        const scoreBoxes = document.getElementsByClassName("artifactScoreText");
+        const extraText = document.getElementById("extraData");
 
         // スコア計算
-        for (let i = 0; i < 5; i++) {
+        for (const scoreBox of Array.from(scoreBoxes)) {
             let score = 0.0;
 
-            const scoreBox = document.getElementById(`score${i}`);
-            if (scoreBox === null) continue;
+            const artifact = scoreBox.parentElement;
+            if (!artifact) continue;
 
-            scoreBox.setAttribute("class", "svelte-1ujofp1");
-
-            // 聖遺物を付けている場合、計算
-            if (isEquippingArtifact(i)) {
-                score = this.calcArtifactScore(i);
-                sumScore += score;
-
-                scoreBox.innerText = score.toFixed(1);
-            } else {
-                scoreBox.innerText = "";
-            }
+            score = this.calcArtifactScore(artifact);
+            scoreBox.textContent = score.toFixed(1);
+            sumScore += score;
         }
         avgScore = sumScore / 5;
 
@@ -165,7 +172,8 @@ export class ArtifactScoring implements CreateWriteRoutine {
             break;
         }
 
-        extraText.innerText = this.getExtraText(
+        if (!extraText) return;
+        extraText.textContent = this.getExtraText(
             critRatio,
             type,
             avgScore,
