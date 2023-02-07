@@ -9,16 +9,12 @@ const cwManager = CreateWriteManager.instance;
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const cardBase = document.getElementsByClassName("CharacterList")[0].parentElement!;
-const observer = new MutationObserver(hoge);
-observer.observe(cardBase, { attributes: true, childList: true, subtree: true });
+const cardObserver = new MutationObserver(main);
+cardObserver.observe(cardBase, { attributes: true, childList: true, subtree: true });
 
-function hoge() {
-    observer.disconnect();
-    main();
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function main() {
+    cardObserver.disconnect();
+
     // 武器
     const weaponInfo = myConst.weapon[0].getElementsByTagName(
         "content"

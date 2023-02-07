@@ -767,13 +767,10 @@
 
     const cwManager = CreateWriteManager.instance;
     const cardBase = document.getElementsByClassName("CharacterList")[0].parentElement;
-    const observer = new MutationObserver(hoge);
-    observer.observe(cardBase, { attributes: true, childList: true, subtree: true });
-    function hoge() {
-        observer.disconnect();
-        main();
-    }
+    const cardObserver = new MutationObserver(main);
+    cardObserver.observe(cardBase, { attributes: true, childList: true, subtree: true });
     function main() {
+        cardObserver.disconnect();
         const weaponInfo = weapon[0].getElementsByTagName("content")[0];
         const weaponName = weaponInfo.getElementsByTagName("h3")[0];
         weaponInfo.style.paddingRight = "0px";
