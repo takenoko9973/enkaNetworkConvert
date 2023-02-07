@@ -1,5 +1,5 @@
-import { TIME_STAMP, VERSION } from "../myConst";
-import { CreateWriteRoutine } from "./createWriteRoutine";
+import { TIME_STAMP, VERSION } from "../../myConst";
+import { CreateWriteRoutine } from "../createWriteRoutine";
 
 /**
  * カード情報取得時間を表示

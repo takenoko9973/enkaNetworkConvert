@@ -1,8 +1,8 @@
-import { optionLocale } from "../myConst";
-import { localeKeys } from "../types/localeKeys";
-import { characterStat } from "../util/characterStat";
-import { fmt } from "../util/fmt";
-import { CreateWriteRoutine } from "./createWriteRoutine";
+import { optionLocale } from "../../myConst";
+import { localeKeys } from "../../types/localeKeys";
+import { characterStat } from "../../util/characterStat";
+import { fmt } from "../../util/fmt";
+import { CreateWriteRoutine } from "../createWriteRoutine";
 import { SelectScoreType } from "./selectScoreType";
 
 class scoreType {

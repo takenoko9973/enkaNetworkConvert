@@ -1,7 +1,7 @@
-import { DateText } from "./dateText";
 import { CreateWriteRoutine } from "./createWriteRoutine";
-import { ArtifactScoring } from "./artifactScoring";
-import { SelectScoreType } from "./selectScoreType";
+import { DateText } from "./routines/dateText";
+import { ArtifactScoring } from "./routines/artifactScoring";
+import { SelectScoreType } from "./routines/selectScoreType";
 
 export class CreateWriteManager implements CreateWriteRoutine {
     private static _instance: CreateWriteManager;

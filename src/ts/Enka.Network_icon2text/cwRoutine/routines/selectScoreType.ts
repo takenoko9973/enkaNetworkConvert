@@ -1,6 +1,6 @@
-import { SCORE_RADIO_NAME, SCORE_SELECT_DIV, optionLocale } from "../myConst";
-import { localeKeys } from "../types/localeKeys";
-import { CreateWriteRoutine } from "./createWriteRoutine";
+import { SCORE_RADIO_NAME, SCORE_SELECT_DIV, optionLocale } from "../../myConst";
+import { localeKeys } from "../../types/localeKeys";
+import { CreateWriteRoutine } from "../createWriteRoutine";
 
 class scoreType {
     #id;
