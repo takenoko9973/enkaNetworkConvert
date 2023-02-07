@@ -687,10 +687,10 @@
             cardToggles.getElementsByTagName("header")[2].before(rowElement);
             const scoreSelectClass = "SCORE_SELECT_INFO";
             const infoText = document.createElement("label");
-            infoText.classList.add(scoreSelectClass, "svelte-nsdlaj");
+            infoText.classList.add(scoreSelectClass, "svelte-1jzchrt");
             const scoreSelectDiv = document.createElement("div");
             scoreSelectDiv.id = SCORE_SELECT_DIV;
-            scoreSelectDiv.classList.add("Input", "svelte-nsdlaj");
+            scoreSelectDiv.classList.add("Input", "svelte-1jzchrt");
             const scoreModeGroup = document.createElement("group");
             scoreModeGroup.classList.add("inline_radio");
             for (const key in SCORE_TYPE) {
@@ -705,7 +705,7 @@
                 label.setAttribute("type", "radio");
                 label.setAttribute("data-type", "OUTLINE");
                 label.style.marginTop = "0em";
-                label.classList.add(SCORE_TYPE[key].key, "radbox", "Button", "label", "svelte-1dpa14o");
+                label.classList.add(SCORE_TYPE[key].key, "radbox", "Button", "label", "svelte-1gbd2i6");
                 scoreModeGroup.appendChild(radio);
                 scoreModeGroup.appendChild(label);
             }

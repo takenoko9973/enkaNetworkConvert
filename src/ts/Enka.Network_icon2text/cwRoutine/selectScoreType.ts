@@ -59,12 +59,12 @@ export class SelectScoreType implements CreateWriteRoutine {
         // 説明テキストを追加
         const scoreSelectClass: localeKeys = "SCORE_SELECT_INFO";
         const infoText = document.createElement("label");
-        infoText.classList.add(scoreSelectClass, "svelte-nsdlaj");
+        infoText.classList.add(scoreSelectClass, "svelte-1jzchrt");
 
         // スコア選択欄を作成
         const scoreSelectDiv = document.createElement("div");
         scoreSelectDiv.id = SCORE_SELECT_DIV;
-        scoreSelectDiv.classList.add("Input", "svelte-nsdlaj");
+        scoreSelectDiv.classList.add("Input", "svelte-1jzchrt");
 
         const scoreModeGroup = document.createElement("group");
         scoreModeGroup.classList.add("inline_radio");
@@ -89,7 +89,7 @@ export class SelectScoreType implements CreateWriteRoutine {
                 "radbox",
                 "Button",
                 "label",
-                "svelte-1dpa14o"
+                "svelte-1gbd2i6"
             );
 
             scoreModeGroup.appendChild(radio);
