@@ -25,7 +25,7 @@ class scoreType {
 }
 
 // スコア計算基準指定 H:HP, A:攻撃力, D:防御力
-export const SCORE_TYPE: { [key: string]: scoreType } = {
+export const SCORE_TYPES: { [key: string]: scoreType } = {
     HP: new scoreType("H", "HP_PERCENT", 1),
     ATTACK: new scoreType("A", "ATTACK_PERCENT", 1),
     DEFENSE: new scoreType("D", "DEFENSE_PERCENT", 0.8),
@@ -47,7 +47,7 @@ export class SelectScoreType implements CreateWriteRoutine {
         const checkedRadio = document.querySelector(
             `input:checked[name=${SCORE_RADIO_NAME}]`
         ) as HTMLInputElement;
-        return checkedRadio?.value ?? SCORE_TYPE.ATTACK.key;
+        return checkedRadio?.value ?? SCORE_TYPES.ATTACK.key;
     }
 
     createText() {
@@ -73,15 +73,15 @@ export class SelectScoreType implements CreateWriteRoutine {
 
         const scoreModeGroup = document.createElement("group");
         scoreModeGroup.classList.add("inline_radio");
-        for (const key in SCORE_TYPE) {
-            const id = `SCORE_${key}_R`;
+        for (const scoreType of Object.values(SCORE_TYPES)) {
+            const id = `SCORE_${scoreType.id}_R`;
 
             // ボタン
             const radio = document.createElement("input");
             radio.id = id;
             radio.name = SCORE_RADIO_NAME;
             radio.setAttribute("type", "radio");
-            radio.value = SCORE_TYPE[key].id;
+            radio.value = scoreType.id;
 
             // ラベル (ボタンとリンクさせる)
             const label = document.createElement("label");
@@ -90,7 +90,7 @@ export class SelectScoreType implements CreateWriteRoutine {
             label.setAttribute("data-type", "OUTLINE");
             label.style.marginTop = "0em";
             label.classList.add(
-                SCORE_TYPE[key].key,
+                scoreType.key,
                 "radbox",
                 "Button",
                 "label",
@@ -105,9 +105,7 @@ export class SelectScoreType implements CreateWriteRoutine {
         rowElement.appendChild(scoreSelectDiv);
 
         // 攻撃をデフォルトにする
-        const atkRadioId = scoreSelectDiv
-            .getElementsByClassName(SCORE_TYPE.ATTACK.key)[0]
-            .getAttribute("for") as string;
+        const atkRadioId = `SCORE_${SCORE_TYPES.ATTACK.id}_R`;
         document.getElementById(atkRadioId)?.toggleAttribute("checked", true);
 
         const radioStyle = [
