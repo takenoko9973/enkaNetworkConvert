@@ -1,4 +1,4 @@
-import { optionLocale } from "../../myConst";
+import { cssManager, optionLocale } from "../../myConst";
 import { localeKeys } from "../../types/localeKeys";
 import { characterStat } from "../../util/characterStat";
 import { fmt } from "../../util/fmt";
@@ -117,12 +117,6 @@ export class ArtifactScoring implements CreateWriteRoutine {
 
             scoreBox = document.createElement("div");
             scoreBox.classList.add("artifactScoreText", "svelte-1ujofp1");
-            scoreBox.style.position = "absolute";
-            scoreBox.style.fontSize = "0.7em";
-            scoreBox.style.top = "-0.2em";
-            scoreBox.style.right = "0.3em";
-            scoreBox.style.textAlign = "right";
-            scoreBox.style.opacity = "0.6";
             artifact.appendChild(scoreBox);
         }
 
@@ -140,6 +134,11 @@ export class ArtifactScoring implements CreateWriteRoutine {
         exParam.style.fontSize = "0.8em";
         exParam.classList.add("svelte-17qi811");
         artifactSection.appendChild(exParam);
+
+        const cssStyle = [
+            ".Artifact > .artifactScoreText{ position: absolute; font-size: 0.7em; opacity: 0.6; right: 0.3em; }"
+        ];
+        cssManager.addStyle(...cssStyle);
     }
 
     writeText() {

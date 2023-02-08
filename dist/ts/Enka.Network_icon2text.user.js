@@ -630,12 +630,6 @@
                     continue;
                 scoreBox = document.createElement("div");
                 scoreBox.classList.add("artifactScoreText", "svelte-1ujofp1");
-                scoreBox.style.position = "absolute";
-                scoreBox.style.fontSize = "0.7em";
-                scoreBox.style.top = "-0.2em";
-                scoreBox.style.right = "0.3em";
-                scoreBox.style.textAlign = "right";
-                scoreBox.style.opacity = "0.6";
                 artifact.appendChild(scoreBox);
             }
             if (document.getElementById("extraData"))
@@ -651,6 +645,10 @@
             exParam.style.fontSize = "0.8em";
             exParam.classList.add("svelte-17qi811");
             artifactSection.appendChild(exParam);
+            const cssStyle = [
+                ".Artifact > .artifactScoreText{ position: absolute; font-size: 0.7em; opacity: 0.6; right: 0.3em; }"
+            ];
+            cssManager.addStyle(...cssStyle);
         }
         writeText() {
             let sumScore = 0;
@@ -743,7 +741,16 @@
             return this._instance;
         }
         createText() {
+            const weaponImage = this.weapon[0].getElementsByTagName("figure")[0];
             const weaponInfo = this.weapon[0].getElementsByTagName("content")[0];
+            const weaponName = weaponInfo.getElementsByTagName("h3")[0];
+            const weaponSubInfo = weaponInfo.getElementsByClassName("sub")[0];
+            const weaponRefine = weaponSubInfo.getElementsByClassName("refine")[0];
+            weaponImage.style.width = "30%";
+            weaponInfo.style.paddingRight = "0%";
+            weaponName.style.fontWeight = "bold";
+            weaponSubInfo.style.display = "flex";
+            weaponRefine.after(getSeparateElement());
             const subStat = weaponInfo.getElementsByClassName("Substat");
             addStatTextElement(subStat[0]);
             if (!subStat[1])
@@ -829,16 +836,9 @@
     });
     function main() {
         cardObserver.disconnect();
-        const weapon = document.getElementsByClassName("Weapon")[0];
-        const weaponInfo = weapon.getElementsByTagName("content")[0];
-        const weaponName = weaponInfo.getElementsByTagName("h3")[0];
-        weaponInfo.style.paddingRight = "0px";
-        weaponName.style.fontWeight = "bold";
-        weapon.children[0].style.width = "30%";
         const cssStyle = [
             ".Card .Icon{ display:none !important }",
-            ".stats.svelte-j8ec66 .Substat { display: flex; margin-right: 0em; }",
-            ".Card .Substat.svelte-1ut2kb8.svelte-1ut2kb8 { display: flex; align-items: center; margin-right: 0em; line-height: 95%; font-size: 98%; }",
+            ".stats.svelte-j8ec66 .Substat { display: flex; margin-right: 0em; padding-top: 3%; margin-bottom: 1% }",
             ".substats.svelte-17qi811>.Substat { display: flex; align-items: center; padding-right: 1.0em; }",
             ".Artifact.svelte-17qi811 .ArtifactIcon { top: -37%; left: -6%; width: 28%; }",
             ".mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(1) { display: flex; align-items: center; top: 5%; font-size: 100%; line-height:0.9; max-height: 25%; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; }",

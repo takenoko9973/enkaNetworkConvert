@@ -13,22 +13,11 @@ cardObserver.observe(cardBase, {
 function main() {
     cardObserver.disconnect();
 
-    // 武器
-    const weapon = document.getElementsByClassName("Weapon")[0];
-    const weaponInfo = weapon.getElementsByTagName("content")[0] as HTMLElement;
-    const weaponName = weaponInfo.getElementsByTagName("h3")[0] as HTMLElement;
-    weaponInfo.style.paddingRight = "0px";
-    weaponName.style.fontWeight = "bold";
-    (weapon.children[0] as HTMLElement).style.width = "30%"; // 武器画像
-
     // ###### キャラカードのデザイン変更 ######
-
     // cssの全面的な変更
-
     const cssStyle = [
         ".Card .Icon{ display:none !important }", // アイコンの削除
-        ".stats.svelte-j8ec66 .Substat { display: flex; margin-right: 0em; }", // 武器ステータスの枠を大きく
-        ".Card .Substat.svelte-1ut2kb8.svelte-1ut2kb8 { display: flex; align-items: center; margin-right: 0em; line-height: 95%; font-size: 98%; }", // サブステータスの枠を広げる
+        ".stats.svelte-j8ec66 .Substat { display: flex; margin-right: 0em; padding-top: 3%; margin-bottom: 1% }", // 武器ステータスの枠を大きく
         ".substats.svelte-17qi811>.Substat { display: flex; align-items: center; padding-right: 1.0em; }", // 聖遺物のサブステータスが右に行きすぎるので調整
         ".Artifact.svelte-17qi811 .ArtifactIcon { top: -37%; left: -6%; width: 28%; }", // 聖遺物画像の調整
         ".mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(1) { display: flex; align-items: center; top: 5%; font-size: 100%; line-height:0.9; max-height: 25%; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; }", // 聖遺物メインステータスの調整

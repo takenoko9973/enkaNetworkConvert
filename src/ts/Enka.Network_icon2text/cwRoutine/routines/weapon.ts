@@ -1,5 +1,5 @@
 import { BASE_ATK_CLASS, optionLocale } from "../../myConst";
-import { addStatTextElement } from "../../util/enkaUtil";
+import { addStatTextElement, getSeparateElement } from "../../util/enkaUtil";
 import { innerOptionText } from "../../util/innerOptionText";
 import { CreateWriteRoutine } from "../createWriteRoutine";
 
@@ -16,10 +16,22 @@ export class Weapon implements CreateWriteRoutine {
     }
 
     createText() {
-        // 武器
-        const weaponInfo = this.weapon[0].getElementsByTagName("content")[0];
-        const subStat = weaponInfo.getElementsByClassName("Substat");
+        const weaponImage = this.weapon[0].getElementsByTagName("figure")[0];  // 武器画像
+        const weaponInfo = this.weapon[0].getElementsByTagName("content")[0] as HTMLElement;
 
+        const weaponName = weaponInfo.getElementsByTagName("h3")[0];
+        const weaponSubInfo = weaponInfo.getElementsByClassName("sub")[0] as HTMLElement;
+        const weaponRefine = weaponSubInfo.getElementsByClassName("refine")[0] as HTMLElement;
+
+        weaponImage.style.width = "30%";
+
+        weaponInfo.style.paddingRight = "0%";
+        weaponName.style.fontWeight = "bold";
+
+        weaponSubInfo.style.display = "flex";
+        weaponRefine.after(getSeparateElement());
+
+        const subStat = weaponInfo.getElementsByClassName("Substat");
         addStatTextElement(subStat[0]);
 
         // サブステータス
