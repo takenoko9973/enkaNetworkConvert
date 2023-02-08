@@ -315,14 +315,32 @@
         }
     }
 
-    const weapon = document.getElementsByClassName("Weapon");
-    document.getElementsByClassName("Artifact");
+    class CssStyleManager {
+        constructor() {
+            this.css = [];
+            this.style = document.createElement("style");
+            const head = document.querySelector("head");
+            head?.append(this.style);
+        }
+        static get instance() {
+            if (!this._instance) {
+                this._instance = new CssStyleManager();
+            }
+            return this._instance;
+        }
+        addStyle(...css) {
+            this.css.push(...css);
+            this.style.innerHTML = this.css.join(" ");
+        }
+    }
+
     const VERSION = "v0.50";
     const BASE_ATK_CLASS = "BASE_ATTACK";
     const TIME_STAMP = "timeStamp";
     const SCORE_SELECT_DIV = "scoreSelectDiv";
     const SCORE_RADIO_NAME = "sSource";
     const optionLocale = TranslateKey2Word.instance;
+    const cssManager = CssStyleManager.instance;
 
     function getFormattedDate(date, format) {
         const symbol = {
@@ -510,10 +528,8 @@
                 '.inline_radio input[type="radio"] { position: absolute; opacity: 0; }',
                 '.inline_radio label.radbox[type="radio"] { color: rgba(255,255,255,.5); }',
                 '.inline_radio input[type="radio"]:checked + label.radbox[type="radio"] { color: rgba(255,255,255,1); }',
-            ].join(" ");
-            const style = document.createElement("style");
-            style.innerHTML = radioStyle;
-            document.querySelector("head")?.append(style);
+            ];
+            cssManager.addStyle(...radioStyle);
         }
         writeText() {
             const scoreSelectDiv = document.getElementById(SCORE_SELECT_DIV);
@@ -804,17 +820,21 @@
         }
     }
 
-    const cwManager = CreateWriteManager.instance;
     const cardBase = document.getElementsByClassName("CharacterList")[0].parentElement;
     const cardObserver = new MutationObserver(main);
-    cardObserver.observe(cardBase, { attributes: true, childList: true, subtree: true });
+    cardObserver.observe(cardBase, {
+        attributes: true,
+        childList: true,
+        subtree: true,
+    });
     function main() {
         cardObserver.disconnect();
-        const weaponInfo = weapon[0].getElementsByTagName("content")[0];
+        const weapon = document.getElementsByClassName("Weapon")[0];
+        const weaponInfo = weapon.getElementsByTagName("content")[0];
         const weaponName = weaponInfo.getElementsByTagName("h3")[0];
         weaponInfo.style.paddingRight = "0px";
         weaponName.style.fontWeight = "bold";
-        weapon[0].children[0].style.width = "30%";
+        weapon.children[0].style.width = "30%";
         const cssStyle = [
             ".Card .Icon{ display:none !important }",
             ".stats.svelte-j8ec66 .Substat { display: flex; margin-right: 0em; }",
@@ -825,14 +845,13 @@
             ".mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(2) { padding: 4% 0%; }",
             ".mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(3) { max-height: 25% }",
         ];
-        const style = document.createElement("style");
-        style.innerHTML = cssStyle.join(" ");
-        document.querySelector("head")?.append(style);
+        cssManager.addStyle(...cssStyle);
         const cardSection = document.getElementsByClassName("section");
         cardSection[0].style.width = "36%";
         cardSection[1].style.width = "24%";
         cardSection[1].style.left = "34%";
         cardSection[2].style.width = "43%";
+        const cwManager = CreateWriteManager.instance;
         cwManager.init();
         cwManager.createText();
         cwManager.writeText();

@@ -1,4 +1,4 @@
-import { SCORE_RADIO_NAME, SCORE_SELECT_DIV, optionLocale } from "../../myConst";
+import { SCORE_RADIO_NAME, SCORE_SELECT_DIV, cssManager, optionLocale } from "../../myConst";
 import { localeKeys } from "../../types/localeKeys";
 import { CreateWriteRoutine } from "../createWriteRoutine";
 
@@ -112,10 +112,8 @@ export class SelectScoreType implements CreateWriteRoutine {
             '.inline_radio input[type="radio"] { position: absolute; opacity: 0; }', // チェックボックスを隠す
             '.inline_radio label.radbox[type="radio"] { color: rgba(255,255,255,.5); }', // 普段は薄目
             '.inline_radio input[type="radio"]:checked + label.radbox[type="radio"] { color: rgba(255,255,255,1); }', // 選択しているボタンを強調
-        ].join(" ");
-        const style = document.createElement("style");
-        style.innerHTML = radioStyle;
-        document.querySelector("head")?.append(style);
+        ];
+        cssManager.addStyle(...radioStyle);
     }
 
     writeText() {

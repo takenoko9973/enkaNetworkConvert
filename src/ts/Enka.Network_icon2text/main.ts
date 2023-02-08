@@ -1,28 +1,30 @@
-import * as myConst from "./myConst";
 import { CreateWriteManager } from "./cwRoutine/cwManager";
-
-const cwManager = CreateWriteManager.instance;
+import { SCORE_RADIO_NAME, cssManager } from "./myConst";
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const cardBase = document.getElementsByClassName("CharacterList")[0].parentElement!;
 const cardObserver = new MutationObserver(main);
-cardObserver.observe(cardBase, { attributes: true, childList: true, subtree: true });
+cardObserver.observe(cardBase, {
+    attributes: true,
+    childList: true,
+    subtree: true,
+});
 
 function main() {
     cardObserver.disconnect();
 
     // 武器
-    const weaponInfo = myConst.weapon[0].getElementsByTagName(
-        "content"
-    )[0] as HTMLElement;
+    const weapon = document.getElementsByClassName("Weapon")[0];
+    const weaponInfo = weapon.getElementsByTagName("content")[0] as HTMLElement;
     const weaponName = weaponInfo.getElementsByTagName("h3")[0] as HTMLElement;
     weaponInfo.style.paddingRight = "0px";
     weaponName.style.fontWeight = "bold";
-    (myConst.weapon[0].children[0] as HTMLElement).style.width = "30%"; // 武器画像
+    (weapon.children[0] as HTMLElement).style.width = "30%"; // 武器画像
 
     // ###### キャラカードのデザイン変更 ######
 
     // cssの全面的な変更
+
     const cssStyle = [
         ".Card .Icon{ display:none !important }", // アイコンの削除
         ".stats.svelte-j8ec66 .Substat { display: flex; margin-right: 0em; }", // 武器ステータスの枠を大きく
@@ -33,9 +35,7 @@ function main() {
         ".mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(2) { padding: 4% 0%; }",
         ".mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(3) { max-height: 25% }",
     ];
-    const style = document.createElement("style");
-    style.innerHTML = cssStyle.join(" ");
-    document.querySelector("head")?.append(style);
+    cssManager.addStyle(...cssStyle);
 
     // 全体の配置の変更
     const cardSection = document.getElementsByClassName(
@@ -49,9 +49,9 @@ function main() {
     // 右
     cardSection[2].style.width = "43%";
 
+    const cwManager = CreateWriteManager.instance;
     cwManager.init();
     cwManager.createText();
-
     cwManager.writeText();
 
     const charaName = document.getElementsByClassName("name")[0];
@@ -72,7 +72,7 @@ function main() {
     observer.observe(language, observeConf); // 言語変更時
 
     // スコア評価対象変更時に発火
-    document.getElementsByName(myConst.SCORE_RADIO_NAME).forEach(function (e) {
+    document.getElementsByName(SCORE_RADIO_NAME).forEach(function (e) {
         e.addEventListener("click", function () {
             cwManager.writeText();
         });
