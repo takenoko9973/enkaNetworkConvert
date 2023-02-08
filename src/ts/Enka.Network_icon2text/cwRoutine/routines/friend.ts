@@ -20,7 +20,7 @@ export class Friend implements CreateWriteRoutine {
         const friend = document.getElementsByClassName("fren")[0];
         if (!friend) return;
 
-        const friendText = addStatTextElement(friend, false) as HTMLElement;
+        const friendText = addStatTextElement(friend, false);
         if (!friendText) return;
 
         friendText.style.marginRight = "0.3em"; // sepでは調整できないので、手動調整

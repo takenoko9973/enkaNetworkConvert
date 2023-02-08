@@ -106,7 +106,6 @@ export class ArtifactScoring implements CreateWriteRoutine {
     }
 
     createText() {
-        const charaCard = document.getElementsByClassName("card-host")[0];
         const artifacts = document.getElementsByClassName("Artifact");
 
         for (const artifact of Array.from(artifacts)) {
@@ -114,17 +113,17 @@ export class ArtifactScoring implements CreateWriteRoutine {
             let scoreBox = artifact.getElementsByClassName(
                 "artifactScoreText"
             )[0] as HTMLElement;
-            if (!scoreBox) {
-                scoreBox = document.createElement("div");
-                scoreBox.classList.add("artifactScoreText", "svelte-1ujofp1");
-                scoreBox.style.position = "absolute";
-                scoreBox.style.fontSize = "0.7em";
-                scoreBox.style.top = "-0.2em";
-                scoreBox.style.right = "0.3em";
-                scoreBox.style.textAlign = "right";
-                scoreBox.style.opacity = "0.6";
-                artifact.appendChild(scoreBox);
-            }
+            if (scoreBox) continue;
+
+            scoreBox = document.createElement("div");
+            scoreBox.classList.add("artifactScoreText", "svelte-1ujofp1");
+            scoreBox.style.position = "absolute";
+            scoreBox.style.fontSize = "0.7em";
+            scoreBox.style.top = "-0.2em";
+            scoreBox.style.right = "0.3em";
+            scoreBox.style.textAlign = "right";
+            scoreBox.style.opacity = "0.6";
+            artifact.appendChild(scoreBox);
         }
 
         // その他情報を表示する枠

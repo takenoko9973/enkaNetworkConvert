@@ -34,7 +34,7 @@ export function getLocale(): languages {
 /**
  * 親要素から、適切なステータステキスト要素を生成
  */
-export function createStatTextElement(parentElement: Element): Element {
+export function createStatTextElement(parentElement: Element): HTMLElement {
     const className =
         Array.from(parentElement.classList).filter((val) =>
             val.match(/svelte/)
@@ -55,7 +55,7 @@ export function createStatTextElement(parentElement: Element): Element {
  * @param addSep 分割要素を追加するか (default: true)
  * @returns 設置したstatText
  */
-export function addStatTextElement(parentElement: Element, addSep = true): Element | null {
+export function addStatTextElement(parentElement: Element, addSep = true): HTMLElement | null {
     if (parentElement.getElementsByClassName("statText").length >= 1)
         return null;
 

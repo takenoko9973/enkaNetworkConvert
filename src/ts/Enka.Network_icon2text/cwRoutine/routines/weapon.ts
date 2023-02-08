@@ -18,9 +18,7 @@ export class Weapon implements CreateWriteRoutine {
     createText() {
         // 武器
         const weaponInfo = this.weapon[0].getElementsByTagName("content")[0];
-        const subStat = weaponInfo.getElementsByClassName(
-            "Substat"
-        ) as HTMLCollectionOf<HTMLElement>;
+        const subStat = weaponInfo.getElementsByClassName("Substat");
 
         addStatTextElement(subStat[0]);
 
