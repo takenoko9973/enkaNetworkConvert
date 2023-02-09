@@ -102,12 +102,12 @@
             subOption: undefined,
         },
         CRITICAL: {
-            locale: "Crit Rate",
-            subOption: undefined,
+            locale: "CRIT Rate",
+            subOption: "CR",
         },
         CRITICAL_HURT: {
-            locale: "Crit DMG",
-            subOption: undefined,
+            locale: "CRIT DMG",
+            subOption: "CD",
         },
         CHARGE_EFFICIENCY: {
             locale: "Energy Recharge",
