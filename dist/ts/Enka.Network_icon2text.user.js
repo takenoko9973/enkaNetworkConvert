@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Enka.Network_lang-jp_mod_by_takenoko
 // @namespace    http://tampermonkey.net/
-// @version      0.50
+// @version      1.00
 // @description  Enka.Network 日本語化スクリプト
 // @author       Takenoko-ya
 // @updateURL    https://github.com/takenoko9973/enkaNetworkConvert/raw/master/dist/ts/Enka.Network_icon2text.user.js
@@ -333,7 +333,7 @@
         }
     }
 
-    const VERSION = "v0.50";
+    const VERSION = "v1.00";
     const BASE_ATK_CLASS = "BASE_ATTACK";
     const TIME_STAMP = "timeStamp";
     const SCORE_SELECT_DIV = "scoreSelectDiv";
@@ -388,7 +388,7 @@
                 return;
             const date = new Date();
             const timeString = getFormattedDate(date, "yyyy-MM-dd hh:mm:ss");
-            timeStamp.textContent = VERSION + "_" + timeString;
+            timeStamp.textContent = `${VERSION}TE ${timeString}`;
         }
     }
 

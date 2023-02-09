@@ -38,6 +38,6 @@ export class DateText implements CreateWriteRoutine {
 
         const date = new Date();
         const timeString = getFormattedDate(date, "yyyy-MM-dd hh:mm:ss");
-        timeStamp.textContent = VERSION + "_" + timeString;
+        timeStamp.textContent = `${VERSION}TE ${timeString}`;
     }
 }

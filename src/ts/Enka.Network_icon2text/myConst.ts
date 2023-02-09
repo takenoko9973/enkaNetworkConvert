@@ -2,7 +2,7 @@ import { TranslateKey2Word } from "./translateKey2Word";
 import { localeKeys } from "./types/localeKeys";
 import { CssStyleManager } from "./util/cssStyleManager";
 
-export const VERSION = "v0.50";
+export const VERSION = "v1.00";
 
 export const BASE_ATK_CLASS: localeKeys = "BASE_ATTACK";
 export const TIME_STAMP = "timeStamp";
