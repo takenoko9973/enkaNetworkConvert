@@ -838,7 +838,7 @@
         cardObserver.disconnect();
         const cssStyle = [
             ".Card .Icon{ display:none !important }",
-            ".stats.svelte-j8ec66 .Substat { display: flex; margin-right: 0em; padding-top: 3%; margin-bottom: 1%; white-space: nowrap; }",
+            ".stats.svelte-j8ec66 .Substat { display: flex; align-items: center; margin-right: 0em; padding-top: 3%; margin-bottom: 1%; }",
             ".substats.svelte-17qi811 > .Substat { display: flex; align-items: center; padding-right: 1.0em; white-space: nowrap; }",
             ".Artifact.svelte-17qi811 .ArtifactIcon { top: -37%; left: -6%; width: 28%; }",
             ".statText { font-weight: bold; }",

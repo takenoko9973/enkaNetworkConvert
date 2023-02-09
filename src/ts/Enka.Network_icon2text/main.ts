@@ -17,7 +17,7 @@ function main() {
     // cssの全面的な変更
     const cssStyle = [
         ".Card .Icon{ display:none !important }", // アイコンの削除
-        ".stats.svelte-j8ec66 .Substat { display: flex; margin-right: 0em; padding-top: 3%; margin-bottom: 1%; white-space: nowrap; }", // 武器ステータスの枠を大きく
+        ".stats.svelte-j8ec66 .Substat { display: flex; align-items: center; margin-right: 0em; padding-top: 3%; margin-bottom: 1%; }", // 武器ステータスの枠を大きく
         ".substats.svelte-17qi811 > .Substat { display: flex; align-items: center; padding-right: 1.0em; white-space: nowrap; }", // 聖遺物のサブステータスが右に行きすぎるので調整
         ".Artifact.svelte-17qi811 .ArtifactIcon { top: -37%; left: -6%; width: 28%; }", // 聖遺物画像の調整
         ".statText { font-weight: bold; }",
