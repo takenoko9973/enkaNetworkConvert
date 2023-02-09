@@ -17,8 +17,9 @@ export class Friend implements CreateWriteRoutine {
 
     createText() {
         // 好感度
-        const friend = document.getElementsByClassName("fren")[0];
+        const friend = document.getElementsByClassName("fren")[0] as HTMLElement;
         if (!friend) return;
+        friend.style.whiteSpace = "nowrap";
 
         const friendText = addStatTextElement(friend, false);
         if (!friendText) return;

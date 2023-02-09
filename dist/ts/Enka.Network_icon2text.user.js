@@ -31,7 +31,6 @@
         const statText = document.createElement(tag);
         statText.classList.add("statText");
         statText.classList.add(className);
-        statText.style.fontWeight = "bold";
         return statText;
     }
     function addStatTextElement(parentElement, addSep = true) {
@@ -780,6 +779,7 @@
             const friend = document.getElementsByClassName("fren")[0];
             if (!friend)
                 return;
+            friend.style.whiteSpace = "nowrap";
             const friendText = addStatTextElement(friend, false);
             if (!friendText)
                 return;
@@ -838,10 +838,11 @@
         cardObserver.disconnect();
         const cssStyle = [
             ".Card .Icon{ display:none !important }",
-            ".stats.svelte-j8ec66 .Substat { display: flex; margin-right: 0em; padding-top: 3%; margin-bottom: 1% }",
-            ".substats.svelte-17qi811>.Substat { display: flex; align-items: center; padding-right: 1.0em; }",
+            ".stats.svelte-j8ec66 .Substat { display: flex; margin-right: 0em; padding-top: 3%; margin-bottom: 1%; white-space: nowrap; }",
+            ".substats.svelte-17qi811 > .Substat { display: flex; align-items: center; padding-right: 1.0em; white-space: nowrap; }",
             ".Artifact.svelte-17qi811 .ArtifactIcon { top: -37%; left: -6%; width: 28%; }",
-            ".mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(1) { display: flex; align-items: center; top: 5%; font-size: 100%; line-height:0.9; max-height: 25%; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; }",
+            ".statText { font-weight: bold; }",
+            ".mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(1) { display: flex; align-items: center; top: 5%; font-size: 100%; line-height:0.9; max-height: 25%; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; justify-content: flex-end; align-self: unset; margin-left: unset;}",
             ".mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(2) { padding: 4% 0%; }",
             ".mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(3) { max-height: 25% }",
         ];

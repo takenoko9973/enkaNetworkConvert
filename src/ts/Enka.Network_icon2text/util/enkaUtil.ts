@@ -44,7 +44,6 @@ export function createStatTextElement(parentElement: Element): HTMLElement {
     const statText = document.createElement(tag);
     statText.classList.add("statText");
     statText.classList.add(className);
-    statText.style.fontWeight = "bold";
 
     return statText;
 }
