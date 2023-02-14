@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Enka.Network_lang-jp_mod_by_takenoko
 // @namespace    http://tampermonkey.net/
-// @version      1.00
+// @version      1.0.1
 // @description  Enka.Network 日本語化スクリプト
 // @author       Takenoko-ya
 // @updateURL    https://github.com/takenoko9973/enkaNetworkConvert/raw/master/dist/ts/Enka.Network_icon2text.user.js
@@ -333,7 +333,7 @@
         }
     }
 
-    const VERSION = "v1.00";
+    const VERSION = "v1.0.1";
     const BASE_ATK_CLASS = "BASE_ATTACK";
     const TIME_STAMP = "timeStamp";
     const SCORE_SELECT_DIV = "scoreSelectDiv";
@@ -501,6 +501,7 @@
             scoreSelectDiv.id = SCORE_SELECT_DIV;
             scoreSelectDiv.classList.add("Input", "svelte-1jzchrt");
             const scoreModeGroup = document.createElement("group");
+            scoreModeGroup.style.marginTop = "-1em";
             scoreModeGroup.classList.add("inline_radio");
             for (const scoreType of Object.values(SCORE_TYPES)) {
                 const id = `SCORE_${scoreType.id}_R`;
@@ -513,7 +514,6 @@
                 label.setAttribute("for", id);
                 label.setAttribute("type", "radio");
                 label.setAttribute("data-type", "OUTLINE");
-                label.style.marginTop = "0em";
                 label.classList.add(scoreType.key, "radbox", "Button", "label", "svelte-1gbd2i6");
                 scoreModeGroup.appendChild(radio);
                 scoreModeGroup.appendChild(label);

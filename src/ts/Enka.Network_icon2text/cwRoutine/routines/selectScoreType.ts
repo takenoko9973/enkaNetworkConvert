@@ -72,6 +72,7 @@ export class SelectScoreType implements CreateWriteRoutine {
         scoreSelectDiv.classList.add("Input", "svelte-1jzchrt");
 
         const scoreModeGroup = document.createElement("group");
+        scoreModeGroup.style.marginTop = "-1em";
         scoreModeGroup.classList.add("inline_radio");
         for (const scoreType of Object.values(SCORE_TYPES)) {
             const id = `SCORE_${scoreType.id}_R`;
@@ -88,7 +89,6 @@ export class SelectScoreType implements CreateWriteRoutine {
             label.setAttribute("for", id);
             label.setAttribute("type", "radio");
             label.setAttribute("data-type", "OUTLINE");
-            label.style.marginTop = "0em";
             label.classList.add(
                 scoreType.key,
                 "radbox",
