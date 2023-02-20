@@ -21,6 +21,7 @@ export class CssStyleManager {
 
     addStyle(...css: string[]) {
         this.css.push(...css);
+        this.css = [...new Set(this.css)];  // 重複削除
         this.style.innerHTML = this.css.join(" ");
     }
 }
