@@ -22,15 +22,6 @@ function main() {
         cssManager.addStyle(".statText { font-weight: bold; font-size: 100%; }");
     }
 
-    const cssStyle = [
-        ".substats.svelte-17qi811 > .Substat { display: flex; align-items: center; padding-right: 1.0em; white-space: nowrap; }", // 聖遺物のサブステータスが右に行きすぎるので調整
-        ".Artifact.svelte-17qi811 .ArtifactIcon { top: -37%; left: -6%; width: 28%; }", // 聖遺物画像の調整
-        ".mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(1) { display: flex; align-items: center; top: 5%; line-height:0.9; max-height: 25%; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; justify-content: flex-end; align-self: unset; margin-left: unset;}", // 聖遺物メインステータスの調整
-        ".mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(2) { padding: 4% 0%; }",
-        ".mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(3) { max-height: 25% }",
-    ];
-    cssManager.addStyle(...cssStyle);
-
     // 全体の配置の変更
     const cardSection = document.getElementsByClassName(
         "section"

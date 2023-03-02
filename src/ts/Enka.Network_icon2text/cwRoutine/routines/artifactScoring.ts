@@ -1,6 +1,7 @@
 import { cssManager, optionLocale } from "../../myConst";
 import { localeKeys } from "../../types/localeKeys";
 import { characterStat } from "../../util/characterStat";
+import { getSvelteClassName } from "../../util/enkaUtil";
 import { fmt } from "../../util/fmt";
 import { CreateWriteRoutine } from "../createWriteRoutine";
 import { SelectScoreType } from "./selectScoreType";
@@ -116,7 +117,10 @@ export class ArtifactScoring implements CreateWriteRoutine {
             if (scoreBox) continue;
 
             scoreBox = document.createElement("div");
-            scoreBox.classList.add("artifactScoreText", "svelte-1ujofp1");
+            scoreBox.classList.add(
+                "artifactScoreText",
+                getSvelteClassName(artifact)
+            );
             artifact.appendChild(scoreBox);
         }
 
@@ -132,11 +136,11 @@ export class ArtifactScoring implements CreateWriteRoutine {
         exParam.style.marginTop = "-0.5em";
         exParam.style.textAlign = "right";
         exParam.style.fontSize = "0.8em";
-        exParam.classList.add("svelte-17qi811");
+        exParam.classList.add(getSvelteClassName(artifacts[0]));
         artifactSection.appendChild(exParam);
 
         const cssStyle = [
-            ".Artifact > .artifactScoreText{ position: absolute; font-size: 0.7em; opacity: 0.6; right: 0.3em; }"
+            ".Artifact .artifactScoreText{ position: absolute; font-size: 0.7em; opacity: 0.6; right: 0.3em; }",
         ];
         cssManager.addStyle(...cssStyle);
     }
