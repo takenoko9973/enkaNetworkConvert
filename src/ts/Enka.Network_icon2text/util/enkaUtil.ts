@@ -32,13 +32,17 @@ export function getLocale(): languages {
 }
 
 /**
+ * 要素から、"svelte"から始まるクラス名を取得
+ */
+export function getSvelteClassName(element: Element): string {
+    return Array.from(element.classList).filter((val) => val.match(/svelte/))[0] ?? "";
+}
+
+/**
  * 親要素から、適切なステータステキスト要素を生成
  */
 export function createStatTextElement(parentElement: Element): HTMLElement {
-    const className =
-        Array.from(parentElement.classList).filter((val) =>
-            val.match(/svelte/)
-        )[0] ?? "";
+    const className = getSvelteClassName(parentElement);
     const tag = parentElement.lastElementChild?.tagName ?? "div";
 
     const statText = document.createElement(tag);
@@ -63,7 +67,11 @@ export function addStatTextElement(parentElement: Element, addSep = true): HTMLE
         parentElement.getElementsByClassName("Icon")[0];
 
     const statText = createStatTextElement(parentElement);
-    if (addSep) icon.after(getSeparateElement());
+    if (addSep) {
+        const sep = getSeparateElement();
+        sep.classList.add(getSvelteClassName(parentElement));
+        icon.after(sep);
+    }
     icon.after(statText);
 
     parentElement.removeChild(icon);

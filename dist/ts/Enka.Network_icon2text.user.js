@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Enka.Network_lang-jp_mod_by_takenoko
 // @namespace    http://tampermonkey.net/
-// @version      1.0.1
+// @version      1.0.2
 // @description  Enka.Network 日本語化スクリプト
 // @author       Takenoko-ya
 // @updateURL    https://github.com/takenoko9973/enkaNetworkConvert/raw/master/dist/ts/Enka.Network_icon2text.user.js
@@ -25,8 +25,11 @@
         const language = document.getElementsByClassName("Dropdown-selectedItem")[0];
         return language.innerText;
     }
+    function getSvelteClassName(element) {
+        return Array.from(element.classList).filter((val) => val.match(/svelte/))[0] ?? "";
+    }
     function createStatTextElement(parentElement) {
-        const className = Array.from(parentElement.classList).filter((val) => val.match(/svelte/))[0] ?? "";
+        const className = getSvelteClassName(parentElement);
         const tag = parentElement.lastElementChild?.tagName ?? "div";
         const statText = document.createElement(tag);
         statText.classList.add("statText");
@@ -39,8 +42,11 @@
         const icon = parentElement.getElementsByClassName("ShadedSvgIcon")[0] ??
             parentElement.getElementsByClassName("Icon")[0];
         const statText = createStatTextElement(parentElement);
-        if (addSep)
-            icon.after(getSeparateElement());
+        if (addSep) {
+            const sep = getSeparateElement();
+            sep.classList.add(getSvelteClassName(parentElement));
+            icon.after(sep);
+        }
         icon.after(statText);
         parentElement.removeChild(icon);
         return statText;
@@ -334,7 +340,7 @@
         }
     }
 
-    const VERSION = "v1.0.1";
+    const VERSION = "v1.0.2";
     const BASE_ATK_CLASS = "BASE_ATTACK";
     const TIME_STAMP = "timeStamp";
     const SCORE_SELECT_DIV = "scoreSelectDiv";
@@ -742,20 +748,23 @@
         }
         createText() {
             const weaponImage = this.weapon[0].getElementsByTagName("figure")[0];
-            const weaponInfo = this.weapon[0].getElementsByTagName("content")[0];
-            const weaponName = weaponInfo.getElementsByTagName("h3")[0];
-            const weaponSubInfo = weaponInfo.getElementsByClassName("sub")[0];
-            const weaponRefine = weaponSubInfo.getElementsByClassName("refine")[0];
+            const weaponInfo = this.weapon[0].getElementsByClassName("weapon-caption")[0];
+            const weaponName = weaponInfo.getElementsByClassName("title")[0];
+            const weaponStatsInfo = weaponInfo.getElementsByClassName("stats")[0];
+            const weaponRefine = weaponInfo.getElementsByClassName("refine")[0];
             weaponImage.style.width = "30%";
             weaponInfo.style.paddingRight = "0%";
             weaponName.style.fontWeight = "bold";
-            weaponSubInfo.style.display = "flex";
             weaponRefine.after(getSeparateElement());
-            const subStat = weaponInfo.getElementsByClassName("Substat");
-            addStatTextElement(subStat[0]);
-            if (!subStat[1])
-                return;
-            addStatTextElement(subStat[1]);
+            const subStats = Array.from(weaponStatsInfo.getElementsByClassName("Substat"));
+            for (const subStat of subStats) {
+                addStatTextElement(subStat);
+                subStat.style.display = "flex";
+                subStat.style.alignItems = "center";
+                subStat.style.marginRight = "0%";
+                subStat.style.marginBottom = "1%";
+                subStat.style.paddingTop = "3%";
+            }
         }
         writeText() {
             const subStat = this.weapon[0].getElementsByClassName("Substat");
@@ -855,8 +864,6 @@
             cssManager.addStyle(".statText { font-weight: bold; font-size: 100%; }");
         }
         const cssStyle = [
-            ".Card .Icon{ display:none !important }",
-            ".stats.svelte-j8ec66 .Substat { display: flex; align-items: center; margin-right: 0em; padding-top: 3%; margin-bottom: 1%; }",
             ".substats.svelte-17qi811 > .Substat { display: flex; align-items: center; padding-right: 1.0em; white-space: nowrap; }",
             ".Artifact.svelte-17qi811 .ArtifactIcon { top: -37%; left: -6%; width: 28%; }",
             ".mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(1) { display: flex; align-items: center; top: 5%; line-height:0.9; max-height: 25%; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; justify-content: flex-end; align-self: unset; margin-left: unset;}",

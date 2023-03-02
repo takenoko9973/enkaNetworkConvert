@@ -16,27 +16,39 @@ export class Weapon implements CreateWriteRoutine {
     }
 
     createText() {
-        const weaponImage = this.weapon[0].getElementsByTagName("figure")[0];  // 武器画像
-        const weaponInfo = this.weapon[0].getElementsByTagName("content")[0] as HTMLElement;
+        const weaponImage = this.weapon[0].getElementsByTagName("figure")[0]; // 武器画像
+        const weaponInfo = this.weapon[0].getElementsByClassName(
+            "weapon-caption"
+        )[0] as HTMLElement;
 
-        const weaponName = weaponInfo.getElementsByTagName("h3")[0];
-        const weaponSubInfo = weaponInfo.getElementsByClassName("sub")[0] as HTMLElement;
-        const weaponRefine = weaponSubInfo.getElementsByClassName("refine")[0] as HTMLElement;
+        const weaponName = weaponInfo.getElementsByClassName(
+            "title"
+        )[0] as HTMLElement;
+        const weaponStatsInfo = weaponInfo.getElementsByClassName(
+            "stats"
+        )[0] as HTMLElement;
+        const weaponRefine = weaponInfo.getElementsByClassName(
+            "refine"
+        )[0] as HTMLElement;
 
         weaponImage.style.width = "30%";
 
         weaponInfo.style.paddingRight = "0%";
         weaponName.style.fontWeight = "bold";
 
-        weaponSubInfo.style.display = "flex";
         weaponRefine.after(getSeparateElement());
 
-        const subStat = weaponInfo.getElementsByClassName("Substat");
-        addStatTextElement(subStat[0]);
-
-        // サブステータス
-        if (!subStat[1]) return;
-        addStatTextElement(subStat[1]);
+        const subStats = Array.from(
+            weaponStatsInfo.getElementsByClassName("Substat")
+        ) as HTMLElement[];
+        for (const subStat of subStats) {
+            addStatTextElement(subStat);
+            subStat.style.display = "flex";
+            subStat.style.alignItems = "center";
+            subStat.style.marginRight = "0%";
+            subStat.style.marginBottom = "1%";
+            subStat.style.paddingTop = "3%";
+        }
     }
 
     writeText() {
