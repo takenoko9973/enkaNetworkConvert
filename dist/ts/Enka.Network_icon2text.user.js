@@ -521,7 +521,7 @@
                 label.setAttribute("for", id);
                 label.setAttribute("type", "radio");
                 label.setAttribute("data-type", "OUTLINE");
-                label.classList.add(scoreType.key, "radbox", "Button", "label", "svelte-1gbd2i6");
+                label.classList.add(scoreType.key, "radbox", "Button", "label", "svelte-6y8083");
                 scoreModeGroup.appendChild(radio);
                 scoreModeGroup.appendChild(label);
             }
@@ -635,7 +635,7 @@
                 if (scoreBox)
                     continue;
                 scoreBox = document.createElement("div");
-                scoreBox.classList.add("artifactScoreText", "svelte-1ujofp1");
+                scoreBox.classList.add("artifactScoreText", getSvelteClassName(artifact));
                 artifact.appendChild(scoreBox);
             }
             if (document.getElementById("extraData"))
@@ -649,10 +649,10 @@
             exParam.style.marginTop = "-0.5em";
             exParam.style.textAlign = "right";
             exParam.style.fontSize = "0.8em";
-            exParam.classList.add("svelte-17qi811");
+            exParam.classList.add(getSvelteClassName(artifacts[0]));
             artifactSection.appendChild(exParam);
             const cssStyle = [
-                ".Artifact > .artifactScoreText{ position: absolute; font-size: 0.7em; opacity: 0.6; right: 0.3em; }"
+                ".Artifact .artifactScoreText{ position: absolute; font-size: 0.7em; opacity: 0.6; right: 0.3em; }",
             ];
             cssManager.addStyle(...cssStyle);
         }
@@ -721,6 +721,15 @@
                     addStatTextElement(subStat);
                 }
             }
+            const svelte = getSvelteClassName(this.artifacts[0]);
+            const cssStyle = [
+                ".Artifact.${svelte} .ArtifactIcon { top: -37%; left: -6%; width: 28%; }",
+                ".substats.${svelte} > .Substat { display: flex; align-items: center; padding-right: 1.0em; white-space: nowrap; }",
+                ".mainstat.${svelte} > div.${svelte}:nth-child(1) { display: flex; align-items: center; top: 5%; line-height:0.9; max-height: 25%; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; justify-content: flex-end; align-self: unset; margin-left: unset;}",
+                ".mainstat.${svelte} > div.${svelte}:nth-child(2) { padding: 4% 0%; }",
+                ".mainstat.${svelte} > div.${svelte}:nth-child(3) { max-height: 25% }",
+            ].map(css => fmt(css, { svelte: svelte }));
+            cssManager.addStyle(...cssStyle);
         }
         writeText() {
             for (const artifact of Array.from(this.artifacts)) {
@@ -863,14 +872,6 @@
         else {
             cssManager.addStyle(".statText { font-weight: bold; font-size: 100%; }");
         }
-        const cssStyle = [
-            ".substats.svelte-17qi811 > .Substat { display: flex; align-items: center; padding-right: 1.0em; white-space: nowrap; }",
-            ".Artifact.svelte-17qi811 .ArtifactIcon { top: -37%; left: -6%; width: 28%; }",
-            ".mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(1) { display: flex; align-items: center; top: 5%; line-height:0.9; max-height: 25%; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; justify-content: flex-end; align-self: unset; margin-left: unset;}",
-            ".mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(2) { padding: 4% 0%; }",
-            ".mainstat.svelte-17qi811 > div.svelte-17qi811:nth-child(3) { max-height: 25% }",
-        ];
-        cssManager.addStyle(...cssStyle);
         const cardSection = document.getElementsByClassName("section");
         cardSection[0].style.width = "36%";
         cardSection[1].style.width = "24%";

@@ -94,7 +94,7 @@ export class SelectScoreType implements CreateWriteRoutine {
                 "radbox",
                 "Button",
                 "label",
-                "svelte-1gbd2i6"
+                "svelte-6y8083"
             );
 
             scoreModeGroup.appendChild(radio);
