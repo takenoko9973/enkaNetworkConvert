@@ -454,33 +454,6 @@
         return format(...Object.values(values).map((value) => value ?? ""));
     }
 
-    var _scoreType_id$1, _scoreType_key$1, _scoreType_correction$1;
-    let scoreType$1 = class scoreType {
-        constructor(id, key, correction) {
-            _scoreType_id$1.set(this, void 0);
-            _scoreType_key$1.set(this, void 0);
-            _scoreType_correction$1.set(this, void 0);
-            __classPrivateFieldSet(this, _scoreType_id$1, id, "f");
-            __classPrivateFieldSet(this, _scoreType_key$1, key, "f");
-            __classPrivateFieldSet(this, _scoreType_correction$1, correction, "f");
-        }
-        get id() {
-            return __classPrivateFieldGet(this, _scoreType_id$1, "f");
-        }
-        get key() {
-            return __classPrivateFieldGet(this, _scoreType_key$1, "f");
-        }
-        get correction() {
-            return __classPrivateFieldGet(this, _scoreType_correction$1, "f");
-        }
-    };
-    _scoreType_id$1 = new WeakMap(), _scoreType_key$1 = new WeakMap(), _scoreType_correction$1 = new WeakMap();
-    const SCORE_TYPES = {
-        HP: new scoreType$1("H", "HP_PERCENT", 1),
-        ATTACK: new scoreType$1("A", "ATTACK_PERCENT", 1),
-        DEFENSE: new scoreType$1("D", "DEFENSE_PERCENT", 0.8),
-        EM: new scoreType$1("EM", "ELEMENT_MASTERY", 0.25),
-    };
     class SelectScoreType {
         static get instance() {
             if (!this._instance) {
@@ -571,7 +544,7 @@
         }
     }
     _scoreType_id = new WeakMap(), _scoreType_key = new WeakMap(), _scoreType_correction = new WeakMap();
-    const SCORE_TYPE = {
+    const SCORE_TYPES = {
         HP: new scoreType("H", "HP_PERCENT", 1),
         ATTACK: new scoreType("A", "ATTACK_PERCENT", 1),
         DEFENSE: new scoreType("D", "DEFENSE_PERCENT", 0.8),
@@ -603,8 +576,8 @@
                         score += Number(subStatAmount[i]);
                         break;
                     default:
-                        for (const typeKey in SCORE_TYPE) {
-                            const scoreType = SCORE_TYPE[typeKey];
+                        for (const typeKey in SCORE_TYPES) {
+                            const scoreType = SCORE_TYPES[typeKey];
                             if (key != scoreType.key)
                                 continue;
                             if (scoreH != scoreType.id)
@@ -676,8 +649,8 @@
             const critRatio = critDMG / critRate;
             let type = "";
             const scoreH = SelectScoreType.instance.getScoreType();
-            for (const typeKey in SCORE_TYPE) {
-                const scoreType = SCORE_TYPE[typeKey];
+            for (const typeKey in SCORE_TYPES) {
+                const scoreType = SCORE_TYPES[typeKey];
                 if (scoreH != scoreType.id)
                     continue;
                 type = optionLocale.getLocaleSub(scoreType.key);

@@ -29,7 +29,7 @@ class scoreType {
 }
 
 // スコア計算基準指定 H:HP, A:攻撃力, D:防御力
-export const SCORE_TYPE: { [key: string]: scoreType } = {
+export const SCORE_TYPES: { [key: string]: scoreType } = {
     HP: new scoreType("H", "HP_PERCENT", 1),
     ATTACK: new scoreType("A", "ATTACK_PERCENT", 1),
     DEFENSE: new scoreType("D", "DEFENSE_PERCENT", 0.8),
@@ -73,8 +73,8 @@ export class ArtifactScoring implements CreateWriteRoutine {
                     break;
                 default:
                     // 指定のステータスをスコア換算
-                    for (const typeKey in SCORE_TYPE) {
-                        const scoreType = SCORE_TYPE[typeKey];
+                    for (const typeKey in SCORE_TYPES) {
+                        const scoreType = SCORE_TYPES[typeKey];
                         if (key != scoreType.key) continue;
                         if (scoreH != scoreType.id) continue;
 
@@ -170,8 +170,8 @@ export class ArtifactScoring implements CreateWriteRoutine {
 
         let type = "";
         const scoreH = SelectScoreType.instance.getScoreType();
-        for (const typeKey in SCORE_TYPE) {
-            const scoreType = SCORE_TYPE[typeKey];
+        for (const typeKey in SCORE_TYPES) {
+            const scoreType = SCORE_TYPES[typeKey];
             if (scoreH != scoreType.id) continue;
 
             type = optionLocale.getLocaleSub(scoreType.key);

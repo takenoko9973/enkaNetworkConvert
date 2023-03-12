@@ -1,6 +1,7 @@
 import { SCORE_RADIO_NAME, SCORE_SELECT_DIV, cssManager, optionLocale } from "../../myConst";
 import { localeKeys } from "../../types/localeKeys";
 import { CreateWriteRoutine } from "../createWriteRoutine";
+import { SCORE_TYPES } from "./artifactScoring";
 
 class scoreType {
     #id;
@@ -23,14 +24,6 @@ class scoreType {
         return this.#correction;
     }
 }
-
-// スコア計算基準指定 H:HP, A:攻撃力, D:防御力
-export const SCORE_TYPES: { [key: string]: scoreType } = {
-    HP: new scoreType("H", "HP_PERCENT", 1),
-    ATTACK: new scoreType("A", "ATTACK_PERCENT", 1),
-    DEFENSE: new scoreType("D", "DEFENSE_PERCENT", 0.8),
-    EM: new scoreType("EM", "ELEMENT_MASTERY", 0.25),
-};
 
 export class SelectScoreType implements CreateWriteRoutine {
     private static _instance: SelectScoreType;
