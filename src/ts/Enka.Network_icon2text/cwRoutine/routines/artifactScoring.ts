@@ -34,6 +34,7 @@ export const SCORE_TYPES: { [key: string]: scoreType } = {
     ATTACK: new scoreType("A", "ATTACK_PERCENT", 1),
     DEFENSE: new scoreType("D", "DEFENSE_PERCENT", 0.8),
     EM: new scoreType("EM", "ELEMENT_MASTERY", 0.25),
+    ER: new scoreType("ER", "CHARGE_EFFICIENCY", 0.9),
 };
 
 export class ArtifactScoring implements CreateWriteRoutine {

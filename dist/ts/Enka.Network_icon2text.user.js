@@ -340,7 +340,7 @@
         }
     }
 
-    const VERSION = "v1.0.2";
+    const VERSION = "v1.1.0";
     const BASE_ATK_CLASS = "BASE_ATTACK";
     const TIME_STAMP = "timeStamp";
     const SCORE_SELECT_DIV = "scoreSelectDiv";
@@ -549,6 +549,7 @@
         ATTACK: new scoreType("A", "ATTACK_PERCENT", 1),
         DEFENSE: new scoreType("D", "DEFENSE_PERCENT", 0.8),
         EM: new scoreType("EM", "ELEMENT_MASTERY", 0.25),
+        ER: new scoreType("ER", "CHARGE_EFFICIENCY", 0.9),
     };
     class ArtifactScoring {
         static get instance() {
