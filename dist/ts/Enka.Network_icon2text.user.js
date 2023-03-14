@@ -540,6 +540,60 @@
     };
     _Artifact_element = new WeakMap(), _Artifact_star = new WeakMap(), _Artifact_level = new WeakMap(), _Artifact_mainStat = new WeakMap(), _Artifact_subStats = new WeakMap();
 
+    var _ArtifactSets_element, _ArtifactSets_artifacts;
+    class ArtifactSets {
+        constructor(artifactSets) {
+            _ArtifactSets_element.set(this, void 0);
+            _ArtifactSets_artifacts.set(this, []);
+            __classPrivateFieldSet(this, _ArtifactSets_element, artifactSets, "f");
+            const artifacts = artifactSets.getElementsByClassName("Artifact");
+            for (const artifact of Array.from(artifacts)) {
+                __classPrivateFieldGet(this, _ArtifactSets_artifacts, "f").push(new Artifact$1(artifact));
+            }
+        }
+        get element() {
+            return __classPrivateFieldGet(this, _ArtifactSets_element, "f");
+        }
+        get artifacts() {
+            return __classPrivateFieldGet(this, _ArtifactSets_artifacts, "f");
+        }
+        artifactNum() {
+            const equippingArtifacts = __classPrivateFieldGet(this, _ArtifactSets_artifacts, "f").filter((_artifact) => !_artifact.element.classList.contains("empty"));
+            return equippingArtifacts.length;
+        }
+        eachScore(key) {
+            return __classPrivateFieldGet(this, _ArtifactSets_artifacts, "f").map((_artifact) => _artifact.artifactScore(key));
+        }
+        sumScore(key) {
+            return this.eachScore(key).reduce((sum, score) => sum + score, 0);
+        }
+        avgScore(key) {
+            const artifactNum = this.artifactNum();
+            if (artifactNum == 0) {
+                return 0;
+            }
+            else {
+                return this.sumScore(key) / artifactNum;
+            }
+        }
+        eachRollValue(...keys) {
+            return __classPrivateFieldGet(this, _ArtifactSets_artifacts, "f").map((_artifact) => _artifact.rollValue(...keys));
+        }
+        sumRollValue(...keys) {
+            return this.eachRollValue(...keys).reduce((sum, rv) => sum + rv, 0);
+        }
+        avgRollValue(...keys) {
+            const artifactNum = __classPrivateFieldGet(this, _ArtifactSets_artifacts, "f").length;
+            if (artifactNum == 0) {
+                return 0;
+            }
+            else {
+                return this.sumRollValue(...keys) / artifactNum;
+            }
+        }
+    }
+    _ArtifactSets_element = new WeakMap(), _ArtifactSets_artifacts = new WeakMap();
+
     function characterStats() {
         const charaStatsTable = document.getElementsByClassName("StatsTable")[0];
         const statsList = Array.from(charaStatsTable.children).filter((row) => Array.from(row.classList).indexOf("row") !== -1);
@@ -567,26 +621,35 @@
         return format(...Object.values(values).map((value) => value ?? ""));
     }
 
+    var _scoreType_id, _scoreType_key;
+    class scoreType {
+        constructor(id, key) {
+            _scoreType_id.set(this, void 0);
+            _scoreType_key.set(this, void 0);
+            __classPrivateFieldSet(this, _scoreType_id, id, "f");
+            __classPrivateFieldSet(this, _scoreType_key, key, "f");
+        }
+        get id() {
+            return __classPrivateFieldGet(this, _scoreType_id, "f");
+        }
+        get key() {
+            return __classPrivateFieldGet(this, _scoreType_key, "f");
+        }
+    }
+    _scoreType_id = new WeakMap(), _scoreType_key = new WeakMap();
+    const SCORE_TYPES = {
+        HP: new scoreType("H", "HP_PERCENT"),
+        ATTACK: new scoreType("A", "ATTACK_PERCENT"),
+        DEFENSE: new scoreType("D", "DEFENSE_PERCENT"),
+        EM: new scoreType("EM", "ELEMENT_MASTERY"),
+        ER: new scoreType("ER", "CHARGE_EFFICIENCY"),
+    };
     class SelectScoreType {
         static get instance() {
             if (!this._instance) {
                 this._instance = new SelectScoreType();
             }
             return this._instance;
-        }
-        getScoreTypeId() {
-            const checkedRadio = document.querySelector(`input:checked[name=${SCORE_RADIO_NAME}]`);
-            return checkedRadio?.value ?? SCORE_TYPES.ATTACK.key;
-        }
-        getScoreTypeKey() {
-            const scoreH = this.getScoreTypeId();
-            for (const typeKey in SCORE_TYPES) {
-                const scoreType = SCORE_TYPES[typeKey];
-                if (scoreH != scoreType.id)
-                    continue;
-                return scoreType.key;
-            }
-            return "ATTACK_PERCENT";
         }
         createText() {
             const cardToggles = document.getElementsByClassName("CardToggles")[0];
@@ -638,45 +701,32 @@
             if (!scoreSelectDiv)
                 return;
             const scoreSelectInfo = scoreSelectDiv.children[0];
-            scoreSelectInfo.innerText = optionLocale.getLocale(scoreSelectInfo.classList[0]);
+            scoreSelectInfo.textContent = optionLocale.getLocale(scoreSelectInfo.classList[0]);
             const scoreButtons = scoreSelectDiv.getElementsByClassName("Button");
             for (const label of Array.from(scoreButtons)) {
-                label.innerText = optionLocale.getLocaleSub(label.classList[0]);
+                label.textContent = optionLocale.getLocaleSub(label.classList[0]);
             }
+        }
+        getScoreTypeId() {
+            const checkedRadio = document.querySelector(`input:checked[name=${SCORE_RADIO_NAME}]`);
+            return checkedRadio?.value ?? SCORE_TYPES.ATTACK.key;
+        }
+        getScoreTypeKey() {
+            const scoreH = this.getScoreTypeId();
+            for (const typeKey in SCORE_TYPES) {
+                const scoreType = SCORE_TYPES[typeKey];
+                if (scoreH != scoreType.id)
+                    continue;
+                return scoreType.key;
+            }
+            return "ATTACK_PERCENT";
         }
     }
 
-    var _scoreType_id, _scoreType_key, _scoreType_correction, _ArtifactScoring_artifacts;
-    class scoreType {
-        constructor(id, key, correction) {
-            _scoreType_id.set(this, void 0);
-            _scoreType_key.set(this, void 0);
-            _scoreType_correction.set(this, void 0);
-            __classPrivateFieldSet(this, _scoreType_id, id, "f");
-            __classPrivateFieldSet(this, _scoreType_key, key, "f");
-            __classPrivateFieldSet(this, _scoreType_correction, correction, "f");
-        }
-        get id() {
-            return __classPrivateFieldGet(this, _scoreType_id, "f");
-        }
-        get key() {
-            return __classPrivateFieldGet(this, _scoreType_key, "f");
-        }
-        get correction() {
-            return __classPrivateFieldGet(this, _scoreType_correction, "f");
-        }
-    }
-    _scoreType_id = new WeakMap(), _scoreType_key = new WeakMap(), _scoreType_correction = new WeakMap();
-    const SCORE_TYPES = {
-        HP: new scoreType("H", "HP_PERCENT", 1),
-        ATTACK: new scoreType("A", "ATTACK_PERCENT", 1),
-        DEFENSE: new scoreType("D", "DEFENSE_PERCENT", 0.8),
-        EM: new scoreType("EM", "ELEMENT_MASTERY", 0.25),
-        ER: new scoreType("ER", "CHARGE_EFFICIENCY", 0.9),
-    };
+    var _ArtifactScoring_artifactSets;
     class ArtifactScoring {
         constructor() {
-            _ArtifactScoring_artifacts.set(this, []);
+            _ArtifactScoring_artifactSets.set(this, void 0);
         }
         static get instance() {
             if (!this._instance) {
@@ -684,33 +734,18 @@
             }
             return this._instance;
         }
-        getExtraText(ratio, scoreType, score) {
-            const ratioFixed = ratio.toFixed(1);
-            const avgScoreFixed = (score / __classPrivateFieldGet(this, _ArtifactScoring_artifacts, "f").length).toFixed(1);
-            const scoreFixed = score.toFixed(1);
-            return fmt(optionLocale.getLocale("CARD_EXTRA_INFO"), {
-                critRatio: ratioFixed,
-                scoreType: scoreType,
-                avgScore: avgScoreFixed,
-                sumScore: scoreFixed,
-            });
-        }
         createText() {
-            const artifacts = document.getElementsByClassName("Artifact");
-            __classPrivateFieldSet(this, _ArtifactScoring_artifacts, [], "f");
-            for (const artifact of Array.from(artifacts)) {
-                __classPrivateFieldGet(this, _ArtifactScoring_artifacts, "f").push(new Artifact$1(artifact));
-                let scoreBox = artifact.getElementsByClassName("artifactScoreText")[0];
+            __classPrivateFieldSet(this, _ArtifactScoring_artifactSets, new ArtifactSets(document.getElementsByClassName("section right")[0]), "f");
+            for (const artifact of __classPrivateFieldGet(this, _ArtifactScoring_artifactSets, "f").artifacts) {
+                const artifactElement = artifact.element;
+                let scoreBox = artifactElement.getElementsByClassName("artifactScoreText")[0];
                 if (scoreBox)
                     continue;
                 scoreBox = document.createElement("div");
-                scoreBox.classList.add("artifactScoreText", getSvelteClassName(artifact));
-                artifact.appendChild(scoreBox);
+                scoreBox.classList.add("artifactScoreText", getSvelteClassName(artifactElement));
+                artifactElement.appendChild(scoreBox);
             }
             if (document.getElementById("extraData"))
-                return;
-            const artifactSection = document.getElementsByClassName("section")[2];
-            if (!artifactSection)
                 return;
             const exParam = document.createElement("div");
             exParam.id = "extraData";
@@ -718,34 +753,48 @@
             exParam.style.marginTop = "-0.5em";
             exParam.style.textAlign = "right";
             exParam.style.fontSize = "0.8em";
-            exParam.classList.add(getSvelteClassName(artifacts[0]));
-            artifactSection.appendChild(exParam);
+            exParam.classList.add(getSvelteClassName(__classPrivateFieldGet(this, _ArtifactScoring_artifactSets, "f").artifacts[0].element));
+            __classPrivateFieldGet(this, _ArtifactScoring_artifactSets, "f").element.appendChild(exParam);
             const cssStyle = [
                 ".Artifact .artifactScoreText{ position: absolute; font-size: 0.7em; opacity: 0.6; right: 0.3em; }",
             ];
             cssManager.addStyle(...cssStyle);
         }
         writeText() {
-            let sumScore = 0;
+            if (!__classPrivateFieldGet(this, _ArtifactScoring_artifactSets, "f"))
+                return;
             const extraText = document.getElementById("extraData");
             const selectScoreType = SelectScoreType.instance;
+            const artifacts = __classPrivateFieldGet(this, _ArtifactScoring_artifactSets, "f").artifacts;
             const scoreTypeKey = selectScoreType.getScoreTypeKey();
-            for (const artifact of __classPrivateFieldGet(this, _ArtifactScoring_artifacts, "f")) {
+            for (const artifact of artifacts) {
                 const score = artifact.artifactScore(scoreTypeKey);
                 const scoreBox = artifact.element.getElementsByClassName("artifactScoreText")[0];
                 scoreBox.textContent = score.toFixed(1);
-                sumScore += score;
             }
             const critRate = characterStat("CRITICAL");
             const critDMG = characterStat("CRITICAL_HURT");
             const critRatio = critDMG / critRate;
-            const type = optionLocale.getLocaleSub(selectScoreType.getScoreTypeKey());
+            const typeName = optionLocale.getLocaleSub(scoreTypeKey);
+            const sumScore = __classPrivateFieldGet(this, _ArtifactScoring_artifactSets, "f").sumScore(scoreTypeKey);
+            const avgScore = __classPrivateFieldGet(this, _ArtifactScoring_artifactSets, "f").avgScore(scoreTypeKey);
             if (!extraText)
                 return;
-            extraText.textContent = this.getExtraText(critRatio, type, sumScore);
+            extraText.textContent = this.getExtraText(critRatio, typeName, sumScore, avgScore);
+        }
+        getExtraText(ratio, scoreTypeName, sumScore, avgScore) {
+            const ratioFixed = ratio.toFixed(1);
+            const sumScoreFixed = sumScore.toFixed(1);
+            const avgScoreFixed = avgScore.toFixed(1);
+            return fmt(optionLocale.getLocale("CARD_EXTRA_INFO"), {
+                critRatio: ratioFixed,
+                scoreType: scoreTypeName,
+                avgScore: avgScoreFixed,
+                sumScore: sumScoreFixed,
+            });
         }
     }
-    _ArtifactScoring_artifacts = new WeakMap();
+    _ArtifactScoring_artifactSets = new WeakMap();
 
     function innerOptionText(statElement, isSub = false) {
         const statText = statElement?.getElementsByClassName("statText")[0];

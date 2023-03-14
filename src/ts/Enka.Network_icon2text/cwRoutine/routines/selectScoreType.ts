@@ -1,8 +1,38 @@
-import { SCORE_RADIO_NAME, SCORE_SELECT_DIV, cssManager, optionLocale } from "../../myConst";
+import {
+    SCORE_RADIO_NAME,
+    SCORE_SELECT_DIV,
+    cssManager,
+    optionLocale,
+} from "../../myConst";
 import { statsSubOptionKey } from "../../types/characterStatKey";
 import { localeKeys } from "../../types/localeKeys";
 import { CreateWriteRoutine } from "../createWriteRoutine";
-import { SCORE_TYPES } from "./artifactScoring";
+
+class scoreType {
+    #id;
+    #key;
+
+    constructor(id: string, key: statsSubOptionKey) {
+        this.#id = id;
+        this.#key = key;
+    }
+
+    get id() {
+        return this.#id;
+    }
+    get key() {
+        return this.#key;
+    }
+}
+
+// スコア計算基準指定 H:HP, A:攻撃力, D:防御力
+const SCORE_TYPES: { [key: string]: scoreType } = {
+    HP: new scoreType("H", "HP_PERCENT"),
+    ATTACK: new scoreType("A", "ATTACK_PERCENT"),
+    DEFENSE: new scoreType("D", "DEFENSE_PERCENT"),
+    EM: new scoreType("EM", "ELEMENT_MASTERY"),
+    ER: new scoreType("ER", "CHARGE_EFFICIENCY"),
+};
 
 export class SelectScoreType implements CreateWriteRoutine {
     private static _instance: SelectScoreType;
@@ -13,25 +43,6 @@ export class SelectScoreType implements CreateWriteRoutine {
         }
 
         return this._instance;
-    }
-
-    getScoreTypeId(): string {
-        const checkedRadio = document.querySelector(
-            `input:checked[name=${SCORE_RADIO_NAME}]`
-        ) as HTMLInputElement;
-        return checkedRadio?.value ?? SCORE_TYPES.ATTACK.key;
-    }
-
-    getScoreTypeKey(): statsSubOptionKey {
-        const scoreH = this.getScoreTypeId();
-        for (const typeKey in SCORE_TYPES) {
-            const scoreType = SCORE_TYPES[typeKey];
-            if (scoreH != scoreType.id) continue;
-
-            return scoreType.key;
-        }
-
-        return "ATTACK_PERCENT";
     }
 
     createText() {
@@ -105,17 +116,34 @@ export class SelectScoreType implements CreateWriteRoutine {
         if (!scoreSelectDiv) return;
 
         // スコア方式選択説明テキスト
-        const scoreSelectInfo = scoreSelectDiv.children[0] as HTMLElement;
-        scoreSelectInfo.innerText = optionLocale.getLocale(
+        const scoreSelectInfo = scoreSelectDiv.children[0];
+        scoreSelectInfo.textContent = optionLocale.getLocale(
             scoreSelectInfo.classList[0]
         );
 
         // スコア方式選択ボタン
-        const scoreButtons = scoreSelectDiv.getElementsByClassName(
-            "Button"
-        ) as HTMLCollectionOf<HTMLElement>;
+        const scoreButtons = scoreSelectDiv.getElementsByClassName("Button");
         for (const label of Array.from(scoreButtons)) {
-            label.innerText = optionLocale.getLocaleSub(label.classList[0]);
+            label.textContent = optionLocale.getLocaleSub(label.classList[0]);
         }
+    }
+
+    getScoreTypeId(): string {
+        const checkedRadio = document.querySelector(
+            `input:checked[name=${SCORE_RADIO_NAME}]`
+        ) as HTMLInputElement;
+        return checkedRadio?.value ?? SCORE_TYPES.ATTACK.key;
+    }
+
+    getScoreTypeKey(): statsSubOptionKey {
+        const scoreH = this.getScoreTypeId();
+        for (const typeKey in SCORE_TYPES) {
+            const scoreType = SCORE_TYPES[typeKey];
+            if (scoreH != scoreType.id) continue;
+
+            return scoreType.key;
+        }
+
+        return "ATTACK_PERCENT";
     }
 }
