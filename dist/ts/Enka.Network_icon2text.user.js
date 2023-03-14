@@ -427,6 +427,119 @@
         return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
     }
 
+    var _ArtifactSubStat_statName, _ArtifactSubStat_stat, _ArtifactSubStat_roll, _Artifact_element, _Artifact_star, _Artifact_level, _Artifact_mainStat, _Artifact_subStats;
+    const STATS_OPTION_RATE = {
+        HP: Infinity,
+        ATTACK: Infinity,
+        DEFENSE: Infinity,
+        HP_PERCENT: 3,
+        ATTACK_PERCENT: 3,
+        DEFENSE_PERCENT: 15 / 4,
+        CRITICAL: 4,
+        CRITICAL_HURT: 2,
+        CHARGE_EFFICIENCY: 10 / 3,
+        ELEMENT_MASTERY: 12,
+    };
+    class ArtifactSubStat {
+        constructor(subStat) {
+            _ArtifactSubStat_statName.set(this, void 0);
+            _ArtifactSubStat_stat.set(this, 0);
+            _ArtifactSubStat_roll.set(this, []);
+            if (!subStat.classList.contains("Substat"))
+                return;
+            const rolls = subStat.getElementsByClassName("rolls")[0];
+            __classPrivateFieldSet(this, _ArtifactSubStat_statName, subStat.classList[1], "f");
+            __classPrivateFieldSet(this, _ArtifactSubStat_stat, Number(subStat.lastChild?.textContent?.replace("%", "")), "f");
+            Array.from(rolls.children).forEach((_roll) => {
+                __classPrivateFieldGet(this, _ArtifactSubStat_roll, "f").push(_roll.children.length);
+            });
+        }
+        get statKey() {
+            return __classPrivateFieldGet(this, _ArtifactSubStat_statName, "f");
+        }
+        get stat() {
+            return __classPrivateFieldGet(this, _ArtifactSubStat_stat, "f");
+        }
+        get rollValue() {
+            return __classPrivateFieldGet(this, _ArtifactSubStat_roll, "f")
+                .map((_roll) => 100 - 10 * (4 - _roll))
+                .reduce((_sumRV, _rv) => _sumRV + _rv);
+        }
+    }
+    _ArtifactSubStat_statName = new WeakMap(), _ArtifactSubStat_stat = new WeakMap(), _ArtifactSubStat_roll = new WeakMap();
+    let Artifact$1 = class Artifact {
+        constructor(artifact) {
+            _Artifact_element.set(this, void 0);
+            _Artifact_star.set(this, 0);
+            _Artifact_level.set(this, 0);
+            _Artifact_mainStat.set(this, void 0);
+            _Artifact_subStats.set(this, []);
+            __classPrivateFieldSet(this, _Artifact_element, artifact, "f");
+            if (!artifact.classList.contains("Artifact"))
+                return;
+            if (artifact.classList.contains("empty"))
+                return;
+            const elements = {};
+            elements["mainStat"] = artifact.getElementsByClassName("mainstat")[0];
+            elements["subStats"] = artifact.getElementsByClassName("substats")[0];
+            elements["stars"] = elements["mainStat"].getElementsByClassName("Stars")[0];
+            elements["level"] = elements["mainStat"].getElementsByClassName("level")[0];
+            __classPrivateFieldSet(this, _Artifact_star, elements["stars"].childElementCount, "f");
+            __classPrivateFieldSet(this, _Artifact_level, Number(elements["level"].textContent ?? "0"), "f");
+            __classPrivateFieldSet(this, _Artifact_mainStat, elements["mainStat"]
+                .classList[1], "f");
+            const subStats = elements["subStats"].getElementsByClassName("Substat");
+            for (const subStat of Array.from(subStats)) {
+                __classPrivateFieldGet(this, _Artifact_subStats, "f").push(new ArtifactSubStat(subStat));
+            }
+        }
+        get element() {
+            return __classPrivateFieldGet(this, _Artifact_element, "f");
+        }
+        get star() {
+            return __classPrivateFieldGet(this, _Artifact_star, "f");
+        }
+        get level() {
+            return __classPrivateFieldGet(this, _Artifact_level, "f");
+        }
+        get mainStatKey() {
+            return __classPrivateFieldGet(this, _Artifact_mainStat, "f");
+        }
+        get subStats() {
+            return __classPrivateFieldGet(this, _Artifact_subStats, "f");
+        }
+        artifactScore(key) {
+            const rate = STATS_OPTION_RATE.ATTACK_PERCENT / STATS_OPTION_RATE[key];
+            let score = 0;
+            for (const subStat of __classPrivateFieldGet(this, _Artifact_subStats, "f")) {
+                switch (subStat.statKey) {
+                    case "CRITICAL":
+                        score += subStat.stat * 2;
+                        break;
+                    case "CRITICAL_HURT":
+                        score += subStat.stat;
+                        break;
+                    case key:
+                        score += subStat.stat * rate;
+                        break;
+                }
+            }
+            return score;
+        }
+        rollValue(...keys) {
+            let rollValue = 0;
+            for (const subStat of __classPrivateFieldGet(this, _Artifact_subStats, "f")) {
+                if (!subStat.statKey)
+                    continue;
+                if (subStat.statKey in keys) {
+                    rollValue += subStat.rollValue;
+                }
+            }
+            return rollValue;
+        }
+    };
+    _Artifact_element = new WeakMap(), _Artifact_star = new WeakMap(), _Artifact_level = new WeakMap(), _Artifact_mainStat = new WeakMap(), _Artifact_subStats = new WeakMap();
+
     function characterStats() {
         const charaStatsTable = document.getElementsByClassName("StatsTable")[0];
         const statsList = Array.from(charaStatsTable.children).filter((row) => Array.from(row.classList).indexOf("row") !== -1);
@@ -461,9 +574,19 @@
             }
             return this._instance;
         }
-        getScoreType() {
+        getScoreTypeId() {
             const checkedRadio = document.querySelector(`input:checked[name=${SCORE_RADIO_NAME}]`);
             return checkedRadio?.value ?? SCORE_TYPES.ATTACK.key;
+        }
+        getScoreTypeKey() {
+            const scoreH = this.getScoreTypeId();
+            for (const typeKey in SCORE_TYPES) {
+                const scoreType = SCORE_TYPES[typeKey];
+                if (scoreH != scoreType.id)
+                    continue;
+                return scoreType.key;
+            }
+            return "ATTACK_PERCENT";
         }
         createText() {
             const cardToggles = document.getElementsByClassName("CardToggles")[0];
@@ -523,7 +646,7 @@
         }
     }
 
-    var _scoreType_id, _scoreType_key, _scoreType_correction;
+    var _scoreType_id, _scoreType_key, _scoreType_correction, _ArtifactScoring_artifacts;
     class scoreType {
         constructor(id, key, correction) {
             _scoreType_id.set(this, void 0);
@@ -552,48 +675,18 @@
         ER: new scoreType("ER", "CHARGE_EFFICIENCY", 0.9),
     };
     class ArtifactScoring {
+        constructor() {
+            _ArtifactScoring_artifacts.set(this, []);
+        }
         static get instance() {
             if (!this._instance) {
                 this._instance = new ArtifactScoring();
             }
             return this._instance;
         }
-        calcArtifactScore(artifact) {
-            let score = 0;
-            if (artifact.classList.contains("empty"))
-                return score;
-            const subStat = Array.from(artifact.getElementsByClassName("Substat"));
-            const subStatName = subStat.map((sub) => sub.classList[1]);
-            const subStatAmount = subStat.map((sub) => sub.lastChild.innerText.replace(/[^0-9.]/g, ""));
-            const subLen = subStat.length;
-            const scoreH = SelectScoreType.instance.getScoreType();
-            for (let i = 0; i < subLen; i++) {
-                const key = subStatName[i];
-                switch (key) {
-                    case "CRITICAL":
-                        score += Number(subStatAmount[i]) * 2;
-                        break;
-                    case "CRITICAL_HURT":
-                        score += Number(subStatAmount[i]);
-                        break;
-                    default:
-                        for (const typeKey in SCORE_TYPES) {
-                            const scoreType = SCORE_TYPES[typeKey];
-                            if (key != scoreType.key)
-                                continue;
-                            if (scoreH != scoreType.id)
-                                continue;
-                            score +=
-                                Number(subStatAmount[i]) * scoreType.correction;
-                            break;
-                        }
-                }
-            }
-            return score;
-        }
-        getExtraText(ratio, scoreType, avgScore, score) {
+        getExtraText(ratio, scoreType, score) {
             const ratioFixed = ratio.toFixed(1);
-            const avgScoreFixed = avgScore.toFixed(1);
+            const avgScoreFixed = (score / __classPrivateFieldGet(this, _ArtifactScoring_artifacts, "f").length).toFixed(1);
             const scoreFixed = score.toFixed(1);
             return fmt(optionLocale.getLocale("CARD_EXTRA_INFO"), {
                 critRatio: ratioFixed,
@@ -604,7 +697,9 @@
         }
         createText() {
             const artifacts = document.getElementsByClassName("Artifact");
+            __classPrivateFieldSet(this, _ArtifactScoring_artifacts, [], "f");
             for (const artifact of Array.from(artifacts)) {
+                __classPrivateFieldGet(this, _ArtifactScoring_artifacts, "f").push(new Artifact$1(artifact));
                 let scoreBox = artifact.getElementsByClassName("artifactScoreText")[0];
                 if (scoreBox)
                     continue;
@@ -632,36 +727,25 @@
         }
         writeText() {
             let sumScore = 0;
-            let avgScore = 0;
-            const scoreBoxes = document.getElementsByClassName("artifactScoreText");
             const extraText = document.getElementById("extraData");
-            for (const scoreBox of Array.from(scoreBoxes)) {
-                let score = 0.0;
-                const artifact = scoreBox.parentElement;
-                if (!artifact)
-                    continue;
-                score = this.calcArtifactScore(artifact);
+            const selectScoreType = SelectScoreType.instance;
+            const scoreTypeKey = selectScoreType.getScoreTypeKey();
+            for (const artifact of __classPrivateFieldGet(this, _ArtifactScoring_artifacts, "f")) {
+                const score = artifact.artifactScore(scoreTypeKey);
+                const scoreBox = artifact.element.getElementsByClassName("artifactScoreText")[0];
                 scoreBox.textContent = score.toFixed(1);
                 sumScore += score;
             }
-            avgScore = sumScore / 5;
             const critRate = characterStat("CRITICAL");
             const critDMG = characterStat("CRITICAL_HURT");
             const critRatio = critDMG / critRate;
-            let type = "";
-            const scoreH = SelectScoreType.instance.getScoreType();
-            for (const typeKey in SCORE_TYPES) {
-                const scoreType = SCORE_TYPES[typeKey];
-                if (scoreH != scoreType.id)
-                    continue;
-                type = optionLocale.getLocaleSub(scoreType.key);
-                break;
-            }
+            const type = optionLocale.getLocaleSub(selectScoreType.getScoreTypeKey());
             if (!extraText)
                 return;
-            extraText.textContent = this.getExtraText(critRatio, type, avgScore, sumScore);
+            extraText.textContent = this.getExtraText(critRatio, type, sumScore);
         }
     }
+    _ArtifactScoring_artifacts = new WeakMap();
 
     function innerOptionText(statElement, isSub = false) {
         const statText = statElement?.getElementsByClassName("statText")[0];

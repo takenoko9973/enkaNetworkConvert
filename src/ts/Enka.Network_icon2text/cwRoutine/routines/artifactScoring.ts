@@ -1,5 +1,6 @@
+import { Artifact } from "../../class/artifact";
 import { cssManager, optionLocale } from "../../myConst";
-import { localeKeys } from "../../types/localeKeys";
+import { statsSubOptionKey } from "../../types/characterStatKey";
 import { characterStat } from "../../util/characterStat";
 import { getSvelteClassName } from "../../util/enkaUtil";
 import { fmt } from "../../util/fmt";
@@ -9,12 +10,10 @@ import { SelectScoreType } from "./selectScoreType";
 class scoreType {
     #id;
     #key;
-    #correction;
 
-    constructor(id: string, key: localeKeys, correction: number) {
+    constructor(id: string, key: statsSubOptionKey) {
         this.#id = id;
         this.#key = key;
-        this.#correction = correction;
     }
 
     get id() {
@@ -23,18 +22,15 @@ class scoreType {
     get key() {
         return this.#key;
     }
-    get correction() {
-        return this.#correction;
-    }
 }
 
 // スコア計算基準指定 H:HP, A:攻撃力, D:防御力
 export const SCORE_TYPES: { [key: string]: scoreType } = {
-    HP: new scoreType("H", "HP_PERCENT", 1),
-    ATTACK: new scoreType("A", "ATTACK_PERCENT", 1),
-    DEFENSE: new scoreType("D", "DEFENSE_PERCENT", 0.8),
-    EM: new scoreType("EM", "ELEMENT_MASTERY", 0.25),
-    ER: new scoreType("ER", "CHARGE_EFFICIENCY", 0.9),
+    HP: new scoreType("H", "HP_PERCENT"),
+    ATTACK: new scoreType("A", "ATTACK_PERCENT"),
+    DEFENSE: new scoreType("D", "DEFENSE_PERCENT"),
+    EM: new scoreType("EM", "ELEMENT_MASTERY"),
+    ER: new scoreType("ER", "CHARGE_EFFICIENCY"),
 };
 
 export class ArtifactScoring implements CreateWriteRoutine {
@@ -48,55 +44,15 @@ export class ArtifactScoring implements CreateWriteRoutine {
         return this._instance;
     }
 
-    /**
-     * 聖遺物のスコアを計算
-     */
-    private calcArtifactScore(artifact: Element): number {
-        let score = 0;
-        if (artifact.classList.contains("empty")) return score;
-
-        const subStat = Array.from(artifact.getElementsByClassName("Substat"));
-        const subStatName = subStat.map((sub) => sub.classList[1]);
-        const subStatAmount = subStat.map((sub) =>
-            (sub.lastChild as HTMLElement).innerText.replace(/[^0-9.]/g, "")
-        );
-        const subLen = subStat.length;
-
-        const scoreH = SelectScoreType.instance.getScoreType();
-        for (let i = 0; i < subLen; i++) {
-            const key = subStatName[i] as localeKeys;
-            switch (key) {
-                case "CRITICAL":
-                    score += Number(subStatAmount[i]) * 2;
-                    break;
-                case "CRITICAL_HURT":
-                    score += Number(subStatAmount[i]);
-                    break;
-                default:
-                    // 指定のステータスをスコア換算
-                    for (const typeKey in SCORE_TYPES) {
-                        const scoreType = SCORE_TYPES[typeKey];
-                        if (key != scoreType.key) continue;
-                        if (scoreH != scoreType.id) continue;
-
-                        score +=
-                            Number(subStatAmount[i]) * scoreType.correction;
-                        break;
-                    }
-            }
-        }
-
-        return score;
-    }
+    #artifacts: Artifact[] = [];
 
     private getExtraText(
         ratio: number,
         scoreType: string,
-        avgScore: number,
         score: number
     ): string {
         const ratioFixed = ratio.toFixed(1);
-        const avgScoreFixed = avgScore.toFixed(1);
+        const avgScoreFixed = (score / this.#artifacts.length).toFixed(1);
         const scoreFixed = score.toFixed(1);
 
         return fmt(optionLocale.getLocale("CARD_EXTRA_INFO"), {
@@ -109,8 +65,11 @@ export class ArtifactScoring implements CreateWriteRoutine {
 
     createText() {
         const artifacts = document.getElementsByClassName("Artifact");
+        this.#artifacts = [];
 
         for (const artifact of Array.from(artifacts)) {
+            this.#artifacts.push(new Artifact(artifact));
+
             // スコア表示
             let scoreBox = artifact.getElementsByClassName(
                 "artifactScoreText"
@@ -148,42 +107,29 @@ export class ArtifactScoring implements CreateWriteRoutine {
 
     writeText() {
         let sumScore = 0;
-        let avgScore = 0;
-        const scoreBoxes = document.getElementsByClassName("artifactScoreText");
         const extraText = document.getElementById("extraData");
+        const selectScoreType = SelectScoreType.instance;
 
         // スコア計算
-        for (const scoreBox of Array.from(scoreBoxes)) {
-            let score = 0.0;
+        const scoreTypeKey = selectScoreType.getScoreTypeKey();
+        for (const artifact of this.#artifacts) {
+            const score = artifact.artifactScore(scoreTypeKey);
+            const scoreBox = artifact.element.getElementsByClassName("artifactScoreText")[0];
 
-            const artifact = scoreBox.parentElement;
-            if (!artifact) continue;
-
-            score = this.calcArtifactScore(artifact);
             scoreBox.textContent = score.toFixed(1);
             sumScore += score;
         }
-        avgScore = sumScore / 5;
 
         const critRate = characterStat("CRITICAL");
         const critDMG = characterStat("CRITICAL_HURT");
         const critRatio = critDMG / critRate;
 
-        let type = "";
-        const scoreH = SelectScoreType.instance.getScoreType();
-        for (const typeKey in SCORE_TYPES) {
-            const scoreType = SCORE_TYPES[typeKey];
-            if (scoreH != scoreType.id) continue;
-
-            type = optionLocale.getLocaleSub(scoreType.key);
-            break;
-        }
+        const type = optionLocale.getLocaleSub(selectScoreType.getScoreTypeKey());
 
         if (!extraText) return;
         extraText.textContent = this.getExtraText(
             critRatio,
             type,
-            avgScore,
             sumScore
         );
     }

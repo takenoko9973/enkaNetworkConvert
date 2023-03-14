@@ -1,29 +1,8 @@
 import { SCORE_RADIO_NAME, SCORE_SELECT_DIV, cssManager, optionLocale } from "../../myConst";
+import { statsSubOptionKey } from "../../types/characterStatKey";
 import { localeKeys } from "../../types/localeKeys";
 import { CreateWriteRoutine } from "../createWriteRoutine";
 import { SCORE_TYPES } from "./artifactScoring";
-
-class scoreType {
-    #id;
-    #key;
-    #correction;
-
-    constructor(id: string, key: localeKeys, correction: number) {
-        this.#id = id;
-        this.#key = key;
-        this.#correction = correction;
-    }
-
-    get id() {
-        return this.#id;
-    }
-    get key() {
-        return this.#key;
-    }
-    get correction() {
-        return this.#correction;
-    }
-}
 
 export class SelectScoreType implements CreateWriteRoutine {
     private static _instance: SelectScoreType;
@@ -36,11 +15,23 @@ export class SelectScoreType implements CreateWriteRoutine {
         return this._instance;
     }
 
-    getScoreType(): string {
+    getScoreTypeId(): string {
         const checkedRadio = document.querySelector(
             `input:checked[name=${SCORE_RADIO_NAME}]`
         ) as HTMLInputElement;
         return checkedRadio?.value ?? SCORE_TYPES.ATTACK.key;
+    }
+
+    getScoreTypeKey(): statsSubOptionKey {
+        const scoreH = this.getScoreTypeId();
+        for (const typeKey in SCORE_TYPES) {
+            const scoreType = SCORE_TYPES[typeKey];
+            if (scoreH != scoreType.id) continue;
+
+            return scoreType.key;
+        }
+
+        return "ATTACK_PERCENT";
     }
 
     createText() {
