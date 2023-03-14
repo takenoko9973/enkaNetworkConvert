@@ -1,7 +1,6 @@
-export type characterStatKey
+export type statsMainOptionKey
     = "HP"
     | "ATTACK"
-    | "DEFENSE"
     | "HP_PERCENT"
     | "ATTACK_PERCENT"
     | "DEFENSE_PERCENT"
@@ -18,3 +17,17 @@ export type characterStatKey
     | "ICE_ADD_HURT"
     | "ROCK_ADD_HURT"
     | "GRASS_ADD_HURT";
+
+export type statsSubOptionKey
+    = "HP"
+    | "ATTACK"
+    | "DEFENSE"
+    | "HP_PERCENT"
+    | "ATTACK_PERCENT"
+    | "DEFENSE_PERCENT"
+    | "CRITICAL"
+    | "CRITICAL_HURT"
+    | "CHARGE_EFFICIENCY"
+    | "ELEMENT_MASTERY";
+
+export type characterStatKey = statsMainOptionKey | statsSubOptionKey;
