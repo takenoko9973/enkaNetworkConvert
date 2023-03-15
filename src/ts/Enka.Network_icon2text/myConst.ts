@@ -6,6 +6,11 @@ export const VERSION = "v1.1.0";
 
 export const BASE_ATK_CLASS: localeKeys = "BASE_ATTACK";
 export const TIME_STAMP = "timeStamp";
+
+export const EVALUATION_SELECTOR = "evaluationSelectorRow";
+export const EVALUATION_SELECTOR_DIV = "evaluationSelectorDiv";
+export const EVALUATION_SELECTOR_NAME = "evaluationSelector";
+
 export const SCORE_SELECT_DIV = "scoreSelectDiv";
 export const SCORE_RADIO_NAME = "sSource";
 

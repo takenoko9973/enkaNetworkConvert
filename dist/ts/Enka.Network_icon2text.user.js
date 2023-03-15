@@ -163,6 +163,18 @@
             locale: "Friendship",
             subOption: undefined,
         },
+        EVALUATION_SELECTOR_INFO: {
+            locale: "Evaluation select",
+            subOption: undefined,
+        },
+        SCORING_METHOD: {
+            locale: "Scoring method",
+            subOption: undefined,
+        },
+        RV_METHOD: {
+            locale: "RV method",
+            subOption: undefined,
+        },
         SCORE_SELECT_INFO: {
             locale: "Score type",
             subOption: undefined,
@@ -269,6 +281,18 @@
             locale: "好感度",
             subOption: undefined,
         },
+        EVALUATION_SELECTOR_INFO: {
+            locale: "評価方式",
+            subOption: undefined,
+        },
+        SCORING_METHOD: {
+            locale: "スコア方式",
+            subOption: undefined,
+        },
+        RV_METHOD: {
+            locale: "RV方式",
+            subOption: undefined,
+        },
         SCORE_SELECT_INFO: {
             locale: "スコア計算方法",
             subOption: undefined,
@@ -343,6 +367,9 @@
     const VERSION = "v1.1.0";
     const BASE_ATK_CLASS = "BASE_ATTACK";
     const TIME_STAMP = "timeStamp";
+    const EVALUATION_SELECTOR = "evaluationSelectorRow";
+    const EVALUATION_SELECTOR_DIV = "evaluationSelectorDiv";
+    const EVALUATION_SELECTOR_NAME = "evaluationSelector";
     const SCORE_SELECT_DIV = "scoreSelectDiv";
     const SCORE_RADIO_NAME = "sSource";
     const optionLocale = TranslateKey2Word.instance;
@@ -850,19 +877,18 @@
         return Number(stat.replace(/[^0-9.-]/g, ""));
     }
 
-    var _a, _ArtifactEvaluateRoutine_instance, _ArtifactEvaluateRoutine_artifactSets;
+    var _a$1, _ArtifactEvaluateRoutine_instance, _ArtifactEvaluateRoutine_artifactSets;
     const EVALUATION_TEXT = "artifactEvaluateText";
     const EXTRA_PARAMETER_TEXT = "extraParamText";
     class ArtifactEvaluateRoutine {
-        static get instance() {
-            if (!__classPrivateFieldGet(this, _a, "f", _ArtifactEvaluateRoutine_instance)) {
-                __classPrivateFieldSet(this, _a, new ArtifactEvaluateRoutine(), "f", _ArtifactEvaluateRoutine_instance);
-            }
-            return __classPrivateFieldGet(this, _a, "f", _ArtifactEvaluateRoutine_instance);
-        }
         constructor() {
             _ArtifactEvaluateRoutine_artifactSets.set(this, void 0);
-            __classPrivateFieldSet(this, _ArtifactEvaluateRoutine_artifactSets, new ArtifactSets(document.getElementsByClassName("section right")[0]), "f");
+        }
+        static get instance() {
+            if (!__classPrivateFieldGet(this, _a$1, "f", _ArtifactEvaluateRoutine_instance)) {
+                __classPrivateFieldSet(this, _a$1, new ArtifactEvaluateRoutine(), "f", _ArtifactEvaluateRoutine_instance);
+            }
+            return __classPrivateFieldGet(this, _a$1, "f", _ArtifactEvaluateRoutine_instance);
         }
         createText() {
             __classPrivateFieldSet(this, _ArtifactEvaluateRoutine_artifactSets, new ArtifactSets(document.getElementsByClassName("section right")[0]), "f");
@@ -870,8 +896,7 @@
             this.createExtraParameterText();
         }
         writeText() {
-            this.writeEvaluation();
-            this.writeExtraParameter();
+            this.writeScoringMethod();
         }
         createEvaluationText() {
             for (const artifact of __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").artifacts) {
@@ -901,33 +926,28 @@
             extraParameter.classList.add(getSvelteClassName(__classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").artifacts[0].element));
             __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").element.appendChild(extraParameter);
         }
-        writeEvaluation() {
-            this.writeScoring();
-        }
-        writeScoring() {
+        writeScoringMethod() {
             const selectScoreType = SelectScoreType.instance;
             const scoreTypeKey = selectScoreType.getScoreTypeKey();
             for (const artifact of __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").artifacts) {
                 const score = artifact.artifactScore(scoreTypeKey);
                 const scoreBox = artifact.element.getElementsByClassName(EVALUATION_TEXT)[0];
+                if (!scoreBox)
+                    continue;
                 scoreBox.textContent = score.toFixed(1);
             }
-        }
-        writeExtraParameter() {
             const extraText = document.getElementById(EXTRA_PARAMETER_TEXT);
             if (!extraText)
                 return;
-            const selectScoreType = SelectScoreType.instance;
-            const scoreTypeKey = selectScoreType.getScoreTypeKey();
             const critRate = characterStat("CRITICAL");
             const critDMG = characterStat("CRITICAL_HURT");
             const critRatio = critDMG / critRate;
             const typeName = optionLocale.getLocaleSub(scoreTypeKey);
             const sumScore = __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").sumScore(scoreTypeKey);
             const avgScore = __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").avgScore(scoreTypeKey);
-            extraText.textContent = this.getExtraParameterText(critRatio, typeName, sumScore, avgScore);
+            extraText.textContent = this.getScoringInfoText(critRatio, typeName, sumScore, avgScore);
         }
-        getExtraParameterText(ratio, scoreTypeName, sumScore, avgScore) {
+        getScoringInfoText(ratio, scoreTypeName, sumScore, avgScore) {
             const ratioFixed = ratio.toFixed(1);
             const sumScoreFixed = sumScore.toFixed(1);
             const avgScoreFixed = avgScore.toFixed(1);
@@ -939,22 +959,116 @@
             });
         }
     }
-    _a = ArtifactEvaluateRoutine, _ArtifactEvaluateRoutine_artifactSets = new WeakMap();
+    _a$1 = ArtifactEvaluateRoutine, _ArtifactEvaluateRoutine_artifactSets = new WeakMap();
     _ArtifactEvaluateRoutine_instance = { value: void 0 };
 
-    class CreateWriteManager {
-        constructor() {
-            this.createList = [];
+    var _a, _EvaluationSelector_instance;
+    const EVALUATION_METHOD = [
+        { id: "scoring", key: "SCORING_METHOD" },
+        { id: "rollValue", key: "RV_METHOD" }
+    ];
+    class EvaluationSelector {
+        static get instance() {
+            if (!__classPrivateFieldGet(this, _a, "f", _EvaluationSelector_instance)) {
+                __classPrivateFieldSet(this, _a, new EvaluationSelector(), "f", _EvaluationSelector_instance);
+            }
+            return __classPrivateFieldGet(this, _a, "f", _EvaluationSelector_instance);
         }
+        createText() {
+            const cardToggles = document.getElementsByClassName("CardToggles")[0];
+            if (document.getElementById(EVALUATION_SELECTOR))
+                return;
+            const rowElement = cardToggles
+                .getElementsByClassName("row")[0]
+                .cloneNode(false);
+            rowElement.id = EVALUATION_SELECTOR;
+            cardToggles.getElementsByTagName("header")[2].before(rowElement);
+            const methodSelectDiv = document.createElement("div");
+            methodSelectDiv.id = EVALUATION_SELECTOR_DIV;
+            methodSelectDiv.style.marginTop = "1em";
+            methodSelectDiv.classList.add("svelte-1jzchrt");
+            rowElement.appendChild(methodSelectDiv);
+            const infoText = document.createElement("label");
+            const evaluationSelectorInfo = "EVALUATION_SELECTOR_INFO";
+            infoText.classList.add(evaluationSelectorInfo, getSvelteClassName(methodSelectDiv));
+            methodSelectDiv.appendChild(infoText);
+            const methodGroup = document.createElement("group");
+            methodGroup.style.display = "flex";
+            methodGroup.style.flexWrap = "wrap";
+            methodGroup.style.marginTop = "-1em";
+            methodGroup.classList.add("methodRadio", "svelte-1893j5");
+            methodSelectDiv.appendChild(methodGroup);
+            for (const evaluationMethod of Object.values(EVALUATION_METHOD)) {
+                const id = `evaluation_${evaluationMethod.id}_radio`;
+                const baseLabel = document.createElement("label");
+                baseLabel.classList.add("Checkbox", "Control", "sm", getSvelteClassName(methodGroup));
+                const radio = document.createElement("input");
+                radio.id = id;
+                radio.name = EVALUATION_SELECTOR_NAME;
+                radio.style.display = "none";
+                radio.setAttribute("type", "radio");
+                radio.value = evaluationMethod.id;
+                const toggle = document.createElement("div");
+                toggle.classList.add("toggle", getSvelteClassName(methodGroup));
+                const methodNameBase = document.createElement("span");
+                methodNameBase.setAttribute("for", id);
+                methodNameBase.setAttribute("type", "radio");
+                methodNameBase.classList.add("info", getSvelteClassName(methodGroup));
+                const methodName = document.createElement("span");
+                methodName.classList.add(evaluationMethod.key, "label", getSvelteClassName(methodGroup));
+                methodNameBase.appendChild(methodName);
+                baseLabel.appendChild(radio);
+                baseLabel.appendChild(toggle);
+                baseLabel.appendChild(methodNameBase);
+                methodGroup.appendChild(baseLabel);
+            }
+            const scoringSelectId = `evaluation_${EVALUATION_METHOD[0].id}_radio`;
+            document.getElementById(scoringSelectId)?.toggleAttribute("checked", true);
+            const radioStyle = [
+                ".methodRadio input:checked ~ .toggle.svelte-1893j5:before { content: ''; border-radius: 1px; transform: scale(1); }",
+                ".methodRadio .Checkbox.svelte-1893j5.svelte-1893j5:has(> input:checked) { opacity: 1; }",
+            ];
+            cssManager.addStyle(...radioStyle);
+        }
+        writeText() {
+            const methodSelectDiv = document.getElementById(EVALUATION_SELECTOR_DIV);
+            if (!methodSelectDiv)
+                return;
+            const infoText = methodSelectDiv.children[0];
+            infoText.textContent = optionLocale.getLocale(infoText.classList[0]);
+            for (const method of EVALUATION_METHOD) {
+                const methodLabel = methodSelectDiv.getElementsByClassName(method.key)[0];
+                methodLabel.textContent = optionLocale.getLocale(methodLabel.classList[0]);
+            }
+        }
+        getSelectMethodId() {
+            const checkedRadio = document.querySelector(`.methodRadio input:checked[name=${EVALUATION_SELECTOR_NAME}]`);
+            return checkedRadio.value ?? EVALUATION_METHOD[0].id;
+        }
+        getSelectMethodKey() {
+            const id = this.getSelectMethodId();
+            for (const method of EVALUATION_METHOD) {
+                if (id === method.id)
+                    return method.key;
+            }
+            return EVALUATION_METHOD[0].key;
+        }
+    }
+    _a = EvaluationSelector;
+    _EvaluationSelector_instance = { value: void 0 };
+
+    class CreateWriteManager {
         static get instance() {
             if (!this._instance) {
                 this._instance = new CreateWriteManager();
             }
             return this._instance;
         }
-        init() {
+        constructor() {
+            this.createList = [];
             this.createList.push(DateText.instance);
             this.createList.push(Friend.instance);
+            this.createList.push(EvaluationSelector.instance);
             this.createList.push(SelectScoreType.instance);
             this.createList.push(Weapon.instance);
             this.createList.push(Artifact$1.instance);
@@ -1004,7 +1118,6 @@
         cardSection[1].style.left = "34%";
         cardSection[2].style.width = "43%";
         const cwManager = CreateWriteManager.instance;
-        cwManager.init();
         cwManager.createText();
         cwManager.writeText();
         const charaName = document.getElementsByClassName("name")[0];
@@ -1020,6 +1133,11 @@
         });
         observer.observe(charaName, observeConf);
         observer.observe(language, observeConf);
+        document.getElementsByName(EVALUATION_SELECTOR_NAME).forEach(function (e) {
+            e.addEventListener("click", function () {
+                cwManager.writeText();
+            });
+        });
         document.getElementsByName(SCORE_RADIO_NAME).forEach(function (e) {
             e.addEventListener("click", function () {
                 cwManager.writeText();

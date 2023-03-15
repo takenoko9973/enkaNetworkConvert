@@ -124,6 +124,18 @@ localeArray["EN"] = {
         locale: "Friendship",
         subOption: undefined,
     },
+    EVALUATION_SELECTOR_INFO: {
+        locale: "Evaluation select",
+        subOption: undefined,
+    },
+    SCORING_METHOD: {
+        locale: "Scoring method",
+        subOption: undefined,
+    },
+    RV_METHOD: {
+        locale: "RV method",
+        subOption: undefined,
+    },
     SCORE_SELECT_INFO: {
         locale: "Score type",
         subOption: undefined,
@@ -229,6 +241,18 @@ localeArray["JA"] = {
     },
     FRIEND: {
         locale: "好感度",
+        subOption: undefined,
+    },
+    EVALUATION_SELECTOR_INFO: {
+        locale: "評価方式",
+        subOption: undefined,
+    },
+    SCORING_METHOD: {
+        locale: "スコア方式",
+        subOption: undefined,
+    },
+    RV_METHOD: {
+        locale: "RV方式",
         subOption: undefined,
     },
     SCORE_SELECT_INFO: {

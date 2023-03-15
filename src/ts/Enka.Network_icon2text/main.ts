@@ -1,5 +1,5 @@
 import { CreateWriteManager } from "./cwRoutine/cwManager";
-import { SCORE_RADIO_NAME, cssManager } from "./myConst";
+import { EVALUATION_SELECTOR_NAME, SCORE_RADIO_NAME, cssManager } from "./myConst";
 import { isIOS } from "./util/ios";
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -54,6 +54,13 @@ function main() {
     });
     observer.observe(charaName, observeConf); // キャラクター変更時
     observer.observe(language, observeConf); // 言語変更時
+
+    // スコア評価対象変更時に発火
+    document.getElementsByName(EVALUATION_SELECTOR_NAME).forEach(function (e) {
+        e.addEventListener("click", function () {
+            cwManager.writeText();
+        });
+    });
 
     // スコア評価対象変更時に発火
     document.getElementsByName(SCORE_RADIO_NAME).forEach(function (e) {

@@ -5,6 +5,7 @@ import { Artifact } from "./routines/artifacts";
 import { Weapon } from "./routines/weapon";
 import { Friend } from "./routines/friend";
 import { ArtifactEvaluateRoutine } from "./routines/artifactEvaluateRoutine";
+import { EvaluationSelector } from "./routines/evaluationSelectorRoutine";
 
 export class CreateWriteManager implements CreateWriteRoutine {
     private static _instance: CreateWriteManager;
@@ -21,6 +22,7 @@ export class CreateWriteManager implements CreateWriteRoutine {
     constructor() {
         this.createList.push(DateText.instance);
         this.createList.push(Friend.instance);
+        this.createList.push(EvaluationSelector.instance);
         this.createList.push(SelectScoreType.instance);
         this.createList.push(Weapon.instance);
         this.createList.push(Artifact.instance);
