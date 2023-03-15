@@ -84,9 +84,10 @@ export class RollValueMethodRoutine implements CreateWriteRoutine {
         document.getElementById(atkRadioId)?.toggleAttribute("checked", true);
 
         const radioStyle = [
-            '.rvSelectCheckbox input { display:none }', // チェックボックスを隠す
-            '.rvSelectCheckbox label.radbox { opacity: 0.5; }', // 普段は薄目
-            '.rvSelectCheckbox input:checked + label.radbox { opacity: 1; }', // 選択しているボタンを強調
+            `#${EVALUATION_SELECTOR}:not(:has(#evaluation_rollValue_radio:checked)) #${RV_SELECT_DIV} { display:none }`,
+            ".rvSelectCheckbox input { display:none }", // チェックボックスを隠す
+            ".rvSelectCheckbox label.radbox { opacity: 0.5; }", // 普段は薄目
+            ".rvSelectCheckbox input:checked + label.radbox { opacity: 1; }", // 選択しているボタンを強調
         ];
         cssManager.addStyle(...radioStyle);
     }

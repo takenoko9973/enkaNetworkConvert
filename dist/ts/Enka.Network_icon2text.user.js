@@ -479,18 +479,13 @@
             return this._instance;
         }
         createText() {
-            const cardToggles = document.getElementsByClassName("CardToggles")[0];
+            const evaluationRow = document.getElementById(EVALUATION_SELECTOR);
             if (document.getElementById("scoreSelectRow"))
                 return;
-            const rowElement = cardToggles
-                .getElementsByClassName("row")[0]
-                .cloneNode(false);
-            rowElement.id = "scoreSelectRow";
-            cardToggles.getElementsByTagName("header")[2].before(rowElement);
             const scoreModeDiv = document.createElement("div");
             scoreModeDiv.id = SCORE_SELECT_DIV;
             scoreModeDiv.classList.add("Input", "svelte-1jzchrt");
-            rowElement.appendChild(scoreModeDiv);
+            evaluationRow?.appendChild(scoreModeDiv);
             const scoreModeGroup = document.createElement("group");
             scoreModeGroup.style.marginTop = "-1em";
             scoreModeGroup.classList.add("scoreModeRadio");
@@ -513,9 +508,10 @@
             const atkRadioId = `SCORE_${SCORE_TYPES.ATTACK.id}_R`;
             document.getElementById(atkRadioId)?.toggleAttribute("checked", true);
             const radioStyle = [
-                '.scoreModeRadio input { display:none }',
-                '.scoreModeRadio label.radbox { opacity: 0.5; }',
-                '.scoreModeRadio input:checked + label.radbox { opacity: 1; }',
+                `#${EVALUATION_SELECTOR}:not(:has(#evaluation_scoring_radio:checked)) #${SCORE_SELECT_DIV} { display:none }`,
+                ".scoreModeRadio input { display:none }",
+                ".scoreModeRadio label.radbox { opacity: 0.5; }",
+                ".scoreModeRadio input:checked + label.radbox { opacity: 1; }",
             ];
             cssManager.addStyle(...radioStyle);
         }
@@ -952,7 +948,7 @@
     var _a$1, _EvaluationSelector_instance;
     const EVALUATION_METHOD = [
         { id: "scoring", key: "SCORING_METHOD" },
-        { id: "rollValue", key: "RV_METHOD" }
+        { id: "rollValue", key: "RV_METHOD" },
     ];
     class EvaluationSelector {
         static get instance() {
@@ -969,6 +965,9 @@
                 .getElementsByClassName("row")[0]
                 .cloneNode(false);
             rowElement.id = EVALUATION_SELECTOR;
+            rowElement.style.display = "flex";
+            rowElement.style.flexDirection = "column";
+            rowElement.style.alignItems = "flex-start";
             cardToggles.getElementsByTagName("header")[2].before(rowElement);
             const methodSelectDiv = document.createElement("div");
             methodSelectDiv.id = EVALUATION_SELECTOR_DIV;
@@ -1010,7 +1009,8 @@
                 methodGroup.appendChild(baseLabel);
             }
             const scoringSelectId = `evaluation_${EVALUATION_METHOD[0].id}_radio`;
-            document.getElementById(scoringSelectId)?.toggleAttribute("checked", true);
+            document.getElementById(scoringSelectId)
+                ?.toggleAttribute("checked", true);
             const radioStyle = [
                 ".methodRadio input:checked ~ .toggle.svelte-1893j5:before { content: ''; border-radius: 1px; transform: scale(1); }",
                 ".methodRadio .Checkbox.svelte-1893j5.svelte-1893j5:has(> input:checked) { opacity: 1; }",
@@ -1065,18 +1065,13 @@
             return __classPrivateFieldGet(this, _a, "f", _RollValueMethodRoutine_instance);
         }
         createText() {
-            const cardToggles = document.getElementsByClassName("CardToggles")[0];
-            if (document.getElementById("rvSelectRow"))
+            const evaluationRow = document.getElementById(EVALUATION_SELECTOR);
+            if (document.getElementById(RV_SELECT_DIV))
                 return;
-            const rowElement = cardToggles
-                .getElementsByClassName("row")[0]
-                .cloneNode(false);
-            rowElement.id = "rvSelectRow";
-            cardToggles.getElementsByTagName("header")[2].before(rowElement);
             const rvSelectDiv = document.createElement("div");
             rvSelectDiv.id = RV_SELECT_DIV;
             rvSelectDiv.classList.add("Input", "svelte-1jzchrt");
-            rowElement.appendChild(rvSelectDiv);
+            evaluationRow?.appendChild(rvSelectDiv);
             const rvSelectGroup = document.createElement("group");
             rvSelectGroup.style.marginTop = "-1em";
             rvSelectGroup.classList.add("rvSelectCheckbox");
@@ -1104,9 +1099,10 @@
             document.getElementById(cdRadioId)?.toggleAttribute("checked", true);
             document.getElementById(atkRadioId)?.toggleAttribute("checked", true);
             const radioStyle = [
-                '.rvSelectCheckbox input { display:none }',
-                '.rvSelectCheckbox label.radbox { opacity: 0.5; }',
-                '.rvSelectCheckbox input:checked + label.radbox { opacity: 1; }',
+                `#${EVALUATION_SELECTOR}:not(:has(#evaluation_rollValue_radio:checked)) #${RV_SELECT_DIV} { display:none }`,
+                ".rvSelectCheckbox input { display:none }",
+                ".rvSelectCheckbox label.radbox { opacity: 0.5; }",
+                ".rvSelectCheckbox input:checked + label.radbox { opacity: 1; }",
             ];
             cssManager.addStyle(...radioStyle);
         }
@@ -1127,13 +1123,14 @@
         }
         getCheckedIds() {
             const checkedIds = [];
-            document.querySelectorAll(`.scoreModeRadio input:checked[name=${RV_CHECKBOX_NAME}]`).forEach((element) => checkedIds.push(element.id));
+            document
+                .querySelectorAll(`.scoreModeRadio input:checked[name=${RV_CHECKBOX_NAME}]`)
+                .forEach((element) => checkedIds.push(element.id));
             return checkedIds;
         }
         getCheckedKeys() {
             const checkedIds = this.getCheckedIds();
-            return Object.keys(STATS_OPTION_ID)
-                .filter((key) => checkedIds.includes(STATS_OPTION_ID[key]));
+            return Object.keys(STATS_OPTION_ID).filter((key) => checkedIds.includes(STATS_OPTION_ID[key]));
         }
     }
     _a = RollValueMethodRoutine;

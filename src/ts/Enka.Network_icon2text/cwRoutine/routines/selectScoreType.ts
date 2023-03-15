@@ -92,9 +92,10 @@ export class SelectScoreType implements CreateWriteRoutine {
         document.getElementById(atkRadioId)?.toggleAttribute("checked", true);
 
         const radioStyle = [
-            '.scoreModeRadio input { display:none }', // チェックボックスを隠す
-            '.scoreModeRadio label.radbox { opacity: 0.5; }', // 普段は薄目
-            '.scoreModeRadio input:checked + label.radbox { opacity: 1; }', // 選択しているボタンを強調
+            `#${EVALUATION_SELECTOR}:not(:has(#evaluation_scoring_radio:checked)) #${SCORE_SELECT_DIV} { display:none }`,
+            ".scoreModeRadio input { display:none }", // チェックボックスを隠す
+            ".scoreModeRadio label.radbox { opacity: 0.5; }", // 普段は薄目
+            ".scoreModeRadio input:checked + label.radbox { opacity: 1; }", // 選択しているボタンを強調
         ];
         cssManager.addStyle(...radioStyle);
     }
