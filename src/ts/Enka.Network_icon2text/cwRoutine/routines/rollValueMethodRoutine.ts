@@ -113,10 +113,11 @@ export class RollValueMethodRoutine implements CreateWriteRoutine {
 
         document
             .querySelectorAll(
-                `.scoreModeRadio input:checked[name=${RV_CHECKBOX_NAME}]`
+                `.rvSelectCheckbox input:checked[name=${RV_CHECKBOX_NAME}]`
             )
             .forEach((element) => checkedIds.push(element.id));
-        return checkedIds;
+        return checkedIds
+            .map((id) => id.match("RV_(.+)_CHECKBOX")?.at(1) ?? "");
     }
 
     getCheckedKeys(): statsSubOptionKey[] {
