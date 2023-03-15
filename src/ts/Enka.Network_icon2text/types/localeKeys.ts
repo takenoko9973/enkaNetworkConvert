@@ -6,5 +6,8 @@ export type localeKeys
     | characterStatKey
     | "UNKNOWN"
     | "FRIEND"
-    | "SCORE_SELECT_INFO"
-    | "CARD_EXTRA_INFO";
+    | "EVALUATION_SELECTOR_INFO"
+    | "SCORING_METHOD"
+    | "RV_METHOD"
+    | "SCORE_EXTRA_INFO"
+    | "RV_EXTRA_INFO";

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Enka.Network_lang-jp_mod_by_takenoko
 // @namespace    http://tampermonkey.net/
-// @version      1.0.2
+// @version      1.1.0
 // @description  Enka.Network 日本語化スクリプト
 // @author       Takenoko-ya
 // @updateURL    https://github.com/takenoko9973/enkaNetworkConvert/raw/master/dist/ts/Enka.Network_icon2text.user.js
@@ -163,12 +163,24 @@
             locale: "Friendship",
             subOption: undefined,
         },
-        SCORE_SELECT_INFO: {
-            locale: "Score type",
+        EVALUATION_SELECTOR_INFO: {
+            locale: "Evaluation method",
             subOption: undefined,
         },
-        CARD_EXTRA_INFO: {
+        SCORING_METHOD: {
+            locale: "Scoring method",
+            subOption: undefined,
+        },
+        RV_METHOD: {
+            locale: "RV method",
+            subOption: undefined,
+        },
+        SCORE_EXTRA_INFO: {
             locale: "Crit Ratio 1:${critRatio} / Score(${scoreType}) Avg. ${avgScore} Total ${sumScore}",
+            subOption: undefined,
+        },
+        RV_EXTRA_INFO: {
+            locale: "Crit Ratio 1:${critRatio} / RV(${scoreType}) Total ${sumScore}",
             subOption: undefined,
         },
         UNKNOWN: {
@@ -269,12 +281,24 @@
             locale: "好感度",
             subOption: undefined,
         },
-        SCORE_SELECT_INFO: {
-            locale: "スコア計算方法",
+        EVALUATION_SELECTOR_INFO: {
+            locale: "評価方式",
             subOption: undefined,
         },
-        CARD_EXTRA_INFO: {
-            locale: "会心率ダメ比 1:${critRatio} / 聖遺物スコア(${scoreType}) 平均:${avgScore} 合計:${sumScore}",
+        SCORING_METHOD: {
+            locale: "スコア方式",
+            subOption: undefined,
+        },
+        RV_METHOD: {
+            locale: "RV方式",
+            subOption: undefined,
+        },
+        SCORE_EXTRA_INFO: {
+            locale: "会心比 1:${critRatio} / スコア方式(${selectStat}) 平均:${avgScore} 合計:${sumScore}",
+            subOption: undefined,
+        },
+        RV_EXTRA_INFO: {
+            locale: "会心比 1:${critRatio} / RV方式(${selectStats}) 合計:${sumRV}%",
             subOption: undefined,
         },
         UNKNOWN: {
@@ -340,11 +364,16 @@
         }
     }
 
-    const VERSION = "v1.0.2";
+    const VERSION = "v1.1.0";
     const BASE_ATK_CLASS = "BASE_ATTACK";
     const TIME_STAMP = "timeStamp";
+    const EVALUATION_SELECTOR = "evaluationSelectorRow";
+    const EVALUATION_SELECTOR_DIV = "evaluationSelectorDiv";
+    const EVALUATION_SELECTOR_NAME = "evaluationSelector";
     const SCORE_SELECT_DIV = "scoreSelectDiv";
     const SCORE_RADIO_NAME = "sSource";
+    const RV_SELECT_DIV = "rvSelectDiv";
+    const RV_CHECKBOX_NAME = "rollValue";
     const optionLocale = TranslateKey2Word.instance;
     const cssManager = CssStyleManager.instance;
 
@@ -427,33 +456,29 @@
         return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
     }
 
-    function characterStats() {
-        const charaStatsTable = document.getElementsByClassName("StatsTable")[0];
-        const statsList = Array.from(charaStatsTable.children).filter((row) => Array.from(row.classList).indexOf("row") !== -1);
-        return statsList;
+    var _scoreType_id, _scoreType_key;
+    class scoreType {
+        constructor(id, key) {
+            _scoreType_id.set(this, void 0);
+            _scoreType_key.set(this, void 0);
+            __classPrivateFieldSet(this, _scoreType_id, id, "f");
+            __classPrivateFieldSet(this, _scoreType_key, key, "f");
+        }
+        get id() {
+            return __classPrivateFieldGet(this, _scoreType_id, "f");
+        }
+        get key() {
+            return __classPrivateFieldGet(this, _scoreType_key, "f");
+        }
     }
-    function characterStatRow(key) {
-        const statsList = characterStats();
-        const index = statsList.map((stat) => stat.classList[1]).indexOf(key);
-        if (index === -1)
-            return null;
-        return statsList[index];
-    }
-    function characterStat(key) {
-        const statRow = characterStatRow(key);
-        if (!statRow)
-            return 0;
-        const stat = statRow.children[1].children[2].innerText;
-        return Number(stat.replace(/[^0-9.-]/g, ""));
-    }
-
-    function fmt(template, values) {
-        if (!values)
-            return template;
-        const format = new Function(...Object.keys(values), `return \`${template}\`;`);
-        return format(...Object.values(values).map((value) => value ?? ""));
-    }
-
+    _scoreType_id = new WeakMap(), _scoreType_key = new WeakMap();
+    const SCORE_TYPES = {
+        HP: new scoreType("H", "HP_PERCENT"),
+        ATTACK: new scoreType("A", "ATTACK_PERCENT"),
+        DEFENSE: new scoreType("D", "DEFENSE_PERCENT"),
+        EM: new scoreType("EM", "ELEMENT_MASTERY"),
+        ER: new scoreType("ER", "CHARGE_EFFICIENCY"),
+    };
     class SelectScoreType {
         static get instance() {
             if (!this._instance) {
@@ -461,28 +486,18 @@
             }
             return this._instance;
         }
-        getScoreType() {
-            const checkedRadio = document.querySelector(`input:checked[name=${SCORE_RADIO_NAME}]`);
-            return checkedRadio?.value ?? SCORE_TYPES.ATTACK.key;
-        }
         createText() {
-            const cardToggles = document.getElementsByClassName("CardToggles")[0];
-            if (document.getElementById("scoreSelectRow"))
+            const evaluationRow = document.getElementById(EVALUATION_SELECTOR);
+            if (document.getElementById(SCORE_SELECT_DIV))
                 return;
-            const rowElement = cardToggles
-                .getElementsByClassName("row")[0]
-                .cloneNode(false);
-            rowElement.id = "scoreSelectRow";
-            cardToggles.getElementsByTagName("header")[2].before(rowElement);
-            const scoreSelectClass = "SCORE_SELECT_INFO";
-            const infoText = document.createElement("label");
-            infoText.classList.add(scoreSelectClass, "svelte-1jzchrt");
-            const scoreSelectDiv = document.createElement("div");
-            scoreSelectDiv.id = SCORE_SELECT_DIV;
-            scoreSelectDiv.classList.add("Input", "svelte-1jzchrt");
+            const scoreModeDiv = document.createElement("div");
+            scoreModeDiv.id = SCORE_SELECT_DIV;
+            scoreModeDiv.classList.add("Input", "svelte-1jzchrt");
+            evaluationRow?.appendChild(scoreModeDiv);
             const scoreModeGroup = document.createElement("group");
             scoreModeGroup.style.marginTop = "-1em";
-            scoreModeGroup.classList.add("inline_radio");
+            scoreModeGroup.classList.add("scoreModeRadio");
+            scoreModeDiv.appendChild(scoreModeGroup);
             for (const scoreType of Object.values(SCORE_TYPES)) {
                 const id = `SCORE_${scoreType.id}_R`;
                 const radio = document.createElement("input");
@@ -498,15 +513,13 @@
                 scoreModeGroup.appendChild(radio);
                 scoreModeGroup.appendChild(label);
             }
-            scoreSelectDiv.appendChild(infoText);
-            scoreSelectDiv.appendChild(scoreModeGroup);
-            rowElement.appendChild(scoreSelectDiv);
             const atkRadioId = `SCORE_${SCORE_TYPES.ATTACK.id}_R`;
             document.getElementById(atkRadioId)?.toggleAttribute("checked", true);
             const radioStyle = [
-                '.inline_radio input[type="radio"] { position: absolute; opacity: 0; }',
-                '.inline_radio label.radbox[type="radio"] { color: rgba(255,255,255,.5); }',
-                '.inline_radio input[type="radio"]:checked + label.radbox[type="radio"] { color: rgba(255,255,255,1); }',
+                `#${EVALUATION_SELECTOR}:not(:has(#evaluation_scoring_radio:checked)) #${SCORE_SELECT_DIV} { display:none }`,
+                ".scoreModeRadio input { display:none }",
+                ".scoreModeRadio label.radbox { opacity: 0.5; }",
+                ".scoreModeRadio input:checked + label.radbox { opacity: 1; }",
             ];
             cssManager.addStyle(...radioStyle);
         }
@@ -514,152 +527,31 @@
             const scoreSelectDiv = document.getElementById(SCORE_SELECT_DIV);
             if (!scoreSelectDiv)
                 return;
-            const scoreSelectInfo = scoreSelectDiv.children[0];
-            scoreSelectInfo.innerText = optionLocale.getLocale(scoreSelectInfo.classList[0]);
             const scoreButtons = scoreSelectDiv.getElementsByClassName("Button");
             for (const label of Array.from(scoreButtons)) {
-                label.innerText = optionLocale.getLocaleSub(label.classList[0]);
+                label.textContent = optionLocale.getLocaleSub(label.classList[0]);
             }
+        }
+        getScoreTypeId() {
+            const checkedRadio = document.querySelector(`.scoreModeRadio input:checked[name=${SCORE_RADIO_NAME}]`);
+            return checkedRadio?.value ?? SCORE_TYPES.ATTACK.id;
+        }
+        getScoreTypeKey() {
+            const id = this.getScoreTypeId();
+            for (const typeKey in SCORE_TYPES) {
+                const scoreType = SCORE_TYPES[typeKey];
+                if (id === scoreType.id)
+                    return scoreType.key;
+            }
+            return "ATTACK_PERCENT";
         }
     }
 
-    var _scoreType_id, _scoreType_key, _scoreType_correction;
-    class scoreType {
-        constructor(id, key, correction) {
-            _scoreType_id.set(this, void 0);
-            _scoreType_key.set(this, void 0);
-            _scoreType_correction.set(this, void 0);
-            __classPrivateFieldSet(this, _scoreType_id, id, "f");
-            __classPrivateFieldSet(this, _scoreType_key, key, "f");
-            __classPrivateFieldSet(this, _scoreType_correction, correction, "f");
-        }
-        get id() {
-            return __classPrivateFieldGet(this, _scoreType_id, "f");
-        }
-        get key() {
-            return __classPrivateFieldGet(this, _scoreType_key, "f");
-        }
-        get correction() {
-            return __classPrivateFieldGet(this, _scoreType_correction, "f");
-        }
-    }
-    _scoreType_id = new WeakMap(), _scoreType_key = new WeakMap(), _scoreType_correction = new WeakMap();
-    const SCORE_TYPES = {
-        HP: new scoreType("H", "HP_PERCENT", 1),
-        ATTACK: new scoreType("A", "ATTACK_PERCENT", 1),
-        DEFENSE: new scoreType("D", "DEFENSE_PERCENT", 0.8),
-        EM: new scoreType("EM", "ELEMENT_MASTERY", 0.25),
-    };
-    class ArtifactScoring {
-        static get instance() {
-            if (!this._instance) {
-                this._instance = new ArtifactScoring();
-            }
-            return this._instance;
-        }
-        calcArtifactScore(artifact) {
-            let score = 0;
-            if (artifact.classList.contains("empty"))
-                return score;
-            const subStat = Array.from(artifact.getElementsByClassName("Substat"));
-            const subStatName = subStat.map((sub) => sub.classList[1]);
-            const subStatAmount = subStat.map((sub) => sub.lastChild.innerText.replace(/[^0-9.]/g, ""));
-            const subLen = subStat.length;
-            const scoreH = SelectScoreType.instance.getScoreType();
-            for (let i = 0; i < subLen; i++) {
-                const key = subStatName[i];
-                switch (key) {
-                    case "CRITICAL":
-                        score += Number(subStatAmount[i]) * 2;
-                        break;
-                    case "CRITICAL_HURT":
-                        score += Number(subStatAmount[i]);
-                        break;
-                    default:
-                        for (const typeKey in SCORE_TYPES) {
-                            const scoreType = SCORE_TYPES[typeKey];
-                            if (key != scoreType.key)
-                                continue;
-                            if (scoreH != scoreType.id)
-                                continue;
-                            score +=
-                                Number(subStatAmount[i]) * scoreType.correction;
-                            break;
-                        }
-                }
-            }
-            return score;
-        }
-        getExtraText(ratio, scoreType, avgScore, score) {
-            const ratioFixed = ratio.toFixed(1);
-            const avgScoreFixed = avgScore.toFixed(1);
-            const scoreFixed = score.toFixed(1);
-            return fmt(optionLocale.getLocale("CARD_EXTRA_INFO"), {
-                critRatio: ratioFixed,
-                scoreType: scoreType,
-                avgScore: avgScoreFixed,
-                sumScore: scoreFixed,
-            });
-        }
-        createText() {
-            const artifacts = document.getElementsByClassName("Artifact");
-            for (const artifact of Array.from(artifacts)) {
-                let scoreBox = artifact.getElementsByClassName("artifactScoreText")[0];
-                if (scoreBox)
-                    continue;
-                scoreBox = document.createElement("div");
-                scoreBox.classList.add("artifactScoreText", getSvelteClassName(artifact));
-                artifact.appendChild(scoreBox);
-            }
-            if (document.getElementById("extraData"))
-                return;
-            const artifactSection = document.getElementsByClassName("section")[2];
-            if (!artifactSection)
-                return;
-            const exParam = document.createElement("div");
-            exParam.id = "extraData";
-            exParam.style.right = "0.3em";
-            exParam.style.marginTop = "-0.5em";
-            exParam.style.textAlign = "right";
-            exParam.style.fontSize = "0.8em";
-            exParam.classList.add(getSvelteClassName(artifacts[0]));
-            artifactSection.appendChild(exParam);
-            const cssStyle = [
-                ".Artifact .artifactScoreText{ position: absolute; font-size: 0.7em; opacity: 0.6; right: 0.3em; }",
-            ];
-            cssManager.addStyle(...cssStyle);
-        }
-        writeText() {
-            let sumScore = 0;
-            let avgScore = 0;
-            const scoreBoxes = document.getElementsByClassName("artifactScoreText");
-            const extraText = document.getElementById("extraData");
-            for (const scoreBox of Array.from(scoreBoxes)) {
-                let score = 0.0;
-                const artifact = scoreBox.parentElement;
-                if (!artifact)
-                    continue;
-                score = this.calcArtifactScore(artifact);
-                scoreBox.textContent = score.toFixed(1);
-                sumScore += score;
-            }
-            avgScore = sumScore / 5;
-            const critRate = characterStat("CRITICAL");
-            const critDMG = characterStat("CRITICAL_HURT");
-            const critRatio = critDMG / critRate;
-            let type = "";
-            const scoreH = SelectScoreType.instance.getScoreType();
-            for (const typeKey in SCORE_TYPES) {
-                const scoreType = SCORE_TYPES[typeKey];
-                if (scoreH != scoreType.id)
-                    continue;
-                type = optionLocale.getLocaleSub(scoreType.key);
-                break;
-            }
-            if (!extraText)
-                return;
-            extraText.textContent = this.getExtraText(critRatio, type, avgScore, sumScore);
-        }
+    function fmt(template, values) {
+        if (!values)
+            return template;
+        const format = new Function(...Object.keys(values), `return \`${template}\`;`);
+        return format(...Object.values(values).map((value) => value ?? ""));
     }
 
     function innerOptionText(statElement, isSub = false) {
@@ -673,13 +565,13 @@
         return statText;
     }
 
-    class Artifact {
+    let Artifact$1 = class Artifact {
         constructor() {
             this.artifacts = document.getElementsByClassName("Artifact");
         }
         static get instance() {
             if (!this._instance) {
-                this._instance = new Artifact();
+                this._instance = new Artifact$1();
             }
             return this._instance;
         }
@@ -716,7 +608,7 @@
                 }
             }
         }
-    }
+    };
 
     class Weapon {
         constructor() {
@@ -789,23 +681,531 @@
         }
     }
 
-    class CreateWriteManager {
-        constructor() {
-            this.createList = [];
+    var _ArtifactSubStat_statName, _ArtifactSubStat_stat, _ArtifactSubStat_roll, _Artifact_element, _Artifact_star, _Artifact_level, _Artifact_mainStat, _Artifact_subStats;
+    const STATS_OPTION_RATE = {
+        HP: Infinity,
+        ATTACK: Infinity,
+        DEFENSE: Infinity,
+        HP_PERCENT: 3,
+        ATTACK_PERCENT: 3,
+        DEFENSE_PERCENT: 15 / 4,
+        CRITICAL: 4,
+        CRITICAL_HURT: 2,
+        CHARGE_EFFICIENCY: 10 / 3,
+        ELEMENT_MASTERY: 12,
+    };
+    class ArtifactSubStat {
+        constructor(subStat) {
+            _ArtifactSubStat_statName.set(this, void 0);
+            _ArtifactSubStat_stat.set(this, 0);
+            _ArtifactSubStat_roll.set(this, []);
+            if (!subStat.classList.contains("Substat"))
+                return;
+            const rolls = subStat.getElementsByClassName("rolls")[0];
+            __classPrivateFieldSet(this, _ArtifactSubStat_statName, subStat.classList[1], "f");
+            __classPrivateFieldSet(this, _ArtifactSubStat_stat, Number(subStat.lastChild?.textContent?.replace("%", "")), "f");
+            Array.from(rolls.children).forEach((_roll) => {
+                __classPrivateFieldGet(this, _ArtifactSubStat_roll, "f").push(_roll.children.length);
+            });
         }
+        get statKey() {
+            return __classPrivateFieldGet(this, _ArtifactSubStat_statName, "f");
+        }
+        get stat() {
+            return __classPrivateFieldGet(this, _ArtifactSubStat_stat, "f");
+        }
+        get rollValue() {
+            return __classPrivateFieldGet(this, _ArtifactSubStat_roll, "f")
+                .map((_roll) => 100 - 10 * (4 - _roll))
+                .reduce((_sumRV, _rv) => _sumRV + _rv);
+        }
+    }
+    _ArtifactSubStat_statName = new WeakMap(), _ArtifactSubStat_stat = new WeakMap(), _ArtifactSubStat_roll = new WeakMap();
+    class Artifact {
+        constructor(artifact) {
+            _Artifact_element.set(this, void 0);
+            _Artifact_star.set(this, 0);
+            _Artifact_level.set(this, 0);
+            _Artifact_mainStat.set(this, void 0);
+            _Artifact_subStats.set(this, []);
+            __classPrivateFieldSet(this, _Artifact_element, artifact, "f");
+            if (!artifact.classList.contains("Artifact"))
+                return;
+            if (artifact.classList.contains("empty"))
+                return;
+            const elements = {};
+            elements["mainStat"] = artifact.getElementsByClassName("mainstat")[0];
+            elements["subStats"] = artifact.getElementsByClassName("substats")[0];
+            elements["stars"] = elements["mainStat"].getElementsByClassName("Stars")[0];
+            elements["level"] = elements["mainStat"].getElementsByClassName("level")[0];
+            __classPrivateFieldSet(this, _Artifact_star, elements["stars"].childElementCount, "f");
+            __classPrivateFieldSet(this, _Artifact_level, Number(elements["level"].textContent ?? "0"), "f");
+            __classPrivateFieldSet(this, _Artifact_mainStat, elements["mainStat"]
+                .classList[1], "f");
+            const subStats = elements["subStats"].getElementsByClassName("Substat");
+            for (const subStat of Array.from(subStats)) {
+                __classPrivateFieldGet(this, _Artifact_subStats, "f").push(new ArtifactSubStat(subStat));
+            }
+        }
+        get element() {
+            return __classPrivateFieldGet(this, _Artifact_element, "f");
+        }
+        get star() {
+            return __classPrivateFieldGet(this, _Artifact_star, "f");
+        }
+        get level() {
+            return __classPrivateFieldGet(this, _Artifact_level, "f");
+        }
+        get mainStatKey() {
+            return __classPrivateFieldGet(this, _Artifact_mainStat, "f");
+        }
+        get subStats() {
+            return __classPrivateFieldGet(this, _Artifact_subStats, "f");
+        }
+        artifactScore(key) {
+            const rate = STATS_OPTION_RATE.ATTACK_PERCENT / STATS_OPTION_RATE[key];
+            let score = 0;
+            for (const subStat of __classPrivateFieldGet(this, _Artifact_subStats, "f")) {
+                switch (subStat.statKey) {
+                    case "CRITICAL":
+                        score += subStat.stat * 2;
+                        break;
+                    case "CRITICAL_HURT":
+                        score += subStat.stat;
+                        break;
+                    case key:
+                        score += subStat.stat * rate;
+                        break;
+                }
+            }
+            return score;
+        }
+        rollValue(...keys) {
+            let rollValue = 0;
+            for (const subStat of __classPrivateFieldGet(this, _Artifact_subStats, "f")) {
+                if (!subStat.statKey)
+                    continue;
+                if (keys.includes(subStat.statKey)) {
+                    rollValue += subStat.rollValue;
+                }
+            }
+            return rollValue;
+        }
+    }
+    _Artifact_element = new WeakMap(), _Artifact_star = new WeakMap(), _Artifact_level = new WeakMap(), _Artifact_mainStat = new WeakMap(), _Artifact_subStats = new WeakMap();
+
+    var _ArtifactSets_element, _ArtifactSets_artifacts;
+    class ArtifactSets {
+        constructor(artifactSets) {
+            _ArtifactSets_element.set(this, void 0);
+            _ArtifactSets_artifacts.set(this, []);
+            __classPrivateFieldSet(this, _ArtifactSets_element, artifactSets, "f");
+            const artifacts = artifactSets.getElementsByClassName("Artifact");
+            for (const artifact of Array.from(artifacts)) {
+                __classPrivateFieldGet(this, _ArtifactSets_artifacts, "f").push(new Artifact(artifact));
+            }
+        }
+        get element() {
+            return __classPrivateFieldGet(this, _ArtifactSets_element, "f");
+        }
+        get artifacts() {
+            return __classPrivateFieldGet(this, _ArtifactSets_artifacts, "f");
+        }
+        artifactNum() {
+            const equippingArtifacts = __classPrivateFieldGet(this, _ArtifactSets_artifacts, "f").filter((_artifact) => !_artifact.element.classList.contains("empty"));
+            return equippingArtifacts.length;
+        }
+        eachScore(key) {
+            return __classPrivateFieldGet(this, _ArtifactSets_artifacts, "f").map((_artifact) => _artifact.artifactScore(key));
+        }
+        sumScore(key) {
+            return this.eachScore(key).reduce((sum, score) => sum + score, 0);
+        }
+        avgScore(key) {
+            const artifactNum = this.artifactNum();
+            if (artifactNum == 0) {
+                return 0;
+            }
+            else {
+                return this.sumScore(key) / artifactNum;
+            }
+        }
+        eachRollValue(...keys) {
+            return __classPrivateFieldGet(this, _ArtifactSets_artifacts, "f").map((_artifact) => _artifact.rollValue(...keys));
+        }
+        sumRollValue(...keys) {
+            return this.eachRollValue(...keys).reduce((sum, rv) => sum + rv, 0);
+        }
+        avgRollValue(...keys) {
+            const artifactNum = __classPrivateFieldGet(this, _ArtifactSets_artifacts, "f").length;
+            if (artifactNum == 0) {
+                return 0;
+            }
+            else {
+                return this.sumRollValue(...keys) / artifactNum;
+            }
+        }
+    }
+    _ArtifactSets_element = new WeakMap(), _ArtifactSets_artifacts = new WeakMap();
+
+    function characterStats() {
+        const charaStatsTable = document.getElementsByClassName("StatsTable")[0];
+        const statsList = Array.from(charaStatsTable.children).filter((row) => Array.from(row.classList).indexOf("row") !== -1);
+        return statsList;
+    }
+    function characterStatRow(key) {
+        const statsList = characterStats();
+        const index = statsList.map((stat) => stat.classList[1]).indexOf(key);
+        if (index === -1)
+            return null;
+        return statsList[index];
+    }
+    function characterStat(key) {
+        const statRow = characterStatRow(key);
+        if (!statRow)
+            return 0;
+        const stat = statRow.children[1].children[2].innerText;
+        return Number(stat.replace(/[^0-9.-]/g, ""));
+    }
+
+    var _a$2, _EvaluationSelector_instance;
+    const EVALUATION_METHOD = [
+        { id: "scoring", key: "SCORING_METHOD" },
+        { id: "rollValue", key: "RV_METHOD" },
+    ];
+    class EvaluationSelector {
+        static get instance() {
+            if (!__classPrivateFieldGet(this, _a$2, "f", _EvaluationSelector_instance)) {
+                __classPrivateFieldSet(this, _a$2, new EvaluationSelector(), "f", _EvaluationSelector_instance);
+            }
+            return __classPrivateFieldGet(this, _a$2, "f", _EvaluationSelector_instance);
+        }
+        createText() {
+            const cardToggles = document.getElementsByClassName("CardToggles")[0];
+            if (document.getElementById(EVALUATION_SELECTOR))
+                return;
+            const rowElement = cardToggles
+                .getElementsByClassName("row")[0]
+                .cloneNode(false);
+            rowElement.id = EVALUATION_SELECTOR;
+            rowElement.style.display = "flex";
+            rowElement.style.flexDirection = "column";
+            rowElement.style.alignItems = "flex-start";
+            cardToggles.getElementsByTagName("header")[2].before(rowElement);
+            const methodSelectDiv = document.createElement("div");
+            methodSelectDiv.id = EVALUATION_SELECTOR_DIV;
+            methodSelectDiv.style.marginTop = "1em";
+            methodSelectDiv.classList.add("svelte-1jzchrt");
+            rowElement.appendChild(methodSelectDiv);
+            const infoText = document.createElement("label");
+            const evaluationSelectorInfo = "EVALUATION_SELECTOR_INFO";
+            infoText.classList.add(evaluationSelectorInfo, getSvelteClassName(methodSelectDiv));
+            methodSelectDiv.appendChild(infoText);
+            const methodGroup = document.createElement("group");
+            methodGroup.style.display = "flex";
+            methodGroup.style.flexWrap = "wrap";
+            methodGroup.style.marginTop = "-1em";
+            methodGroup.classList.add("methodRadio", "svelte-1893j5");
+            methodSelectDiv.appendChild(methodGroup);
+            for (const evaluationMethod of Object.values(EVALUATION_METHOD)) {
+                const id = `evaluation_${evaluationMethod.id}_radio`;
+                const baseLabel = document.createElement("label");
+                baseLabel.classList.add("Checkbox", "Control", "sm", getSvelteClassName(methodGroup));
+                const radio = document.createElement("input");
+                radio.id = id;
+                radio.name = EVALUATION_SELECTOR_NAME;
+                radio.style.display = "none";
+                radio.setAttribute("type", "radio");
+                radio.value = evaluationMethod.id;
+                const toggle = document.createElement("div");
+                toggle.classList.add("toggle", getSvelteClassName(methodGroup));
+                const methodNameBase = document.createElement("span");
+                methodNameBase.setAttribute("for", id);
+                methodNameBase.setAttribute("type", "radio");
+                methodNameBase.classList.add("info", getSvelteClassName(methodGroup));
+                const methodName = document.createElement("span");
+                methodName.classList.add(evaluationMethod.key, "label", getSvelteClassName(methodGroup));
+                methodNameBase.appendChild(methodName);
+                baseLabel.appendChild(radio);
+                baseLabel.appendChild(toggle);
+                baseLabel.appendChild(methodNameBase);
+                methodGroup.appendChild(baseLabel);
+            }
+            const scoringSelectId = `evaluation_${EVALUATION_METHOD[0].id}_radio`;
+            document.getElementById(scoringSelectId)
+                ?.toggleAttribute("checked", true);
+            const radioStyle = [
+                ".methodRadio input:checked ~ .toggle.svelte-1893j5:before { content: ''; border-radius: 1px; transform: scale(1); }",
+                ".methodRadio .Checkbox.svelte-1893j5.svelte-1893j5:has(> input:checked) { opacity: 1; }",
+            ];
+            cssManager.addStyle(...radioStyle);
+        }
+        writeText() {
+            const methodSelectDiv = document.getElementById(EVALUATION_SELECTOR_DIV);
+            if (!methodSelectDiv)
+                return;
+            const infoText = methodSelectDiv.children[0];
+            infoText.textContent = optionLocale.getLocale(infoText.classList[0]);
+            for (const method of EVALUATION_METHOD) {
+                const methodLabel = methodSelectDiv.getElementsByClassName(method.key)[0];
+                methodLabel.textContent = optionLocale.getLocale(methodLabel.classList[0]);
+            }
+        }
+        getSelectMethodId() {
+            const checkedRadio = document.querySelector(`.methodRadio input:checked[name=${EVALUATION_SELECTOR_NAME}]`);
+            return checkedRadio.value ?? EVALUATION_METHOD[0].id;
+        }
+        getSelectMethodKey() {
+            const id = this.getSelectMethodId();
+            for (const method of EVALUATION_METHOD) {
+                if (id === method.id)
+                    return method.key;
+            }
+            return EVALUATION_METHOD[0].key;
+        }
+    }
+    _a$2 = EvaluationSelector;
+    _EvaluationSelector_instance = { value: void 0 };
+
+    var _a$1, _RollValueMethodRoutine_instance;
+    const STATS_OPTION_ID = {
+        HP: "HP",
+        ATTACK: "ATK",
+        DEFENSE: "DEF",
+        HP_PERCENT: "HP_P",
+        ATTACK_PERCENT: "ATK_P",
+        DEFENSE_PERCENT: "DEF_P",
+        CRITICAL: "CR",
+        CRITICAL_HURT: "CD",
+        CHARGE_EFFICIENCY: "ER",
+        ELEMENT_MASTERY: "EM",
+    };
+    class RollValueMethodRoutine {
+        static get instance() {
+            if (!__classPrivateFieldGet(this, _a$1, "f", _RollValueMethodRoutine_instance)) {
+                __classPrivateFieldSet(this, _a$1, new RollValueMethodRoutine(), "f", _RollValueMethodRoutine_instance);
+            }
+            return __classPrivateFieldGet(this, _a$1, "f", _RollValueMethodRoutine_instance);
+        }
+        createText() {
+            const evaluationRow = document.getElementById(EVALUATION_SELECTOR);
+            if (document.getElementById(RV_SELECT_DIV))
+                return;
+            const rvSelectDiv = document.createElement("div");
+            rvSelectDiv.id = RV_SELECT_DIV;
+            rvSelectDiv.classList.add("Input", "svelte-1jzchrt");
+            evaluationRow?.appendChild(rvSelectDiv);
+            const rvSelectGroup = document.createElement("group");
+            rvSelectGroup.style.marginTop = "-1em";
+            rvSelectGroup.classList.add("rvSelectCheckbox");
+            rvSelectDiv.appendChild(rvSelectGroup);
+            for (const scoreType in STATS_OPTION_ID) {
+                const statId = STATS_OPTION_ID[scoreType];
+                const checkboxId = `RV_${statId}_CHECKBOX`;
+                const checkbox = document.createElement("input");
+                checkbox.id = checkboxId;
+                checkbox.name = RV_CHECKBOX_NAME;
+                checkbox.setAttribute("type", "checkbox");
+                checkbox.value = STATS_OPTION_ID[scoreType];
+                const label = document.createElement("label");
+                label.setAttribute("for", checkboxId);
+                label.setAttribute("type", "checkbox");
+                label.setAttribute("data-type", "OUTLINE");
+                label.classList.add(scoreType, "radbox", "Button", "label", "svelte-6y8083");
+                rvSelectGroup.appendChild(checkbox);
+                rvSelectGroup.appendChild(label);
+            }
+            const crRadioId = `RV_${STATS_OPTION_ID.CRITICAL}_CHECKBOX`;
+            const cdRadioId = `RV_${STATS_OPTION_ID.CRITICAL_HURT}_CHECKBOX`;
+            const atkRadioId = `RV_${STATS_OPTION_ID.ATTACK_PERCENT}_CHECKBOX`;
+            document.getElementById(crRadioId)?.toggleAttribute("checked", true);
+            document.getElementById(cdRadioId)?.toggleAttribute("checked", true);
+            document.getElementById(atkRadioId)?.toggleAttribute("checked", true);
+            const radioStyle = [
+                `#${EVALUATION_SELECTOR}:not(:has(#evaluation_rollValue_radio:checked)) #${RV_SELECT_DIV} { display:none }`,
+                ".rvSelectCheckbox input { display:none }",
+                ".rvSelectCheckbox label.radbox { opacity: 0.5; }",
+                ".rvSelectCheckbox input:checked + label.radbox { opacity: 1; }",
+            ];
+            cssManager.addStyle(...radioStyle);
+        }
+        writeText() {
+            const rvSelectDiv = document.getElementById(RV_SELECT_DIV);
+            if (!rvSelectDiv)
+                return;
+            const scoreButtons = rvSelectDiv.getElementsByClassName("Button");
+            for (const label of Array.from(scoreButtons)) {
+                const key = label.classList[0];
+                if (key.includes("PERCENT")) {
+                    label.textContent = optionLocale.getLocaleSub(key) + "%";
+                }
+                else {
+                    label.textContent = optionLocale.getLocaleSub(key);
+                }
+            }
+        }
+        getCheckedIds() {
+            const checkedIds = [];
+            document
+                .querySelectorAll(`.rvSelectCheckbox input:checked[name=${RV_CHECKBOX_NAME}]`)
+                .forEach((element) => checkedIds.push(element.id));
+            return checkedIds
+                .map((id) => id.match("RV_(.+)_CHECKBOX")?.at(1) ?? "");
+        }
+        getCheckedKeys() {
+            const checkedIds = this.getCheckedIds();
+            return Object.keys(STATS_OPTION_ID).filter((key) => checkedIds.includes(STATS_OPTION_ID[key]));
+        }
+    }
+    _a$1 = RollValueMethodRoutine;
+    _RollValueMethodRoutine_instance = { value: void 0 };
+
+    var _a, _ArtifactEvaluateRoutine_instance, _ArtifactEvaluateRoutine_artifactSets;
+    const EVALUATION_TEXT = "artifactEvaluateText";
+    const EXTRA_PARAMETER_TEXT = "extraParamText";
+    class ArtifactEvaluateRoutine {
+        constructor() {
+            _ArtifactEvaluateRoutine_artifactSets.set(this, void 0);
+        }
+        static get instance() {
+            if (!__classPrivateFieldGet(this, _a, "f", _ArtifactEvaluateRoutine_instance)) {
+                __classPrivateFieldSet(this, _a, new ArtifactEvaluateRoutine(), "f", _ArtifactEvaluateRoutine_instance);
+            }
+            return __classPrivateFieldGet(this, _a, "f", _ArtifactEvaluateRoutine_instance);
+        }
+        createText() {
+            __classPrivateFieldSet(this, _ArtifactEvaluateRoutine_artifactSets, new ArtifactSets(document.getElementsByClassName("section right")[0]), "f");
+            this.createEvaluationText();
+            this.createExtraParameterText();
+        }
+        writeText() {
+            const evaluationSelector = EvaluationSelector.instance;
+            switch (evaluationSelector.getSelectMethodId()) {
+                case "scoring": {
+                    this.writeScoringMethod();
+                    break;
+                }
+                case "rollValue": {
+                    this.writeRollValueMethod();
+                    break;
+                }
+            }
+        }
+        createEvaluationText() {
+            for (const artifact of __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").artifacts) {
+                const artifactElement = artifact.element;
+                let evaluationText = artifactElement.getElementsByClassName(EVALUATION_TEXT)[0];
+                if (evaluationText)
+                    continue;
+                evaluationText = document.createElement("div");
+                evaluationText.classList.add(EVALUATION_TEXT, getSvelteClassName(artifactElement));
+                artifactElement.appendChild(evaluationText);
+            }
+            const cssStyle = [
+                `.Artifact .${EVALUATION_TEXT}{ position: absolute; font-size: 0.7em; opacity: 0.6; right: 0.3em; }`,
+            ];
+            cssManager.addStyle(...cssStyle);
+        }
+        createExtraParameterText() {
+            let extraParameter = document.getElementById(EXTRA_PARAMETER_TEXT);
+            if (extraParameter)
+                return;
+            extraParameter = document.createElement("div");
+            extraParameter.id = EXTRA_PARAMETER_TEXT;
+            extraParameter.style.right = "0.3em";
+            extraParameter.style.marginTop = "-0.5em";
+            extraParameter.style.textAlign = "right";
+            extraParameter.style.fontSize = "0.8em";
+            extraParameter.style.whiteSpace = "nowrap";
+            extraParameter.classList.add(getSvelteClassName(__classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").artifacts[0].element));
+            __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").element.appendChild(extraParameter);
+        }
+        writeScoringMethod() {
+            const selectScoreType = SelectScoreType.instance;
+            const scoreTypeKey = selectScoreType.getScoreTypeKey();
+            for (const artifact of __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").artifacts) {
+                const score = artifact.artifactScore(scoreTypeKey);
+                const scoreBox = artifact.element.getElementsByClassName(EVALUATION_TEXT)[0];
+                if (!scoreBox)
+                    continue;
+                scoreBox.textContent = score.toFixed(1);
+            }
+            const extraText = document.getElementById(EXTRA_PARAMETER_TEXT);
+            if (!extraText)
+                return;
+            const critRate = characterStat("CRITICAL");
+            const critDMG = characterStat("CRITICAL_HURT");
+            const critRatio = critDMG / critRate;
+            const typeName = optionLocale.getLocaleSub(scoreTypeKey);
+            const sumScore = __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").sumScore(scoreTypeKey);
+            const avgScore = __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").avgScore(scoreTypeKey);
+            extraText.textContent = this.getScoringInfoText(critRatio, typeName, sumScore, avgScore);
+        }
+        writeRollValueMethod() {
+            const rollValueMethod = RollValueMethodRoutine.instance;
+            const scoreTypeKeys = rollValueMethod.getCheckedKeys();
+            for (const artifact of __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").artifacts) {
+                const rv = artifact.rollValue(...scoreTypeKeys);
+                const evaluateText = artifact.element.getElementsByClassName(EVALUATION_TEXT)[0];
+                if (!evaluateText)
+                    continue;
+                evaluateText.textContent = `${rv}%`;
+            }
+            const extraText = document.getElementById(EXTRA_PARAMETER_TEXT);
+            if (!extraText)
+                return;
+            const critRate = characterStat("CRITICAL");
+            const critDMG = characterStat("CRITICAL_HURT");
+            const critRatio = critDMG / critRate;
+            const statNames = scoreTypeKeys
+                .map((key) => {
+                const name = optionLocale.getLocaleSub(key);
+                return name + (key.includes("PERCENT") ? "%" : "");
+            });
+            const sumRV = __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").sumRollValue(...scoreTypeKeys);
+            extraText.textContent = this.getRVInfoText(critRatio, statNames, sumRV);
+        }
+        getScoringInfoText(ratio, scoreTypeName, sumScore, avgScore) {
+            const ratioFixed = ratio.toFixed(1);
+            const sumScoreFixed = sumScore.toFixed(1);
+            const avgScoreFixed = avgScore.toFixed(1);
+            return fmt(optionLocale.getLocale("SCORE_EXTRA_INFO"), {
+                critRatio: ratioFixed,
+                selectStat: scoreTypeName,
+                avgScore: avgScoreFixed,
+                sumScore: sumScoreFixed,
+            });
+        }
+        getRVInfoText(ratio, statNames, sumRV) {
+            const ratioFixed = ratio.toFixed(1);
+            const sumRVFixed = sumRV.toFixed(0);
+            return fmt(optionLocale.getLocale("RV_EXTRA_INFO"), {
+                critRatio: ratioFixed,
+                selectStats: statNames.join(" "),
+                sumRV: sumRVFixed,
+            });
+        }
+    }
+    _a = ArtifactEvaluateRoutine, _ArtifactEvaluateRoutine_artifactSets = new WeakMap();
+    _ArtifactEvaluateRoutine_instance = { value: void 0 };
+
+    class CreateWriteManager {
         static get instance() {
             if (!this._instance) {
                 this._instance = new CreateWriteManager();
             }
             return this._instance;
         }
-        init() {
+        constructor() {
+            this.createList = [];
             this.createList.push(DateText.instance);
             this.createList.push(Friend.instance);
+            this.createList.push(EvaluationSelector.instance);
             this.createList.push(SelectScoreType.instance);
+            this.createList.push(RollValueMethodRoutine.instance);
             this.createList.push(Weapon.instance);
-            this.createList.push(Artifact.instance);
-            this.createList.push(ArtifactScoring.instance);
+            this.createList.push(Artifact$1.instance);
+            this.createList.push(ArtifactEvaluateRoutine.instance);
         }
         createText() {
             this.createList.forEach((value) => {
@@ -851,7 +1251,6 @@
         cardSection[1].style.left = "34%";
         cardSection[2].style.width = "43%";
         const cwManager = CreateWriteManager.instance;
-        cwManager.init();
         cwManager.createText();
         cwManager.writeText();
         const charaName = document.getElementsByClassName("name")[0];
@@ -867,7 +1266,17 @@
         });
         observer.observe(charaName, observeConf);
         observer.observe(language, observeConf);
+        document.getElementsByName(EVALUATION_SELECTOR_NAME).forEach(function (e) {
+            e.addEventListener("click", function () {
+                cwManager.writeText();
+            });
+        });
         document.getElementsByName(SCORE_RADIO_NAME).forEach(function (e) {
+            e.addEventListener("click", function () {
+                cwManager.writeText();
+            });
+        });
+        document.getElementsByName(RV_CHECKBOX_NAME).forEach(function (e) {
             e.addEventListener("click", function () {
                 cwManager.writeText();
             });

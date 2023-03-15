@@ -1,10 +1,12 @@
 import { CreateWriteRoutine } from "./createWriteRoutine";
 import { DateText } from "./routines/dateText";
-import { ArtifactScoring } from "./routines/artifactScoring";
 import { SelectScoreType } from "./routines/selectScoreType";
 import { Artifact } from "./routines/artifacts";
 import { Weapon } from "./routines/weapon";
 import { Friend } from "./routines/friend";
+import { ArtifactEvaluateRoutine } from "./routines/artifactEvaluateRoutine";
+import { EvaluationSelector } from "./routines/evaluationSelectorRoutine";
+import { RollValueMethodRoutine } from "./routines/rollValueMethodRoutine";
 
 export class CreateWriteManager implements CreateWriteRoutine {
     private static _instance: CreateWriteManager;
@@ -18,13 +20,15 @@ export class CreateWriteManager implements CreateWriteRoutine {
         return this._instance;
     }
 
-    init() {
+    constructor() {
         this.createList.push(DateText.instance);
         this.createList.push(Friend.instance);
+        this.createList.push(EvaluationSelector.instance);
         this.createList.push(SelectScoreType.instance);
+        this.createList.push(RollValueMethodRoutine.instance);
         this.createList.push(Weapon.instance);
         this.createList.push(Artifact.instance);
-        this.createList.push(ArtifactScoring.instance);
+        this.createList.push(ArtifactEvaluateRoutine.instance);
     }
 
     createText() {

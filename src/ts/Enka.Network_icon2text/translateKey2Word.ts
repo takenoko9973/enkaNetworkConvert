@@ -124,12 +124,24 @@ localeArray["EN"] = {
         locale: "Friendship",
         subOption: undefined,
     },
-    SCORE_SELECT_INFO: {
-        locale: "Score type",
+    EVALUATION_SELECTOR_INFO: {
+        locale: "Evaluation method",
         subOption: undefined,
     },
-    CARD_EXTRA_INFO: {
+    SCORING_METHOD: {
+        locale: "Scoring method",
+        subOption: undefined,
+    },
+    RV_METHOD: {
+        locale: "RV method",
+        subOption: undefined,
+    },
+    SCORE_EXTRA_INFO: {
         locale: "Crit Ratio 1:${critRatio} / Score(${scoreType}) Avg. ${avgScore} Total ${sumScore}",
+        subOption: undefined,
+    },
+    RV_EXTRA_INFO: {
+        locale: "Crit Ratio 1:${critRatio} / RV(${scoreType}) Total ${sumScore}",
         subOption: undefined,
     },
     UNKNOWN: {
@@ -231,12 +243,24 @@ localeArray["JA"] = {
         locale: "好感度",
         subOption: undefined,
     },
-    SCORE_SELECT_INFO: {
-        locale: "スコア計算方法",
+    EVALUATION_SELECTOR_INFO: {
+        locale: "評価方式",
         subOption: undefined,
     },
-    CARD_EXTRA_INFO: {
-        locale: "会心率ダメ比 1:${critRatio} / 聖遺物スコア(${scoreType}) 平均:${avgScore} 合計:${sumScore}",
+    SCORING_METHOD: {
+        locale: "スコア方式",
+        subOption: undefined,
+    },
+    RV_METHOD: {
+        locale: "RV方式",
+        subOption: undefined,
+    },
+    SCORE_EXTRA_INFO: {
+        locale: "会心比 1:${critRatio} / スコア方式(${selectStat}) 平均:${avgScore} 合計:${sumScore}",
+        subOption: undefined,
+    },
+    RV_EXTRA_INFO: {
+        locale: "会心比 1:${critRatio} / RV方式(${selectStats}) 合計:${sumRV}%",
         subOption: undefined,
     },
     UNKNOWN: {

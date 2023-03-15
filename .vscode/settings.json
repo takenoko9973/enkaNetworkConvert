@@ -5,7 +5,9 @@
         "Dendro",
         "ELEC",
         "enka",
-        "Pyro"
+        "mainstat",
+        "Pyro",
+        "substats"
     ],
     "[typescript]": {
         "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
