@@ -427,200 +427,6 @@
         return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
     }
 
-    var _ArtifactSubStat_statName, _ArtifactSubStat_stat, _ArtifactSubStat_roll, _Artifact_element, _Artifact_star, _Artifact_level, _Artifact_mainStat, _Artifact_subStats;
-    const STATS_OPTION_RATE = {
-        HP: Infinity,
-        ATTACK: Infinity,
-        DEFENSE: Infinity,
-        HP_PERCENT: 3,
-        ATTACK_PERCENT: 3,
-        DEFENSE_PERCENT: 15 / 4,
-        CRITICAL: 4,
-        CRITICAL_HURT: 2,
-        CHARGE_EFFICIENCY: 10 / 3,
-        ELEMENT_MASTERY: 12,
-    };
-    class ArtifactSubStat {
-        constructor(subStat) {
-            _ArtifactSubStat_statName.set(this, void 0);
-            _ArtifactSubStat_stat.set(this, 0);
-            _ArtifactSubStat_roll.set(this, []);
-            if (!subStat.classList.contains("Substat"))
-                return;
-            const rolls = subStat.getElementsByClassName("rolls")[0];
-            __classPrivateFieldSet(this, _ArtifactSubStat_statName, subStat.classList[1], "f");
-            __classPrivateFieldSet(this, _ArtifactSubStat_stat, Number(subStat.lastChild?.textContent?.replace("%", "")), "f");
-            Array.from(rolls.children).forEach((_roll) => {
-                __classPrivateFieldGet(this, _ArtifactSubStat_roll, "f").push(_roll.children.length);
-            });
-        }
-        get statKey() {
-            return __classPrivateFieldGet(this, _ArtifactSubStat_statName, "f");
-        }
-        get stat() {
-            return __classPrivateFieldGet(this, _ArtifactSubStat_stat, "f");
-        }
-        get rollValue() {
-            return __classPrivateFieldGet(this, _ArtifactSubStat_roll, "f")
-                .map((_roll) => 100 - 10 * (4 - _roll))
-                .reduce((_sumRV, _rv) => _sumRV + _rv);
-        }
-    }
-    _ArtifactSubStat_statName = new WeakMap(), _ArtifactSubStat_stat = new WeakMap(), _ArtifactSubStat_roll = new WeakMap();
-    let Artifact$1 = class Artifact {
-        constructor(artifact) {
-            _Artifact_element.set(this, void 0);
-            _Artifact_star.set(this, 0);
-            _Artifact_level.set(this, 0);
-            _Artifact_mainStat.set(this, void 0);
-            _Artifact_subStats.set(this, []);
-            __classPrivateFieldSet(this, _Artifact_element, artifact, "f");
-            if (!artifact.classList.contains("Artifact"))
-                return;
-            if (artifact.classList.contains("empty"))
-                return;
-            const elements = {};
-            elements["mainStat"] = artifact.getElementsByClassName("mainstat")[0];
-            elements["subStats"] = artifact.getElementsByClassName("substats")[0];
-            elements["stars"] = elements["mainStat"].getElementsByClassName("Stars")[0];
-            elements["level"] = elements["mainStat"].getElementsByClassName("level")[0];
-            __classPrivateFieldSet(this, _Artifact_star, elements["stars"].childElementCount, "f");
-            __classPrivateFieldSet(this, _Artifact_level, Number(elements["level"].textContent ?? "0"), "f");
-            __classPrivateFieldSet(this, _Artifact_mainStat, elements["mainStat"]
-                .classList[1], "f");
-            const subStats = elements["subStats"].getElementsByClassName("Substat");
-            for (const subStat of Array.from(subStats)) {
-                __classPrivateFieldGet(this, _Artifact_subStats, "f").push(new ArtifactSubStat(subStat));
-            }
-        }
-        get element() {
-            return __classPrivateFieldGet(this, _Artifact_element, "f");
-        }
-        get star() {
-            return __classPrivateFieldGet(this, _Artifact_star, "f");
-        }
-        get level() {
-            return __classPrivateFieldGet(this, _Artifact_level, "f");
-        }
-        get mainStatKey() {
-            return __classPrivateFieldGet(this, _Artifact_mainStat, "f");
-        }
-        get subStats() {
-            return __classPrivateFieldGet(this, _Artifact_subStats, "f");
-        }
-        artifactScore(key) {
-            const rate = STATS_OPTION_RATE.ATTACK_PERCENT / STATS_OPTION_RATE[key];
-            let score = 0;
-            for (const subStat of __classPrivateFieldGet(this, _Artifact_subStats, "f")) {
-                switch (subStat.statKey) {
-                    case "CRITICAL":
-                        score += subStat.stat * 2;
-                        break;
-                    case "CRITICAL_HURT":
-                        score += subStat.stat;
-                        break;
-                    case key:
-                        score += subStat.stat * rate;
-                        break;
-                }
-            }
-            return score;
-        }
-        rollValue(...keys) {
-            let rollValue = 0;
-            for (const subStat of __classPrivateFieldGet(this, _Artifact_subStats, "f")) {
-                if (!subStat.statKey)
-                    continue;
-                if (subStat.statKey in keys) {
-                    rollValue += subStat.rollValue;
-                }
-            }
-            return rollValue;
-        }
-    };
-    _Artifact_element = new WeakMap(), _Artifact_star = new WeakMap(), _Artifact_level = new WeakMap(), _Artifact_mainStat = new WeakMap(), _Artifact_subStats = new WeakMap();
-
-    var _ArtifactSets_element, _ArtifactSets_artifacts;
-    class ArtifactSets {
-        constructor(artifactSets) {
-            _ArtifactSets_element.set(this, void 0);
-            _ArtifactSets_artifacts.set(this, []);
-            __classPrivateFieldSet(this, _ArtifactSets_element, artifactSets, "f");
-            const artifacts = artifactSets.getElementsByClassName("Artifact");
-            for (const artifact of Array.from(artifacts)) {
-                __classPrivateFieldGet(this, _ArtifactSets_artifacts, "f").push(new Artifact$1(artifact));
-            }
-        }
-        get element() {
-            return __classPrivateFieldGet(this, _ArtifactSets_element, "f");
-        }
-        get artifacts() {
-            return __classPrivateFieldGet(this, _ArtifactSets_artifacts, "f");
-        }
-        artifactNum() {
-            const equippingArtifacts = __classPrivateFieldGet(this, _ArtifactSets_artifacts, "f").filter((_artifact) => !_artifact.element.classList.contains("empty"));
-            return equippingArtifacts.length;
-        }
-        eachScore(key) {
-            return __classPrivateFieldGet(this, _ArtifactSets_artifacts, "f").map((_artifact) => _artifact.artifactScore(key));
-        }
-        sumScore(key) {
-            return this.eachScore(key).reduce((sum, score) => sum + score, 0);
-        }
-        avgScore(key) {
-            const artifactNum = this.artifactNum();
-            if (artifactNum == 0) {
-                return 0;
-            }
-            else {
-                return this.sumScore(key) / artifactNum;
-            }
-        }
-        eachRollValue(...keys) {
-            return __classPrivateFieldGet(this, _ArtifactSets_artifacts, "f").map((_artifact) => _artifact.rollValue(...keys));
-        }
-        sumRollValue(...keys) {
-            return this.eachRollValue(...keys).reduce((sum, rv) => sum + rv, 0);
-        }
-        avgRollValue(...keys) {
-            const artifactNum = __classPrivateFieldGet(this, _ArtifactSets_artifacts, "f").length;
-            if (artifactNum == 0) {
-                return 0;
-            }
-            else {
-                return this.sumRollValue(...keys) / artifactNum;
-            }
-        }
-    }
-    _ArtifactSets_element = new WeakMap(), _ArtifactSets_artifacts = new WeakMap();
-
-    function characterStats() {
-        const charaStatsTable = document.getElementsByClassName("StatsTable")[0];
-        const statsList = Array.from(charaStatsTable.children).filter((row) => Array.from(row.classList).indexOf("row") !== -1);
-        return statsList;
-    }
-    function characterStatRow(key) {
-        const statsList = characterStats();
-        const index = statsList.map((stat) => stat.classList[1]).indexOf(key);
-        if (index === -1)
-            return null;
-        return statsList[index];
-    }
-    function characterStat(key) {
-        const statRow = characterStatRow(key);
-        if (!statRow)
-            return 0;
-        const stat = statRow.children[1].children[2].innerText;
-        return Number(stat.replace(/[^0-9.-]/g, ""));
-    }
-
-    function fmt(template, values) {
-        if (!values)
-            return template;
-        const format = new Function(...Object.keys(values), `return \`${template}\`;`);
-        return format(...Object.values(values).map((value) => value ?? ""));
-    }
-
     var _scoreType_id, _scoreType_key;
     class scoreType {
         constructor(id, key) {
@@ -723,78 +529,12 @@
         }
     }
 
-    var _ArtifactScoring_artifactSets;
-    class ArtifactScoring {
-        constructor() {
-            _ArtifactScoring_artifactSets.set(this, void 0);
-        }
-        static get instance() {
-            if (!this._instance) {
-                this._instance = new ArtifactScoring();
-            }
-            return this._instance;
-        }
-        createText() {
-            __classPrivateFieldSet(this, _ArtifactScoring_artifactSets, new ArtifactSets(document.getElementsByClassName("section right")[0]), "f");
-            for (const artifact of __classPrivateFieldGet(this, _ArtifactScoring_artifactSets, "f").artifacts) {
-                const artifactElement = artifact.element;
-                let scoreBox = artifactElement.getElementsByClassName("artifactScoreText")[0];
-                if (scoreBox)
-                    continue;
-                scoreBox = document.createElement("div");
-                scoreBox.classList.add("artifactScoreText", getSvelteClassName(artifactElement));
-                artifactElement.appendChild(scoreBox);
-            }
-            if (document.getElementById("extraData"))
-                return;
-            const exParam = document.createElement("div");
-            exParam.id = "extraData";
-            exParam.style.right = "0.3em";
-            exParam.style.marginTop = "-0.5em";
-            exParam.style.textAlign = "right";
-            exParam.style.fontSize = "0.8em";
-            exParam.classList.add(getSvelteClassName(__classPrivateFieldGet(this, _ArtifactScoring_artifactSets, "f").artifacts[0].element));
-            __classPrivateFieldGet(this, _ArtifactScoring_artifactSets, "f").element.appendChild(exParam);
-            const cssStyle = [
-                ".Artifact .artifactScoreText{ position: absolute; font-size: 0.7em; opacity: 0.6; right: 0.3em; }",
-            ];
-            cssManager.addStyle(...cssStyle);
-        }
-        writeText() {
-            if (!__classPrivateFieldGet(this, _ArtifactScoring_artifactSets, "f"))
-                return;
-            const extraText = document.getElementById("extraData");
-            const selectScoreType = SelectScoreType.instance;
-            const artifacts = __classPrivateFieldGet(this, _ArtifactScoring_artifactSets, "f").artifacts;
-            const scoreTypeKey = selectScoreType.getScoreTypeKey();
-            for (const artifact of artifacts) {
-                const score = artifact.artifactScore(scoreTypeKey);
-                const scoreBox = artifact.element.getElementsByClassName("artifactScoreText")[0];
-                scoreBox.textContent = score.toFixed(1);
-            }
-            const critRate = characterStat("CRITICAL");
-            const critDMG = characterStat("CRITICAL_HURT");
-            const critRatio = critDMG / critRate;
-            const typeName = optionLocale.getLocaleSub(scoreTypeKey);
-            const sumScore = __classPrivateFieldGet(this, _ArtifactScoring_artifactSets, "f").sumScore(scoreTypeKey);
-            const avgScore = __classPrivateFieldGet(this, _ArtifactScoring_artifactSets, "f").avgScore(scoreTypeKey);
-            if (!extraText)
-                return;
-            extraText.textContent = this.getExtraText(critRatio, typeName, sumScore, avgScore);
-        }
-        getExtraText(ratio, scoreTypeName, sumScore, avgScore) {
-            const ratioFixed = ratio.toFixed(1);
-            const sumScoreFixed = sumScore.toFixed(1);
-            const avgScoreFixed = avgScore.toFixed(1);
-            return fmt(optionLocale.getLocale("CARD_EXTRA_INFO"), {
-                critRatio: ratioFixed,
-                scoreType: scoreTypeName,
-                avgScore: avgScoreFixed,
-                sumScore: sumScoreFixed,
-            });
-        }
+    function fmt(template, values) {
+        if (!values)
+            return template;
+        const format = new Function(...Object.keys(values), `return \`${template}\`;`);
+        return format(...Object.values(values).map((value) => value ?? ""));
     }
-    _ArtifactScoring_artifactSets = new WeakMap();
 
     function innerOptionText(statElement, isSub = false) {
         const statText = statElement?.getElementsByClassName("statText")[0];
@@ -807,13 +547,13 @@
         return statText;
     }
 
-    class Artifact {
+    let Artifact$1 = class Artifact {
         constructor() {
             this.artifacts = document.getElementsByClassName("Artifact");
         }
         static get instance() {
             if (!this._instance) {
-                this._instance = new Artifact();
+                this._instance = new Artifact$1();
             }
             return this._instance;
         }
@@ -850,7 +590,7 @@
                 }
             }
         }
-    }
+    };
 
     class Weapon {
         constructor() {
@@ -923,6 +663,285 @@
         }
     }
 
+    var _ArtifactSubStat_statName, _ArtifactSubStat_stat, _ArtifactSubStat_roll, _Artifact_element, _Artifact_star, _Artifact_level, _Artifact_mainStat, _Artifact_subStats;
+    const STATS_OPTION_RATE = {
+        HP: Infinity,
+        ATTACK: Infinity,
+        DEFENSE: Infinity,
+        HP_PERCENT: 3,
+        ATTACK_PERCENT: 3,
+        DEFENSE_PERCENT: 15 / 4,
+        CRITICAL: 4,
+        CRITICAL_HURT: 2,
+        CHARGE_EFFICIENCY: 10 / 3,
+        ELEMENT_MASTERY: 12,
+    };
+    class ArtifactSubStat {
+        constructor(subStat) {
+            _ArtifactSubStat_statName.set(this, void 0);
+            _ArtifactSubStat_stat.set(this, 0);
+            _ArtifactSubStat_roll.set(this, []);
+            if (!subStat.classList.contains("Substat"))
+                return;
+            const rolls = subStat.getElementsByClassName("rolls")[0];
+            __classPrivateFieldSet(this, _ArtifactSubStat_statName, subStat.classList[1], "f");
+            __classPrivateFieldSet(this, _ArtifactSubStat_stat, Number(subStat.lastChild?.textContent?.replace("%", "")), "f");
+            Array.from(rolls.children).forEach((_roll) => {
+                __classPrivateFieldGet(this, _ArtifactSubStat_roll, "f").push(_roll.children.length);
+            });
+        }
+        get statKey() {
+            return __classPrivateFieldGet(this, _ArtifactSubStat_statName, "f");
+        }
+        get stat() {
+            return __classPrivateFieldGet(this, _ArtifactSubStat_stat, "f");
+        }
+        get rollValue() {
+            return __classPrivateFieldGet(this, _ArtifactSubStat_roll, "f")
+                .map((_roll) => 100 - 10 * (4 - _roll))
+                .reduce((_sumRV, _rv) => _sumRV + _rv);
+        }
+    }
+    _ArtifactSubStat_statName = new WeakMap(), _ArtifactSubStat_stat = new WeakMap(), _ArtifactSubStat_roll = new WeakMap();
+    class Artifact {
+        constructor(artifact) {
+            _Artifact_element.set(this, void 0);
+            _Artifact_star.set(this, 0);
+            _Artifact_level.set(this, 0);
+            _Artifact_mainStat.set(this, void 0);
+            _Artifact_subStats.set(this, []);
+            __classPrivateFieldSet(this, _Artifact_element, artifact, "f");
+            if (!artifact.classList.contains("Artifact"))
+                return;
+            if (artifact.classList.contains("empty"))
+                return;
+            const elements = {};
+            elements["mainStat"] = artifact.getElementsByClassName("mainstat")[0];
+            elements["subStats"] = artifact.getElementsByClassName("substats")[0];
+            elements["stars"] = elements["mainStat"].getElementsByClassName("Stars")[0];
+            elements["level"] = elements["mainStat"].getElementsByClassName("level")[0];
+            __classPrivateFieldSet(this, _Artifact_star, elements["stars"].childElementCount, "f");
+            __classPrivateFieldSet(this, _Artifact_level, Number(elements["level"].textContent ?? "0"), "f");
+            __classPrivateFieldSet(this, _Artifact_mainStat, elements["mainStat"]
+                .classList[1], "f");
+            const subStats = elements["subStats"].getElementsByClassName("Substat");
+            for (const subStat of Array.from(subStats)) {
+                __classPrivateFieldGet(this, _Artifact_subStats, "f").push(new ArtifactSubStat(subStat));
+            }
+        }
+        get element() {
+            return __classPrivateFieldGet(this, _Artifact_element, "f");
+        }
+        get star() {
+            return __classPrivateFieldGet(this, _Artifact_star, "f");
+        }
+        get level() {
+            return __classPrivateFieldGet(this, _Artifact_level, "f");
+        }
+        get mainStatKey() {
+            return __classPrivateFieldGet(this, _Artifact_mainStat, "f");
+        }
+        get subStats() {
+            return __classPrivateFieldGet(this, _Artifact_subStats, "f");
+        }
+        artifactScore(key) {
+            const rate = STATS_OPTION_RATE.ATTACK_PERCENT / STATS_OPTION_RATE[key];
+            let score = 0;
+            for (const subStat of __classPrivateFieldGet(this, _Artifact_subStats, "f")) {
+                switch (subStat.statKey) {
+                    case "CRITICAL":
+                        score += subStat.stat * 2;
+                        break;
+                    case "CRITICAL_HURT":
+                        score += subStat.stat;
+                        break;
+                    case key:
+                        score += subStat.stat * rate;
+                        break;
+                }
+            }
+            return score;
+        }
+        rollValue(...keys) {
+            let rollValue = 0;
+            for (const subStat of __classPrivateFieldGet(this, _Artifact_subStats, "f")) {
+                if (!subStat.statKey)
+                    continue;
+                if (subStat.statKey in keys) {
+                    rollValue += subStat.rollValue;
+                }
+            }
+            return rollValue;
+        }
+    }
+    _Artifact_element = new WeakMap(), _Artifact_star = new WeakMap(), _Artifact_level = new WeakMap(), _Artifact_mainStat = new WeakMap(), _Artifact_subStats = new WeakMap();
+
+    var _ArtifactSets_element, _ArtifactSets_artifacts;
+    class ArtifactSets {
+        constructor(artifactSets) {
+            _ArtifactSets_element.set(this, void 0);
+            _ArtifactSets_artifacts.set(this, []);
+            __classPrivateFieldSet(this, _ArtifactSets_element, artifactSets, "f");
+            const artifacts = artifactSets.getElementsByClassName("Artifact");
+            for (const artifact of Array.from(artifacts)) {
+                __classPrivateFieldGet(this, _ArtifactSets_artifacts, "f").push(new Artifact(artifact));
+            }
+        }
+        get element() {
+            return __classPrivateFieldGet(this, _ArtifactSets_element, "f");
+        }
+        get artifacts() {
+            return __classPrivateFieldGet(this, _ArtifactSets_artifacts, "f");
+        }
+        artifactNum() {
+            const equippingArtifacts = __classPrivateFieldGet(this, _ArtifactSets_artifacts, "f").filter((_artifact) => !_artifact.element.classList.contains("empty"));
+            return equippingArtifacts.length;
+        }
+        eachScore(key) {
+            return __classPrivateFieldGet(this, _ArtifactSets_artifacts, "f").map((_artifact) => _artifact.artifactScore(key));
+        }
+        sumScore(key) {
+            return this.eachScore(key).reduce((sum, score) => sum + score, 0);
+        }
+        avgScore(key) {
+            const artifactNum = this.artifactNum();
+            if (artifactNum == 0) {
+                return 0;
+            }
+            else {
+                return this.sumScore(key) / artifactNum;
+            }
+        }
+        eachRollValue(...keys) {
+            return __classPrivateFieldGet(this, _ArtifactSets_artifacts, "f").map((_artifact) => _artifact.rollValue(...keys));
+        }
+        sumRollValue(...keys) {
+            return this.eachRollValue(...keys).reduce((sum, rv) => sum + rv, 0);
+        }
+        avgRollValue(...keys) {
+            const artifactNum = __classPrivateFieldGet(this, _ArtifactSets_artifacts, "f").length;
+            if (artifactNum == 0) {
+                return 0;
+            }
+            else {
+                return this.sumRollValue(...keys) / artifactNum;
+            }
+        }
+    }
+    _ArtifactSets_element = new WeakMap(), _ArtifactSets_artifacts = new WeakMap();
+
+    function characterStats() {
+        const charaStatsTable = document.getElementsByClassName("StatsTable")[0];
+        const statsList = Array.from(charaStatsTable.children).filter((row) => Array.from(row.classList).indexOf("row") !== -1);
+        return statsList;
+    }
+    function characterStatRow(key) {
+        const statsList = characterStats();
+        const index = statsList.map((stat) => stat.classList[1]).indexOf(key);
+        if (index === -1)
+            return null;
+        return statsList[index];
+    }
+    function characterStat(key) {
+        const statRow = characterStatRow(key);
+        if (!statRow)
+            return 0;
+        const stat = statRow.children[1].children[2].innerText;
+        return Number(stat.replace(/[^0-9.-]/g, ""));
+    }
+
+    var _a, _ArtifactEvaluateRoutine_instance, _ArtifactEvaluateRoutine_artifactSets;
+    const EVALUATION_TEXT = "artifactEvaluateText";
+    const EXTRA_PARAMETER_TEXT = "extraParamText";
+    class ArtifactEvaluateRoutine {
+        static get instance() {
+            if (!__classPrivateFieldGet(this, _a, "f", _ArtifactEvaluateRoutine_instance)) {
+                __classPrivateFieldSet(this, _a, new ArtifactEvaluateRoutine(), "f", _ArtifactEvaluateRoutine_instance);
+            }
+            return __classPrivateFieldGet(this, _a, "f", _ArtifactEvaluateRoutine_instance);
+        }
+        constructor() {
+            _ArtifactEvaluateRoutine_artifactSets.set(this, void 0);
+            __classPrivateFieldSet(this, _ArtifactEvaluateRoutine_artifactSets, new ArtifactSets(document.getElementsByClassName("section right")[0]), "f");
+        }
+        createText() {
+            __classPrivateFieldSet(this, _ArtifactEvaluateRoutine_artifactSets, new ArtifactSets(document.getElementsByClassName("section right")[0]), "f");
+            this.createEvaluationText();
+            this.createExtraParameterText();
+        }
+        writeText() {
+            this.writeEvaluation();
+            this.writeExtraParameter();
+        }
+        createEvaluationText() {
+            for (const artifact of __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").artifacts) {
+                const artifactElement = artifact.element;
+                let evaluationText = artifactElement.getElementsByClassName(EVALUATION_TEXT)[0];
+                if (evaluationText)
+                    continue;
+                evaluationText = document.createElement("div");
+                evaluationText.classList.add(EVALUATION_TEXT, getSvelteClassName(artifactElement));
+                artifactElement.appendChild(evaluationText);
+            }
+            const cssStyle = [
+                `.Artifact .${EVALUATION_TEXT}{ position: absolute; font-size: 0.7em; opacity: 0.6; right: 0.3em; }`,
+            ];
+            cssManager.addStyle(...cssStyle);
+        }
+        createExtraParameterText() {
+            let extraParameter = document.getElementById(EXTRA_PARAMETER_TEXT);
+            if (extraParameter)
+                return;
+            extraParameter = document.createElement("div");
+            extraParameter.id = EXTRA_PARAMETER_TEXT;
+            extraParameter.style.right = "0.3em";
+            extraParameter.style.marginTop = "-0.5em";
+            extraParameter.style.textAlign = "right";
+            extraParameter.style.fontSize = "0.8em";
+            extraParameter.classList.add(getSvelteClassName(__classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").artifacts[0].element));
+            __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").element.appendChild(extraParameter);
+        }
+        writeEvaluation() {
+            this.writeScoring();
+        }
+        writeScoring() {
+            const selectScoreType = SelectScoreType.instance;
+            const scoreTypeKey = selectScoreType.getScoreTypeKey();
+            for (const artifact of __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").artifacts) {
+                const score = artifact.artifactScore(scoreTypeKey);
+                const scoreBox = artifact.element.getElementsByClassName(EVALUATION_TEXT)[0];
+                scoreBox.textContent = score.toFixed(1);
+            }
+        }
+        writeExtraParameter() {
+            const extraText = document.getElementById(EXTRA_PARAMETER_TEXT);
+            if (!extraText)
+                return;
+            const selectScoreType = SelectScoreType.instance;
+            const scoreTypeKey = selectScoreType.getScoreTypeKey();
+            const critRate = characterStat("CRITICAL");
+            const critDMG = characterStat("CRITICAL_HURT");
+            const critRatio = critDMG / critRate;
+            const typeName = optionLocale.getLocaleSub(scoreTypeKey);
+            const sumScore = __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").sumScore(scoreTypeKey);
+            const avgScore = __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").avgScore(scoreTypeKey);
+            extraText.textContent = this.getExtraParameterText(critRatio, typeName, sumScore, avgScore);
+        }
+        getExtraParameterText(ratio, scoreTypeName, sumScore, avgScore) {
+            const ratioFixed = ratio.toFixed(1);
+            const sumScoreFixed = sumScore.toFixed(1);
+            const avgScoreFixed = avgScore.toFixed(1);
+            return fmt(optionLocale.getLocale("CARD_EXTRA_INFO"), {
+                critRatio: ratioFixed,
+                scoreType: scoreTypeName,
+                avgScore: avgScoreFixed,
+                sumScore: sumScoreFixed,
+            });
+        }
+    }
+    _a = ArtifactEvaluateRoutine, _ArtifactEvaluateRoutine_artifactSets = new WeakMap();
+    _ArtifactEvaluateRoutine_instance = { value: void 0 };
+
     class CreateWriteManager {
         constructor() {
             this.createList = [];
@@ -938,8 +957,8 @@
             this.createList.push(Friend.instance);
             this.createList.push(SelectScoreType.instance);
             this.createList.push(Weapon.instance);
-            this.createList.push(Artifact.instance);
-            this.createList.push(ArtifactScoring.instance);
+            this.createList.push(Artifact$1.instance);
+            this.createList.push(ArtifactEvaluateRoutine.instance);
         }
         createText() {
             this.createList.forEach((value) => {
