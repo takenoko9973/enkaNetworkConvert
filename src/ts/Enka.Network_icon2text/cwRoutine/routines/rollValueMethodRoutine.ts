@@ -1,4 +1,10 @@
-import { RV_CHECKBOX_NAME, RV_SELECT_DIV, cssManager, optionLocale } from "../../myConst";
+import {
+    EVALUATION_SELECTOR,
+    RV_CHECKBOX_NAME,
+    RV_SELECT_DIV,
+    cssManager,
+    optionLocale,
+} from "../../myConst";
 import { statsSubOptionKey } from "../../types/characterStatKey";
 import { CreateWriteRoutine } from "../createWriteRoutine";
 
@@ -15,7 +21,6 @@ const STATS_OPTION_ID: { [key in statsSubOptionKey]: string } = {
     ELEMENT_MASTERY: "EM",
 } as const;
 
-
 export class RollValueMethodRoutine implements CreateWriteRoutine {
     static #instance: RollValueMethodRoutine;
 
@@ -28,21 +33,14 @@ export class RollValueMethodRoutine implements CreateWriteRoutine {
     }
 
     createText() {
-        const cardToggles = document.getElementsByClassName("CardToggles")[0];
-        if (document.getElementById("rvSelectRow")) return;
-
-        // カードオプション枠に作成
-        const rowElement = cardToggles
-            .getElementsByClassName("row")[0]
-            .cloneNode(false) as HTMLElement;
-        rowElement.id = "rvSelectRow";
-        cardToggles.getElementsByTagName("header")[2].before(rowElement);
+        const evaluationRow = document.getElementById(EVALUATION_SELECTOR);
+        if (document.getElementById(RV_SELECT_DIV)) return;
 
         // スコア選択欄を作成
         const rvSelectDiv = document.createElement("div");
         rvSelectDiv.id = RV_SELECT_DIV;
         rvSelectDiv.classList.add("Input", "svelte-1jzchrt");
-        rowElement.appendChild(rvSelectDiv);
+        evaluationRow?.appendChild(rvSelectDiv);
 
         const rvSelectGroup = document.createElement("group");
         rvSelectGroup.style.marginTop = "-1em";
@@ -112,16 +110,19 @@ export class RollValueMethodRoutine implements CreateWriteRoutine {
     getCheckedIds(): string[] {
         const checkedIds: string[] = [];
 
-        document.querySelectorAll(
-            `.scoreModeRadio input:checked[name=${RV_CHECKBOX_NAME}]`
-        ).forEach((element) => checkedIds.push(element.id));
+        document
+            .querySelectorAll(
+                `.scoreModeRadio input:checked[name=${RV_CHECKBOX_NAME}]`
+            )
+            .forEach((element) => checkedIds.push(element.id));
         return checkedIds;
     }
 
     getCheckedKeys(): statsSubOptionKey[] {
         const checkedIds = this.getCheckedIds();
 
-        return (Object.keys(STATS_OPTION_ID) as statsSubOptionKey[])
-            .filter((key) => checkedIds.includes(STATS_OPTION_ID[key]));
+        return (Object.keys(STATS_OPTION_ID) as statsSubOptionKey[]).filter(
+            (key) => checkedIds.includes(STATS_OPTION_ID[key])
+        );
     }
 }

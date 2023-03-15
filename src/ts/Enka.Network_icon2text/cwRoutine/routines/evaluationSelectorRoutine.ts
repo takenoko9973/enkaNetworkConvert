@@ -1,4 +1,10 @@
-import { EVALUATION_SELECTOR, EVALUATION_SELECTOR_DIV, EVALUATION_SELECTOR_NAME, cssManager, optionLocale } from "../../myConst";
+import {
+    EVALUATION_SELECTOR,
+    EVALUATION_SELECTOR_DIV,
+    EVALUATION_SELECTOR_NAME,
+    cssManager,
+    optionLocale,
+} from "../../myConst";
 import { localeKeys } from "../../types/localeKeys";
 import { getSvelteClassName } from "../../util/enkaUtil";
 import { CreateWriteRoutine } from "../createWriteRoutine";
@@ -6,7 +12,7 @@ import { CreateWriteRoutine } from "../createWriteRoutine";
 // スコア計算基準指定 H:HP, A:攻撃力, D:防御力
 const EVALUATION_METHOD = [
     { id: "scoring", key: "SCORING_METHOD" },
-    { id: "rollValue", key: "RV_METHOD" }
+    { id: "rollValue", key: "RV_METHOD" },
 ];
 
 export class EvaluationSelector implements CreateWriteRoutine {
@@ -29,6 +35,9 @@ export class EvaluationSelector implements CreateWriteRoutine {
             .getElementsByClassName("row")[0]
             .cloneNode(false) as HTMLElement;
         rowElement.id = EVALUATION_SELECTOR;
+        rowElement.style.display = "flex";
+        rowElement.style.flexDirection = "column";
+        rowElement.style.alignItems = "flex-start";
         cardToggles.getElementsByTagName("header")[2].before(rowElement);
 
         // 評価方式選択欄を作成
@@ -102,7 +111,8 @@ export class EvaluationSelector implements CreateWriteRoutine {
 
         // デフォルトはスコア方式
         const scoringSelectId = `evaluation_${EVALUATION_METHOD[0].id}_radio`;
-        document.getElementById(scoringSelectId)?.toggleAttribute("checked", true);
+        document.getElementById(scoringSelectId)
+            ?.toggleAttribute("checked", true);
 
         const radioStyle = [
             ".methodRadio input:checked ~ .toggle.svelte-1893j5:before { content: ''; border-radius: 1px; transform: scale(1); }",
@@ -112,17 +122,21 @@ export class EvaluationSelector implements CreateWriteRoutine {
     }
 
     writeText() {
-        const methodSelectDiv = document.getElementById(EVALUATION_SELECTOR_DIV);
+        const methodSelectDiv = document.getElementById(
+            EVALUATION_SELECTOR_DIV
+        );
         if (!methodSelectDiv) return;
 
         const infoText = methodSelectDiv.children[0];
-        infoText.textContent = optionLocale.getLocale(
-            infoText.classList[0]
-        );
+        infoText.textContent = optionLocale.getLocale(infoText.classList[0]);
 
         for (const method of EVALUATION_METHOD) {
-            const methodLabel = methodSelectDiv.getElementsByClassName(method.key)[0];
-            methodLabel.textContent = optionLocale.getLocale(methodLabel.classList[0]);
+            const methodLabel = methodSelectDiv.getElementsByClassName(
+                method.key
+            )[0];
+            methodLabel.textContent = optionLocale.getLocale(
+                methodLabel.classList[0]
+            );
         }
     }
 

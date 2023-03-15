@@ -1,4 +1,5 @@
 import {
+    EVALUATION_SELECTOR,
     SCORE_RADIO_NAME,
     SCORE_SELECT_DIV,
     cssManager,
@@ -45,21 +46,14 @@ export class SelectScoreType implements CreateWriteRoutine {
     }
 
     createText() {
-        const cardToggles = document.getElementsByClassName("CardToggles")[0];
+        const evaluationRow = document.getElementById(EVALUATION_SELECTOR);
         if (document.getElementById("scoreSelectRow")) return;
-
-        // カードオプション枠に作成
-        const rowElement = cardToggles
-            .getElementsByClassName("row")[0]
-            .cloneNode(false) as HTMLElement;
-        rowElement.id = "scoreSelectRow";
-        cardToggles.getElementsByTagName("header")[2].before(rowElement);
 
         // スコア選択欄を作成
         const scoreModeDiv = document.createElement("div");
         scoreModeDiv.id = SCORE_SELECT_DIV;
         scoreModeDiv.classList.add("Input", "svelte-1jzchrt");
-        rowElement.appendChild(scoreModeDiv);
+        evaluationRow?.appendChild(scoreModeDiv);
 
         const scoreModeGroup = document.createElement("group");
         scoreModeGroup.style.marginTop = "-1em";
