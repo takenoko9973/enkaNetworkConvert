@@ -9,4 +9,5 @@ export type localeKeys
     | "EVALUATION_SELECTOR_INFO"
     | "SCORING_METHOD"
     | "RV_METHOD"
-    | "CARD_EXTRA_INFO";
+    | "SCORE_EXTRA_INFO"
+    | "RV_EXTRA_INFO";

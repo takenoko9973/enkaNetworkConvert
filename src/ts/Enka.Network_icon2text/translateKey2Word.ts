@@ -136,8 +136,12 @@ localeArray["EN"] = {
         locale: "RV method",
         subOption: undefined,
     },
-    CARD_EXTRA_INFO: {
+    SCORE_EXTRA_INFO: {
         locale: "Crit Ratio 1:${critRatio} / Score(${scoreType}) Avg. ${avgScore} Total ${sumScore}",
+        subOption: undefined,
+    },
+    RV_EXTRA_INFO: {
+        locale: "Crit Ratio 1:${critRatio} / RV(${scoreType}) Total ${sumScore}",
         subOption: undefined,
     },
     UNKNOWN: {
@@ -251,8 +255,12 @@ localeArray["JA"] = {
         locale: "RV方式",
         subOption: undefined,
     },
-    CARD_EXTRA_INFO: {
-        locale: "会心率ダメ比 1:${critRatio} / 聖遺物スコア(${scoreType}) 平均:${avgScore} 合計:${sumScore}",
+    SCORE_EXTRA_INFO: {
+        locale: "会心比 1:${critRatio} / スコア方式(${selectStat}) 平均:${avgScore} 合計:${sumScore}",
+        subOption: undefined,
+    },
+    RV_EXTRA_INFO: {
+        locale: "会心比 1:${critRatio} / RV方式(${selectStats}) 合計:${sumRV}%",
         subOption: undefined,
     },
     UNKNOWN: {

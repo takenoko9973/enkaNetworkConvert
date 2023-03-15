@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Enka.Network_lang-jp_mod_by_takenoko
 // @namespace    http://tampermonkey.net/
-// @version      1.0.2
+// @version      1.1.0
 // @description  Enka.Network 日本語化スクリプト
 // @author       Takenoko-ya
 // @updateURL    https://github.com/takenoko9973/enkaNetworkConvert/raw/master/dist/ts/Enka.Network_icon2text.user.js
@@ -175,8 +175,12 @@
             locale: "RV method",
             subOption: undefined,
         },
-        CARD_EXTRA_INFO: {
+        SCORE_EXTRA_INFO: {
             locale: "Crit Ratio 1:${critRatio} / Score(${scoreType}) Avg. ${avgScore} Total ${sumScore}",
+            subOption: undefined,
+        },
+        RV_EXTRA_INFO: {
+            locale: "Crit Ratio 1:${critRatio} / RV(${scoreType}) Total ${sumScore}",
             subOption: undefined,
         },
         UNKNOWN: {
@@ -289,8 +293,12 @@
             locale: "RV方式",
             subOption: undefined,
         },
-        CARD_EXTRA_INFO: {
-            locale: "会心率ダメ比 1:${critRatio} / 聖遺物スコア(${scoreType}) 平均:${avgScore} 合計:${sumScore}",
+        SCORE_EXTRA_INFO: {
+            locale: "会心比 1:${critRatio} / スコア方式(${selectStat}) 平均:${avgScore} 合計:${sumScore}",
+            subOption: undefined,
+        },
+        RV_EXTRA_INFO: {
+            locale: "会心比 1:${critRatio} / RV方式(${selectStats}) 合計:${sumRV}%",
             subOption: undefined,
         },
         UNKNOWN: {
@@ -480,7 +488,7 @@
         }
         createText() {
             const evaluationRow = document.getElementById(EVALUATION_SELECTOR);
-            if (document.getElementById("scoreSelectRow"))
+            if (document.getElementById(SCORE_SELECT_DIV))
                 return;
             const scoreModeDiv = document.createElement("div");
             scoreModeDiv.id = SCORE_SELECT_DIV;
@@ -777,7 +785,7 @@
             for (const subStat of __classPrivateFieldGet(this, _Artifact_subStats, "f")) {
                 if (!subStat.statKey)
                     continue;
-                if (subStat.statKey in keys) {
+                if (keys.includes(subStat.statKey)) {
                     rollValue += subStat.rollValue;
                 }
             }
@@ -860,102 +868,17 @@
         return Number(stat.replace(/[^0-9.-]/g, ""));
     }
 
-    var _a$2, _ArtifactEvaluateRoutine_instance, _ArtifactEvaluateRoutine_artifactSets;
-    const EVALUATION_TEXT = "artifactEvaluateText";
-    const EXTRA_PARAMETER_TEXT = "extraParamText";
-    class ArtifactEvaluateRoutine {
-        constructor() {
-            _ArtifactEvaluateRoutine_artifactSets.set(this, void 0);
-        }
-        static get instance() {
-            if (!__classPrivateFieldGet(this, _a$2, "f", _ArtifactEvaluateRoutine_instance)) {
-                __classPrivateFieldSet(this, _a$2, new ArtifactEvaluateRoutine(), "f", _ArtifactEvaluateRoutine_instance);
-            }
-            return __classPrivateFieldGet(this, _a$2, "f", _ArtifactEvaluateRoutine_instance);
-        }
-        createText() {
-            __classPrivateFieldSet(this, _ArtifactEvaluateRoutine_artifactSets, new ArtifactSets(document.getElementsByClassName("section right")[0]), "f");
-            this.createEvaluationText();
-            this.createExtraParameterText();
-        }
-        writeText() {
-            this.writeScoringMethod();
-        }
-        createEvaluationText() {
-            for (const artifact of __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").artifacts) {
-                const artifactElement = artifact.element;
-                let evaluationText = artifactElement.getElementsByClassName(EVALUATION_TEXT)[0];
-                if (evaluationText)
-                    continue;
-                evaluationText = document.createElement("div");
-                evaluationText.classList.add(EVALUATION_TEXT, getSvelteClassName(artifactElement));
-                artifactElement.appendChild(evaluationText);
-            }
-            const cssStyle = [
-                `.Artifact .${EVALUATION_TEXT}{ position: absolute; font-size: 0.7em; opacity: 0.6; right: 0.3em; }`,
-            ];
-            cssManager.addStyle(...cssStyle);
-        }
-        createExtraParameterText() {
-            let extraParameter = document.getElementById(EXTRA_PARAMETER_TEXT);
-            if (extraParameter)
-                return;
-            extraParameter = document.createElement("div");
-            extraParameter.id = EXTRA_PARAMETER_TEXT;
-            extraParameter.style.right = "0.3em";
-            extraParameter.style.marginTop = "-0.5em";
-            extraParameter.style.textAlign = "right";
-            extraParameter.style.fontSize = "0.8em";
-            extraParameter.classList.add(getSvelteClassName(__classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").artifacts[0].element));
-            __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").element.appendChild(extraParameter);
-        }
-        writeScoringMethod() {
-            const selectScoreType = SelectScoreType.instance;
-            const scoreTypeKey = selectScoreType.getScoreTypeKey();
-            for (const artifact of __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").artifacts) {
-                const score = artifact.artifactScore(scoreTypeKey);
-                const scoreBox = artifact.element.getElementsByClassName(EVALUATION_TEXT)[0];
-                if (!scoreBox)
-                    continue;
-                scoreBox.textContent = score.toFixed(1);
-            }
-            const extraText = document.getElementById(EXTRA_PARAMETER_TEXT);
-            if (!extraText)
-                return;
-            const critRate = characterStat("CRITICAL");
-            const critDMG = characterStat("CRITICAL_HURT");
-            const critRatio = critDMG / critRate;
-            const typeName = optionLocale.getLocaleSub(scoreTypeKey);
-            const sumScore = __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").sumScore(scoreTypeKey);
-            const avgScore = __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").avgScore(scoreTypeKey);
-            extraText.textContent = this.getScoringInfoText(critRatio, typeName, sumScore, avgScore);
-        }
-        getScoringInfoText(ratio, scoreTypeName, sumScore, avgScore) {
-            const ratioFixed = ratio.toFixed(1);
-            const sumScoreFixed = sumScore.toFixed(1);
-            const avgScoreFixed = avgScore.toFixed(1);
-            return fmt(optionLocale.getLocale("CARD_EXTRA_INFO"), {
-                critRatio: ratioFixed,
-                scoreType: scoreTypeName,
-                avgScore: avgScoreFixed,
-                sumScore: sumScoreFixed,
-            });
-        }
-    }
-    _a$2 = ArtifactEvaluateRoutine, _ArtifactEvaluateRoutine_artifactSets = new WeakMap();
-    _ArtifactEvaluateRoutine_instance = { value: void 0 };
-
-    var _a$1, _EvaluationSelector_instance;
+    var _a$2, _EvaluationSelector_instance;
     const EVALUATION_METHOD = [
         { id: "scoring", key: "SCORING_METHOD" },
         { id: "rollValue", key: "RV_METHOD" },
     ];
     class EvaluationSelector {
         static get instance() {
-            if (!__classPrivateFieldGet(this, _a$1, "f", _EvaluationSelector_instance)) {
-                __classPrivateFieldSet(this, _a$1, new EvaluationSelector(), "f", _EvaluationSelector_instance);
+            if (!__classPrivateFieldGet(this, _a$2, "f", _EvaluationSelector_instance)) {
+                __classPrivateFieldSet(this, _a$2, new EvaluationSelector(), "f", _EvaluationSelector_instance);
             }
-            return __classPrivateFieldGet(this, _a$1, "f", _EvaluationSelector_instance);
+            return __classPrivateFieldGet(this, _a$2, "f", _EvaluationSelector_instance);
         }
         createText() {
             const cardToggles = document.getElementsByClassName("CardToggles")[0];
@@ -1041,10 +964,10 @@
             return EVALUATION_METHOD[0].key;
         }
     }
-    _a$1 = EvaluationSelector;
+    _a$2 = EvaluationSelector;
     _EvaluationSelector_instance = { value: void 0 };
 
-    var _a, _RollValueMethodRoutine_instance;
+    var _a$1, _RollValueMethodRoutine_instance;
     const STATS_OPTION_ID = {
         HP: "HP",
         ATTACK: "ATK",
@@ -1059,10 +982,10 @@
     };
     class RollValueMethodRoutine {
         static get instance() {
-            if (!__classPrivateFieldGet(this, _a, "f", _RollValueMethodRoutine_instance)) {
-                __classPrivateFieldSet(this, _a, new RollValueMethodRoutine(), "f", _RollValueMethodRoutine_instance);
+            if (!__classPrivateFieldGet(this, _a$1, "f", _RollValueMethodRoutine_instance)) {
+                __classPrivateFieldSet(this, _a$1, new RollValueMethodRoutine(), "f", _RollValueMethodRoutine_instance);
             }
-            return __classPrivateFieldGet(this, _a, "f", _RollValueMethodRoutine_instance);
+            return __classPrivateFieldGet(this, _a$1, "f", _RollValueMethodRoutine_instance);
         }
         createText() {
             const evaluationRow = document.getElementById(EVALUATION_SELECTOR);
@@ -1124,17 +1047,147 @@
         getCheckedIds() {
             const checkedIds = [];
             document
-                .querySelectorAll(`.scoreModeRadio input:checked[name=${RV_CHECKBOX_NAME}]`)
+                .querySelectorAll(`.rvSelectCheckbox input:checked[name=${RV_CHECKBOX_NAME}]`)
                 .forEach((element) => checkedIds.push(element.id));
-            return checkedIds;
+            return checkedIds
+                .map((id) => id.match("RV_(.+)_CHECKBOX")?.at(1) ?? "");
         }
         getCheckedKeys() {
             const checkedIds = this.getCheckedIds();
             return Object.keys(STATS_OPTION_ID).filter((key) => checkedIds.includes(STATS_OPTION_ID[key]));
         }
     }
-    _a = RollValueMethodRoutine;
+    _a$1 = RollValueMethodRoutine;
     _RollValueMethodRoutine_instance = { value: void 0 };
+
+    var _a, _ArtifactEvaluateRoutine_instance, _ArtifactEvaluateRoutine_artifactSets;
+    const EVALUATION_TEXT = "artifactEvaluateText";
+    const EXTRA_PARAMETER_TEXT = "extraParamText";
+    class ArtifactEvaluateRoutine {
+        constructor() {
+            _ArtifactEvaluateRoutine_artifactSets.set(this, void 0);
+        }
+        static get instance() {
+            if (!__classPrivateFieldGet(this, _a, "f", _ArtifactEvaluateRoutine_instance)) {
+                __classPrivateFieldSet(this, _a, new ArtifactEvaluateRoutine(), "f", _ArtifactEvaluateRoutine_instance);
+            }
+            return __classPrivateFieldGet(this, _a, "f", _ArtifactEvaluateRoutine_instance);
+        }
+        createText() {
+            __classPrivateFieldSet(this, _ArtifactEvaluateRoutine_artifactSets, new ArtifactSets(document.getElementsByClassName("section right")[0]), "f");
+            this.createEvaluationText();
+            this.createExtraParameterText();
+        }
+        writeText() {
+            const evaluationSelector = EvaluationSelector.instance;
+            switch (evaluationSelector.getSelectMethodId()) {
+                case "scoring": {
+                    this.writeScoringMethod();
+                    break;
+                }
+                case "rollValue": {
+                    this.writeRollValueMethod();
+                    break;
+                }
+            }
+        }
+        createEvaluationText() {
+            for (const artifact of __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").artifacts) {
+                const artifactElement = artifact.element;
+                let evaluationText = artifactElement.getElementsByClassName(EVALUATION_TEXT)[0];
+                if (evaluationText)
+                    continue;
+                evaluationText = document.createElement("div");
+                evaluationText.classList.add(EVALUATION_TEXT, getSvelteClassName(artifactElement));
+                artifactElement.appendChild(evaluationText);
+            }
+            const cssStyle = [
+                `.Artifact .${EVALUATION_TEXT}{ position: absolute; font-size: 0.7em; opacity: 0.6; right: 0.3em; }`,
+            ];
+            cssManager.addStyle(...cssStyle);
+        }
+        createExtraParameterText() {
+            let extraParameter = document.getElementById(EXTRA_PARAMETER_TEXT);
+            if (extraParameter)
+                return;
+            extraParameter = document.createElement("div");
+            extraParameter.id = EXTRA_PARAMETER_TEXT;
+            extraParameter.style.right = "0.3em";
+            extraParameter.style.marginTop = "-0.5em";
+            extraParameter.style.textAlign = "right";
+            extraParameter.style.fontSize = "0.8em";
+            extraParameter.style.whiteSpace = "nowrap";
+            extraParameter.classList.add(getSvelteClassName(__classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").artifacts[0].element));
+            __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").element.appendChild(extraParameter);
+        }
+        writeScoringMethod() {
+            const selectScoreType = SelectScoreType.instance;
+            const scoreTypeKey = selectScoreType.getScoreTypeKey();
+            for (const artifact of __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").artifacts) {
+                const score = artifact.artifactScore(scoreTypeKey);
+                const scoreBox = artifact.element.getElementsByClassName(EVALUATION_TEXT)[0];
+                if (!scoreBox)
+                    continue;
+                scoreBox.textContent = score.toFixed(1);
+            }
+            const extraText = document.getElementById(EXTRA_PARAMETER_TEXT);
+            if (!extraText)
+                return;
+            const critRate = characterStat("CRITICAL");
+            const critDMG = characterStat("CRITICAL_HURT");
+            const critRatio = critDMG / critRate;
+            const typeName = optionLocale.getLocaleSub(scoreTypeKey);
+            const sumScore = __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").sumScore(scoreTypeKey);
+            const avgScore = __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").avgScore(scoreTypeKey);
+            extraText.textContent = this.getScoringInfoText(critRatio, typeName, sumScore, avgScore);
+        }
+        writeRollValueMethod() {
+            const rollValueMethod = RollValueMethodRoutine.instance;
+            const scoreTypeKeys = rollValueMethod.getCheckedKeys();
+            for (const artifact of __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").artifacts) {
+                const rv = artifact.rollValue(...scoreTypeKeys);
+                const evaluateText = artifact.element.getElementsByClassName(EVALUATION_TEXT)[0];
+                if (!evaluateText)
+                    continue;
+                evaluateText.textContent = `${rv}%`;
+            }
+            const extraText = document.getElementById(EXTRA_PARAMETER_TEXT);
+            if (!extraText)
+                return;
+            const critRate = characterStat("CRITICAL");
+            const critDMG = characterStat("CRITICAL_HURT");
+            const critRatio = critDMG / critRate;
+            const statNames = scoreTypeKeys
+                .map((key) => {
+                const name = optionLocale.getLocaleSub(key);
+                return name + (key.includes("PERCENT") ? "%" : "");
+            });
+            const sumRV = __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").sumRollValue(...scoreTypeKeys);
+            extraText.textContent = this.getRVInfoText(critRatio, statNames, sumRV);
+        }
+        getScoringInfoText(ratio, scoreTypeName, sumScore, avgScore) {
+            const ratioFixed = ratio.toFixed(1);
+            const sumScoreFixed = sumScore.toFixed(1);
+            const avgScoreFixed = avgScore.toFixed(1);
+            return fmt(optionLocale.getLocale("SCORE_EXTRA_INFO"), {
+                critRatio: ratioFixed,
+                selectStat: scoreTypeName,
+                avgScore: avgScoreFixed,
+                sumScore: sumScoreFixed,
+            });
+        }
+        getRVInfoText(ratio, statNames, sumRV) {
+            const ratioFixed = ratio.toFixed(1);
+            const sumRVFixed = sumRV.toFixed(0);
+            return fmt(optionLocale.getLocale("RV_EXTRA_INFO"), {
+                critRatio: ratioFixed,
+                selectStats: statNames.join(" "),
+                sumRV: sumRVFixed,
+            });
+        }
+    }
+    _a = ArtifactEvaluateRoutine, _ArtifactEvaluateRoutine_artifactSets = new WeakMap();
+    _ArtifactEvaluateRoutine_instance = { value: void 0 };
 
     class CreateWriteManager {
         static get instance() {
@@ -1219,6 +1272,11 @@
             });
         });
         document.getElementsByName(SCORE_RADIO_NAME).forEach(function (e) {
+            e.addEventListener("click", function () {
+                cwManager.writeText();
+            });
+        });
+        document.getElementsByName(RV_CHECKBOX_NAME).forEach(function (e) {
             e.addEventListener("click", function () {
                 cwManager.writeText();
             });

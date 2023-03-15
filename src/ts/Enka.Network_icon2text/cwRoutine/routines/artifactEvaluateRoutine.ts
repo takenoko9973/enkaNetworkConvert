@@ -4,6 +4,8 @@ import { characterStat } from "../../util/characterStat";
 import { getSvelteClassName } from "../../util/enkaUtil";
 import { fmt } from "../../util/fmt";
 import { CreateWriteRoutine } from "../createWriteRoutine";
+import { EvaluationSelector } from "./evaluationSelectorRoutine";
+import { RollValueMethodRoutine } from "./rollValueMethodRoutine";
 import { SelectScoreType } from "./selectScoreType";
 
 const EVALUATION_TEXT = "artifactEvaluateText";
@@ -32,7 +34,17 @@ export class ArtifactEvaluateRoutine implements CreateWriteRoutine {
     }
 
     writeText() {
-        this.writeScoringMethod();
+        const evaluationSelector = EvaluationSelector.instance;
+        switch(evaluationSelector.getSelectMethodId()) {
+            case "scoring": {
+                this.writeScoringMethod();
+                break;
+            }
+            case "rollValue":{
+                this.writeRollValueMethod();
+                break;
+            }
+        }
     }
 
     // 各聖遺物評価用テキスト設置
@@ -69,6 +81,7 @@ export class ArtifactEvaluateRoutine implements CreateWriteRoutine {
         extraParameter.style.marginTop = "-0.5em";
         extraParameter.style.textAlign = "right";
         extraParameter.style.fontSize = "0.8em";
+        extraParameter.style.whiteSpace = "nowrap";
         extraParameter.classList.add(
             getSvelteClassName(this.#artifactSets.artifacts[0].element)
         );
@@ -109,6 +122,41 @@ export class ArtifactEvaluateRoutine implements CreateWriteRoutine {
         );
     }
 
+    private writeRollValueMethod() {
+        const rollValueMethod = RollValueMethodRoutine.instance;
+        const scoreTypeKeys = rollValueMethod.getCheckedKeys();
+
+        // 各聖遺物スコア
+        for (const artifact of this.#artifactSets.artifacts) {
+            const rv = artifact.rollValue(...scoreTypeKeys);
+            const evaluateText =
+                artifact.element.getElementsByClassName(EVALUATION_TEXT)[0];
+            if (!evaluateText) continue;
+
+            evaluateText.textContent = `${rv}%`;
+        }
+
+        const extraText = document.getElementById(EXTRA_PARAMETER_TEXT);
+        if (!extraText) return;
+
+        const critRate = characterStat("CRITICAL");
+        const critDMG = characterStat("CRITICAL_HURT");
+        const critRatio = critDMG / critRate;
+
+        const statNames = scoreTypeKeys
+            .map((key) => {
+                const name = optionLocale.getLocaleSub(key);
+                return name + (key.includes("PERCENT") ? "%" : "");
+            });
+        const sumRV = this.#artifactSets.sumRollValue(...scoreTypeKeys);
+
+        extraText.textContent = this.getRVInfoText(
+            critRatio,
+            statNames,
+            sumRV
+        );
+    }
+
     private getScoringInfoText(
         ratio: number,
         scoreTypeName: string,
@@ -119,11 +167,26 @@ export class ArtifactEvaluateRoutine implements CreateWriteRoutine {
         const sumScoreFixed = sumScore.toFixed(1);
         const avgScoreFixed = avgScore.toFixed(1);
 
-        return fmt(optionLocale.getLocale("CARD_EXTRA_INFO"), {
+        return fmt(optionLocale.getLocale("SCORE_EXTRA_INFO"), {
             critRatio: ratioFixed,
-            scoreType: scoreTypeName,
+            selectStat: scoreTypeName,
             avgScore: avgScoreFixed,
             sumScore: sumScoreFixed,
+        });
+    }
+
+    private getRVInfoText(
+        ratio: number,
+        statNames: string[],
+        sumRV: number,
+    ): string {
+        const ratioFixed = ratio.toFixed(1);
+        const sumRVFixed = sumRV.toFixed(0);
+
+        return fmt(optionLocale.getLocale("RV_EXTRA_INFO"), {
+            critRatio: ratioFixed,
+            selectStats: statNames.join(" "),
+            sumRV: sumRVFixed,
         });
     }
 }
