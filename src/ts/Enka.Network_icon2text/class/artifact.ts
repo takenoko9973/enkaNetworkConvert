@@ -126,7 +126,7 @@ export class Artifact {
         for (const subStat of this.#subStats) {
             if (!subStat.statKey) continue;
 
-            if (subStat.statKey in keys) {
+            if (keys.includes(subStat.statKey)) {
                 rollValue += subStat.rollValue;
             }
         }
