@@ -47,7 +47,7 @@ export class SelectScoreType implements CreateWriteRoutine {
 
     createText() {
         const evaluationRow = document.getElementById(EVALUATION_SELECTOR);
-        if (document.getElementById("scoreSelectRow")) return;
+        if (document.getElementById(SCORE_SELECT_DIV)) return;
 
         // スコア選択欄を作成
         const scoreModeDiv = document.createElement("div");
