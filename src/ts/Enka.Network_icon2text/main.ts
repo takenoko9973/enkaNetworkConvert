@@ -35,7 +35,6 @@ function main() {
     cardSection[2].style.width = "43%";
 
     const cwManager = CreateWriteManager.instance;
-    cwManager.init();
     cwManager.createText();
     cwManager.writeText();
 

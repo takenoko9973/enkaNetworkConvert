@@ -18,7 +18,7 @@ export class CreateWriteManager implements CreateWriteRoutine {
         return this._instance;
     }
 
-    init() {
+    constructor() {
         this.createList.push(DateText.instance);
         this.createList.push(Friend.instance);
         this.createList.push(SelectScoreType.instance);
