@@ -125,7 +125,7 @@ localeArray["EN"] = {
         subOption: undefined,
     },
     EVALUATION_SELECTOR_INFO: {
-        locale: "Evaluation select",
+        locale: "Evaluation method",
         subOption: undefined,
     },
     SCORING_METHOD: {
@@ -134,10 +134,6 @@ localeArray["EN"] = {
     },
     RV_METHOD: {
         locale: "RV method",
-        subOption: undefined,
-    },
-    SCORE_SELECT_INFO: {
-        locale: "Score type",
         subOption: undefined,
     },
     CARD_EXTRA_INFO: {
@@ -253,10 +249,6 @@ localeArray["JA"] = {
     },
     RV_METHOD: {
         locale: "RV方式",
-        subOption: undefined,
-    },
-    SCORE_SELECT_INFO: {
-        locale: "スコア計算方法",
         subOption: undefined,
     },
     CARD_EXTRA_INFO: {

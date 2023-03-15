@@ -164,7 +164,7 @@
             subOption: undefined,
         },
         EVALUATION_SELECTOR_INFO: {
-            locale: "Evaluation select",
+            locale: "Evaluation method",
             subOption: undefined,
         },
         SCORING_METHOD: {
@@ -173,10 +173,6 @@
         },
         RV_METHOD: {
             locale: "RV method",
-            subOption: undefined,
-        },
-        SCORE_SELECT_INFO: {
-            locale: "Score type",
             subOption: undefined,
         },
         CARD_EXTRA_INFO: {
@@ -291,10 +287,6 @@
         },
         RV_METHOD: {
             locale: "RV方式",
-            subOption: undefined,
-        },
-        SCORE_SELECT_INFO: {
-            locale: "スコア計算方法",
             subOption: undefined,
         },
         CARD_EXTRA_INFO: {
@@ -493,15 +485,14 @@
                 .cloneNode(false);
             rowElement.id = "scoreSelectRow";
             cardToggles.getElementsByTagName("header")[2].before(rowElement);
-            const scoreSelectClass = "SCORE_SELECT_INFO";
-            const infoText = document.createElement("label");
-            infoText.classList.add(scoreSelectClass, "svelte-1jzchrt");
-            const scoreSelectDiv = document.createElement("div");
-            scoreSelectDiv.id = SCORE_SELECT_DIV;
-            scoreSelectDiv.classList.add("Input", "svelte-1jzchrt");
+            const scoreModeDiv = document.createElement("div");
+            scoreModeDiv.id = SCORE_SELECT_DIV;
+            scoreModeDiv.classList.add("Input", "svelte-1jzchrt");
+            rowElement.appendChild(scoreModeDiv);
             const scoreModeGroup = document.createElement("group");
             scoreModeGroup.style.marginTop = "-1em";
-            scoreModeGroup.classList.add("inline_radio");
+            scoreModeGroup.classList.add("scoreModeRadio");
+            scoreModeDiv.appendChild(scoreModeGroup);
             for (const scoreType of Object.values(SCORE_TYPES)) {
                 const id = `SCORE_${scoreType.id}_R`;
                 const radio = document.createElement("input");
@@ -517,15 +508,12 @@
                 scoreModeGroup.appendChild(radio);
                 scoreModeGroup.appendChild(label);
             }
-            scoreSelectDiv.appendChild(infoText);
-            scoreSelectDiv.appendChild(scoreModeGroup);
-            rowElement.appendChild(scoreSelectDiv);
             const atkRadioId = `SCORE_${SCORE_TYPES.ATTACK.id}_R`;
             document.getElementById(atkRadioId)?.toggleAttribute("checked", true);
             const radioStyle = [
-                '.inline_radio input[type="radio"] { position: absolute; opacity: 0; }',
-                '.inline_radio label.radbox[type="radio"] { color: rgba(255,255,255,.5); }',
-                '.inline_radio input[type="radio"]:checked + label.radbox[type="radio"] { color: rgba(255,255,255,1); }',
+                '.scoreModeRadio input { display:none }',
+                '.scoreModeRadio label.radbox { opacity: 0.5; }',
+                '.scoreModeRadio input:checked + label.radbox { opacity: 1; }',
             ];
             cssManager.addStyle(...radioStyle);
         }
@@ -533,24 +521,21 @@
             const scoreSelectDiv = document.getElementById(SCORE_SELECT_DIV);
             if (!scoreSelectDiv)
                 return;
-            const scoreSelectInfo = scoreSelectDiv.children[0];
-            scoreSelectInfo.textContent = optionLocale.getLocale(scoreSelectInfo.classList[0]);
             const scoreButtons = scoreSelectDiv.getElementsByClassName("Button");
             for (const label of Array.from(scoreButtons)) {
                 label.textContent = optionLocale.getLocaleSub(label.classList[0]);
             }
         }
         getScoreTypeId() {
-            const checkedRadio = document.querySelector(`input:checked[name=${SCORE_RADIO_NAME}]`);
-            return checkedRadio?.value ?? SCORE_TYPES.ATTACK.key;
+            const checkedRadio = document.querySelector(`.scoreModeRadio input:checked[name=${SCORE_RADIO_NAME}]`);
+            return checkedRadio?.value ?? SCORE_TYPES.ATTACK.id;
         }
         getScoreTypeKey() {
-            const scoreH = this.getScoreTypeId();
+            const id = this.getScoreTypeId();
             for (const typeKey in SCORE_TYPES) {
                 const scoreType = SCORE_TYPES[typeKey];
-                if (scoreH != scoreType.id)
-                    continue;
-                return scoreType.key;
+                if (id === scoreType.id)
+                    return scoreType.key;
             }
             return "ATTACK_PERCENT";
         }

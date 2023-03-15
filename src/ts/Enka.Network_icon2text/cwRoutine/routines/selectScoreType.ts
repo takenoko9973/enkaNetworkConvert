@@ -5,7 +5,6 @@ import {
     optionLocale,
 } from "../../myConst";
 import { statsSubOptionKey } from "../../types/characterStatKey";
-import { localeKeys } from "../../types/localeKeys";
 import { CreateWriteRoutine } from "../createWriteRoutine";
 
 class scoreType {
@@ -56,19 +55,17 @@ export class SelectScoreType implements CreateWriteRoutine {
         rowElement.id = "scoreSelectRow";
         cardToggles.getElementsByTagName("header")[2].before(rowElement);
 
-        // 説明テキストを追加
-        const scoreSelectClass: localeKeys = "SCORE_SELECT_INFO";
-        const infoText = document.createElement("label");
-        infoText.classList.add(scoreSelectClass, "svelte-1jzchrt");
-
         // スコア選択欄を作成
-        const scoreSelectDiv = document.createElement("div");
-        scoreSelectDiv.id = SCORE_SELECT_DIV;
-        scoreSelectDiv.classList.add("Input", "svelte-1jzchrt");
+        const scoreModeDiv = document.createElement("div");
+        scoreModeDiv.id = SCORE_SELECT_DIV;
+        scoreModeDiv.classList.add("Input", "svelte-1jzchrt");
+        rowElement.appendChild(scoreModeDiv);
 
         const scoreModeGroup = document.createElement("group");
         scoreModeGroup.style.marginTop = "-1em";
-        scoreModeGroup.classList.add("inline_radio");
+        scoreModeGroup.classList.add("scoreModeRadio");
+        scoreModeDiv.appendChild(scoreModeGroup);
+
         for (const scoreType of Object.values(SCORE_TYPES)) {
             const id = `SCORE_${scoreType.id}_R`;
 
@@ -95,18 +92,15 @@ export class SelectScoreType implements CreateWriteRoutine {
             scoreModeGroup.appendChild(radio);
             scoreModeGroup.appendChild(label);
         }
-        scoreSelectDiv.appendChild(infoText);
-        scoreSelectDiv.appendChild(scoreModeGroup);
-        rowElement.appendChild(scoreSelectDiv);
 
         // 攻撃をデフォルトにする
         const atkRadioId = `SCORE_${SCORE_TYPES.ATTACK.id}_R`;
         document.getElementById(atkRadioId)?.toggleAttribute("checked", true);
 
         const radioStyle = [
-            '.inline_radio input[type="radio"] { position: absolute; opacity: 0; }', // チェックボックスを隠す
-            '.inline_radio label.radbox[type="radio"] { color: rgba(255,255,255,.5); }', // 普段は薄目
-            '.inline_radio input[type="radio"]:checked + label.radbox[type="radio"] { color: rgba(255,255,255,1); }', // 選択しているボタンを強調
+            '.scoreModeRadio input { display:none }', // チェックボックスを隠す
+            '.scoreModeRadio label.radbox { opacity: 0.5; }', // 普段は薄目
+            '.scoreModeRadio input:checked + label.radbox { opacity: 1; }', // 選択しているボタンを強調
         ];
         cssManager.addStyle(...radioStyle);
     }
@@ -114,12 +108,6 @@ export class SelectScoreType implements CreateWriteRoutine {
     writeText() {
         const scoreSelectDiv = document.getElementById(SCORE_SELECT_DIV);
         if (!scoreSelectDiv) return;
-
-        // スコア方式選択説明テキスト
-        const scoreSelectInfo = scoreSelectDiv.children[0];
-        scoreSelectInfo.textContent = optionLocale.getLocale(
-            scoreSelectInfo.classList[0]
-        );
 
         // スコア方式選択ボタン
         const scoreButtons = scoreSelectDiv.getElementsByClassName("Button");
@@ -130,18 +118,16 @@ export class SelectScoreType implements CreateWriteRoutine {
 
     getScoreTypeId(): string {
         const checkedRadio = document.querySelector(
-            `input:checked[name=${SCORE_RADIO_NAME}]`
+            `.scoreModeRadio input:checked[name=${SCORE_RADIO_NAME}]`
         ) as HTMLInputElement;
-        return checkedRadio?.value ?? SCORE_TYPES.ATTACK.key;
+        return checkedRadio?.value ?? SCORE_TYPES.ATTACK.id;
     }
 
     getScoreTypeKey(): statsSubOptionKey {
-        const scoreH = this.getScoreTypeId();
+        const id = this.getScoreTypeId();
         for (const typeKey in SCORE_TYPES) {
             const scoreType = SCORE_TYPES[typeKey];
-            if (scoreH != scoreType.id) continue;
-
-            return scoreType.key;
+            if (id === scoreType.id) return scoreType.key;
         }
 
         return "ATTACK_PERCENT";

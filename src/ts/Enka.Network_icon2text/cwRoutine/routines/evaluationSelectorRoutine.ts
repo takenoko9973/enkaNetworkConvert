@@ -133,12 +133,12 @@ export class EvaluationSelector implements CreateWriteRoutine {
         return checkedRadio.value ?? EVALUATION_METHOD[0].id;
     }
 
-    getSelectMethodKey(): string {
+    getSelectMethodKey(): localeKeys {
         const id = this.getSelectMethodId();
         for (const method of EVALUATION_METHOD) {
-            if (id === method.id) return method.key;
+            if (id === method.id) return method.key as localeKeys;
         }
 
-        return EVALUATION_METHOD[0].key;
+        return EVALUATION_METHOD[0].key as localeKeys;
     }
 }
