@@ -364,6 +364,8 @@
     const EVALUATION_SELECTOR_NAME = "evaluationSelector";
     const SCORE_SELECT_DIV = "scoreSelectDiv";
     const SCORE_RADIO_NAME = "sSource";
+    const RV_SELECT_DIV = "rvSelectDiv";
+    const RV_CHECKBOX_NAME = "rollValue";
     const optionLocale = TranslateKey2Word.instance;
     const cssManager = CssStyleManager.instance;
 
@@ -862,7 +864,7 @@
         return Number(stat.replace(/[^0-9.-]/g, ""));
     }
 
-    var _a$1, _ArtifactEvaluateRoutine_instance, _ArtifactEvaluateRoutine_artifactSets;
+    var _a$2, _ArtifactEvaluateRoutine_instance, _ArtifactEvaluateRoutine_artifactSets;
     const EVALUATION_TEXT = "artifactEvaluateText";
     const EXTRA_PARAMETER_TEXT = "extraParamText";
     class ArtifactEvaluateRoutine {
@@ -870,10 +872,10 @@
             _ArtifactEvaluateRoutine_artifactSets.set(this, void 0);
         }
         static get instance() {
-            if (!__classPrivateFieldGet(this, _a$1, "f", _ArtifactEvaluateRoutine_instance)) {
-                __classPrivateFieldSet(this, _a$1, new ArtifactEvaluateRoutine(), "f", _ArtifactEvaluateRoutine_instance);
+            if (!__classPrivateFieldGet(this, _a$2, "f", _ArtifactEvaluateRoutine_instance)) {
+                __classPrivateFieldSet(this, _a$2, new ArtifactEvaluateRoutine(), "f", _ArtifactEvaluateRoutine_instance);
             }
-            return __classPrivateFieldGet(this, _a$1, "f", _ArtifactEvaluateRoutine_instance);
+            return __classPrivateFieldGet(this, _a$2, "f", _ArtifactEvaluateRoutine_instance);
         }
         createText() {
             __classPrivateFieldSet(this, _ArtifactEvaluateRoutine_artifactSets, new ArtifactSets(document.getElementsByClassName("section right")[0]), "f");
@@ -944,20 +946,20 @@
             });
         }
     }
-    _a$1 = ArtifactEvaluateRoutine, _ArtifactEvaluateRoutine_artifactSets = new WeakMap();
+    _a$2 = ArtifactEvaluateRoutine, _ArtifactEvaluateRoutine_artifactSets = new WeakMap();
     _ArtifactEvaluateRoutine_instance = { value: void 0 };
 
-    var _a, _EvaluationSelector_instance;
+    var _a$1, _EvaluationSelector_instance;
     const EVALUATION_METHOD = [
         { id: "scoring", key: "SCORING_METHOD" },
         { id: "rollValue", key: "RV_METHOD" }
     ];
     class EvaluationSelector {
         static get instance() {
-            if (!__classPrivateFieldGet(this, _a, "f", _EvaluationSelector_instance)) {
-                __classPrivateFieldSet(this, _a, new EvaluationSelector(), "f", _EvaluationSelector_instance);
+            if (!__classPrivateFieldGet(this, _a$1, "f", _EvaluationSelector_instance)) {
+                __classPrivateFieldSet(this, _a$1, new EvaluationSelector(), "f", _EvaluationSelector_instance);
             }
-            return __classPrivateFieldGet(this, _a, "f", _EvaluationSelector_instance);
+            return __classPrivateFieldGet(this, _a$1, "f", _EvaluationSelector_instance);
         }
         createText() {
             const cardToggles = document.getElementsByClassName("CardToggles")[0];
@@ -1039,8 +1041,103 @@
             return EVALUATION_METHOD[0].key;
         }
     }
-    _a = EvaluationSelector;
+    _a$1 = EvaluationSelector;
     _EvaluationSelector_instance = { value: void 0 };
+
+    var _a, _RollValueMethodRoutine_instance;
+    const STATS_OPTION_ID = {
+        HP: "HP",
+        ATTACK: "ATK",
+        DEFENSE: "DEF",
+        HP_PERCENT: "HP_P",
+        ATTACK_PERCENT: "ATK_P",
+        DEFENSE_PERCENT: "DEF_P",
+        CRITICAL: "CR",
+        CRITICAL_HURT: "CD",
+        CHARGE_EFFICIENCY: "ER",
+        ELEMENT_MASTERY: "EM",
+    };
+    class RollValueMethodRoutine {
+        static get instance() {
+            if (!__classPrivateFieldGet(this, _a, "f", _RollValueMethodRoutine_instance)) {
+                __classPrivateFieldSet(this, _a, new RollValueMethodRoutine(), "f", _RollValueMethodRoutine_instance);
+            }
+            return __classPrivateFieldGet(this, _a, "f", _RollValueMethodRoutine_instance);
+        }
+        createText() {
+            const cardToggles = document.getElementsByClassName("CardToggles")[0];
+            if (document.getElementById("rvSelectRow"))
+                return;
+            const rowElement = cardToggles
+                .getElementsByClassName("row")[0]
+                .cloneNode(false);
+            rowElement.id = "rvSelectRow";
+            cardToggles.getElementsByTagName("header")[2].before(rowElement);
+            const rvSelectDiv = document.createElement("div");
+            rvSelectDiv.id = RV_SELECT_DIV;
+            rvSelectDiv.classList.add("Input", "svelte-1jzchrt");
+            rowElement.appendChild(rvSelectDiv);
+            const rvSelectGroup = document.createElement("group");
+            rvSelectGroup.style.marginTop = "-1em";
+            rvSelectGroup.classList.add("rvSelectCheckbox");
+            rvSelectDiv.appendChild(rvSelectGroup);
+            for (const scoreType in STATS_OPTION_ID) {
+                const statId = STATS_OPTION_ID[scoreType];
+                const checkboxId = `RV_${statId}_CHECKBOX`;
+                const checkbox = document.createElement("input");
+                checkbox.id = checkboxId;
+                checkbox.name = RV_CHECKBOX_NAME;
+                checkbox.setAttribute("type", "checkbox");
+                checkbox.value = STATS_OPTION_ID[scoreType];
+                const label = document.createElement("label");
+                label.setAttribute("for", checkboxId);
+                label.setAttribute("type", "checkbox");
+                label.setAttribute("data-type", "OUTLINE");
+                label.classList.add(scoreType, "radbox", "Button", "label", "svelte-6y8083");
+                rvSelectGroup.appendChild(checkbox);
+                rvSelectGroup.appendChild(label);
+            }
+            const crRadioId = `RV_${STATS_OPTION_ID.CRITICAL}_CHECKBOX`;
+            const cdRadioId = `RV_${STATS_OPTION_ID.CRITICAL_HURT}_CHECKBOX`;
+            const atkRadioId = `RV_${STATS_OPTION_ID.ATTACK_PERCENT}_CHECKBOX`;
+            document.getElementById(crRadioId)?.toggleAttribute("checked", true);
+            document.getElementById(cdRadioId)?.toggleAttribute("checked", true);
+            document.getElementById(atkRadioId)?.toggleAttribute("checked", true);
+            const radioStyle = [
+                '.rvSelectCheckbox input { display:none }',
+                '.rvSelectCheckbox label.radbox { opacity: 0.5; }',
+                '.rvSelectCheckbox input:checked + label.radbox { opacity: 1; }',
+            ];
+            cssManager.addStyle(...radioStyle);
+        }
+        writeText() {
+            const rvSelectDiv = document.getElementById(RV_SELECT_DIV);
+            if (!rvSelectDiv)
+                return;
+            const scoreButtons = rvSelectDiv.getElementsByClassName("Button");
+            for (const label of Array.from(scoreButtons)) {
+                const key = label.classList[0];
+                if (key.includes("PERCENT")) {
+                    label.textContent = optionLocale.getLocaleSub(key) + "%";
+                }
+                else {
+                    label.textContent = optionLocale.getLocaleSub(key);
+                }
+            }
+        }
+        getCheckedIds() {
+            const checkedIds = [];
+            document.querySelectorAll(`.scoreModeRadio input:checked[name=${RV_CHECKBOX_NAME}]`).forEach((element) => checkedIds.push(element.id));
+            return checkedIds;
+        }
+        getCheckedKeys() {
+            const checkedIds = this.getCheckedIds();
+            return Object.keys(STATS_OPTION_ID)
+                .filter((key) => checkedIds.includes(STATS_OPTION_ID[key]));
+        }
+    }
+    _a = RollValueMethodRoutine;
+    _RollValueMethodRoutine_instance = { value: void 0 };
 
     class CreateWriteManager {
         static get instance() {
@@ -1055,6 +1152,7 @@
             this.createList.push(Friend.instance);
             this.createList.push(EvaluationSelector.instance);
             this.createList.push(SelectScoreType.instance);
+            this.createList.push(RollValueMethodRoutine.instance);
             this.createList.push(Weapon.instance);
             this.createList.push(Artifact$1.instance);
             this.createList.push(ArtifactEvaluateRoutine.instance);
