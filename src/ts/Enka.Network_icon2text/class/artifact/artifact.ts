@@ -2,6 +2,7 @@ import {
     statsMainOptionKey,
     statsSubOptionKey,
 } from "../../types/characterStatKey";
+import { ArtifactSubStat, ArtifactSubStats } from "./subStats";
 
 // 各ステータスの比率 (固定値はスコアに含まないようにするため inf)
 const STATS_OPTION_RATE: { [key in statsSubOptionKey]: number } = {
@@ -18,45 +19,12 @@ const STATS_OPTION_RATE: { [key in statsSubOptionKey]: number } = {
     UNKNOWN: Infinity
 } as const;
 
-// 聖遺物サブOP
-class ArtifactSubStat {
-    #statName: statsSubOptionKey = "UNKNOWN";
-    #stat = 0;
-    #roll: number[] = [];
-
-    constructor(subStat: Element) {
-        if (!subStat.classList.contains("Substat")) return;
-
-        const rolls = subStat.getElementsByClassName("rolls")[0];
-
-        this.#statName = subStat.classList[1] as statsSubOptionKey;
-        this.#stat = Number(subStat.lastChild?.textContent?.replace("%", ""));
-        Array.from(rolls.children).forEach((_roll) => {
-            this.#roll.push(_roll.children.length); // ドットの数で、roll数を判断
-        });
-    }
-
-    get statKey() {
-        return this.#statName;
-    }
-
-    get stat() {
-        return this.#stat;
-    }
-
-    get rollValue() {
-        return this.#roll
-            .map((_roll) => 100 - 10 * (4 - _roll))
-            .reduce((_sumRV, _rv) => _sumRV + _rv);
-    }
-}
-
 export class Artifact {
     #element: Element;
     #star = 0;
     #level = 0;
     #mainStat: statsMainOptionKey | undefined;
-    #subStats: ArtifactSubStat[] = [];
+    #subStats = new ArtifactSubStats();
 
     constructor(artifact: Element) {
         this.#element = artifact;
@@ -77,7 +45,11 @@ export class Artifact {
 
         const subStats = elements["subStats"].getElementsByClassName("Substat");
         for (const subStat of Array.from(subStats)) {
-            this.#subStats.push(new ArtifactSubStat(subStat));
+            const statKey = subStat.classList[1] as statsSubOptionKey;
+            const stat = Number(subStat.textContent?.replace("%", "") ?? "0");
+            const rolls = Array.from(subStat.getElementsByClassName("rolls")[0].children)
+                .map((_roll) => _roll.children.length);
+            this.#subStats.addSubStat(new ArtifactSubStat(statKey, stat, rolls));
         }
     }
 
@@ -105,7 +77,7 @@ export class Artifact {
         const rate = STATS_OPTION_RATE.ATTACK_PERCENT / STATS_OPTION_RATE[key];
 
         let score = 0;
-        for (const subStat of this.#subStats) {
+        for (const subStat of this.#subStats.subStats) {
             switch (subStat.statKey) {
                 case "CRITICAL":
                     score += subStat.stat * 2;
@@ -124,11 +96,11 @@ export class Artifact {
     rollValue(...keys: statsSubOptionKey[]) {
         let rollValue = 0;
 
-        for (const subStat of this.#subStats) {
+        for (const subStat of this.#subStats.subStats) {
             if (!subStat.statKey) continue;
 
             if (keys.includes(subStat.statKey)) {
-                rollValue += subStat.rollValue;
+                rollValue += subStat.rolls.sumRollValue();
             }
         }
         return rollValue;
