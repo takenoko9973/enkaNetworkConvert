@@ -1,7 +1,7 @@
 import {
     statsMainOptionKey,
     statsSubOptionKey,
-} from "../types/characterStatKey";
+} from "../../types/characterStatKey";
 
 // 各ステータスの比率 (固定値はスコアに含まないようにするため inf)
 const STATS_OPTION_RATE: { [key in statsSubOptionKey]: number } = {

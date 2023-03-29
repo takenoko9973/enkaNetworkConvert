@@ -1,4 +1,4 @@
-import { statsSubOptionKey } from "../types/characterStatKey";
+import { statsSubOptionKey } from "../../types/characterStatKey";
 import { Artifact } from "./artifact";
 
 export class ArtifactSets {

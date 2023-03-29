@@ -1,4 +1,4 @@
-import { ArtifactSets } from "../../class/artifactSets";
+import { ArtifactSets } from "../../class/artifact/artifactSets";
 import { cssManager, optionLocale } from "../../myConst";
 import { characterStat } from "../../util/characterStat";
 import { getSvelteClassName } from "../../util/enkaUtil";
