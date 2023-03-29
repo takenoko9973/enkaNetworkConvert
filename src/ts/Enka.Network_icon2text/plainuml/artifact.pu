@@ -3,6 +3,8 @@ title 聖遺物
 
 class "聖遺物セット" as ArtifactSet {
     # artifacts: Artifact []
+    --
+    artifactNum(): number
 }
 class "聖遺物" as Artifact {
     # mainStat: MainStat
@@ -15,9 +17,6 @@ class "メインオプション" as MainStat {
 }
 class "サブオプションセット" as SubStats {
     # subStat: SubStat
-    --
-    + eachRollValue(...statName: string): number
-    + sumRollValue(...statName: string): number
 }
 class "サブオプション" as SubStat {
     # statName: string
