@@ -16,7 +16,8 @@ export type statsMainOptionKey
     | "WIND_ADD_HURT"
     | "ICE_ADD_HURT"
     | "ROCK_ADD_HURT"
-    | "GRASS_ADD_HURT";
+    | "GRASS_ADD_HURT"
+    | "UNKNOWN";
 
 export type statsSubOptionKey
     = "HP"
@@ -28,6 +29,7 @@ export type statsSubOptionKey
     | "CRITICAL"
     | "CRITICAL_HURT"
     | "CHARGE_EFFICIENCY"
-    | "ELEMENT_MASTERY";
+    | "ELEMENT_MASTERY"
+    | "UNKNOWN";
 
 export type characterStatKey = statsMainOptionKey | statsSubOptionKey;

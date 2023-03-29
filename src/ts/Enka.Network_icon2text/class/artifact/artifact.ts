@@ -15,11 +15,12 @@ const STATS_OPTION_RATE: { [key in statsSubOptionKey]: number } = {
     CRITICAL_HURT: 2,
     CHARGE_EFFICIENCY: 10 / 3,
     ELEMENT_MASTERY: 12,
+    UNKNOWN: Infinity
 } as const;
 
 // 聖遺物サブOP
 class ArtifactSubStat {
-    #statName: statsSubOptionKey | undefined;
+    #statName: statsSubOptionKey = "UNKNOWN";
     #stat = 0;
     #roll: number[] = [];
 

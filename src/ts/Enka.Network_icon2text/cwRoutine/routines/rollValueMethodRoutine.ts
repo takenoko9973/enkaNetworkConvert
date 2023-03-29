@@ -19,6 +19,7 @@ const STATS_OPTION_ID: { [key in statsSubOptionKey]: string } = {
     CRITICAL_HURT: "CD",
     CHARGE_EFFICIENCY: "ER",
     ELEMENT_MASTERY: "EM",
+    UNKNOWN: "UNKNOWN"
 } as const;
 
 export class RollValueMethodRoutine implements CreateWriteRoutine {
