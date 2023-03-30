@@ -1,10 +1,10 @@
-import { statsSubOptionKey } from "../types/characterStatKey";
+import { characterStatKey } from "../types/characterStatKey";
 
 export abstract class Stat {
-    protected _statName: statsSubOptionKey;
+    protected _statName: characterStatKey;
     protected _stat;
 
-    constructor(statName: statsSubOptionKey, stat: number) {
+    constructor(statName: characterStatKey, stat: number) {
         this._statName = statName;
         this._stat = stat;
     }

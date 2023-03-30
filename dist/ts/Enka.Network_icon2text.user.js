@@ -694,6 +694,19 @@
         }
     }
 
+    var _ArtifactMainStat_level;
+    class ArtifactMainStat extends Stat {
+        constructor(statName, stat, level) {
+            super(statName, stat);
+            _ArtifactMainStat_level.set(this, void 0);
+            __classPrivateFieldSet(this, _ArtifactMainStat_level, level, "f");
+        }
+        get level() {
+            return __classPrivateFieldGet(this, _ArtifactMainStat_level, "f");
+        }
+    }
+    _ArtifactMainStat_level = new WeakMap();
+
     var _statRoll_roll, _statRolls_rolls;
     class statRoll {
         constructor(roll) {
@@ -770,13 +783,12 @@
     }
     _ArtifactSubStats_subStats = new WeakMap();
 
-    var _Artifact_element, _Artifact_star, _Artifact_level, _Artifact_mainStat, _Artifact_subStats;
+    var _Artifact_element, _Artifact_star, _Artifact_mainStat, _Artifact_subStats;
     class Artifact {
         constructor(artifact) {
             _Artifact_element.set(this, void 0);
             _Artifact_star.set(this, 0);
-            _Artifact_level.set(this, 0);
-            _Artifact_mainStat.set(this, "UNKNOWN");
+            _Artifact_mainStat.set(this, new ArtifactMainStat("UNKNOWN", 0, 0));
             _Artifact_subStats.set(this, new ArtifactSubStats());
             __classPrivateFieldSet(this, _Artifact_element, artifact, "f");
             if (!artifact.classList.contains("Artifact"))
@@ -789,13 +801,14 @@
             elements["stars"] = elements["mainStat"].getElementsByClassName("Stars")[0];
             elements["level"] = elements["mainStat"].getElementsByClassName("level")[0];
             __classPrivateFieldSet(this, _Artifact_star, elements["stars"].childElementCount, "f");
-            __classPrivateFieldSet(this, _Artifact_level, Number(elements["level"].textContent ?? "0"), "f");
-            __classPrivateFieldSet(this, _Artifact_mainStat, elements["mainStat"]
-                .classList[1], "f");
+            const mainStatKey = elements["mainStat"].classList[1];
+            const stat = elements["mainStat"].children[2].textContent?.replace("%", "") ?? "0";
+            const level = Number(elements["level"].textContent ?? "0");
+            __classPrivateFieldSet(this, _Artifact_mainStat, new ArtifactMainStat(mainStatKey, Number(stat), level), "f");
             const subStats = elements["subStats"].getElementsByClassName("Substat");
             for (const subStat of Array.from(subStats)) {
                 const statKey = subStat.classList[1];
-                const stat = Number(subStat.textContent?.replace("%", "") ?? "0");
+                const stat = Number(subStat.lastChild?.textContent?.replace("%", "") ?? "0");
                 const rolls = Array.from(subStat.getElementsByClassName("rolls")[0].children)
                     .map((_roll) => _roll.children.length);
                 __classPrivateFieldGet(this, _Artifact_subStats, "f").addSubStat(new ArtifactSubStat(statKey, stat, rolls));
@@ -807,17 +820,14 @@
         get star() {
             return __classPrivateFieldGet(this, _Artifact_star, "f");
         }
-        get level() {
-            return __classPrivateFieldGet(this, _Artifact_level, "f");
-        }
-        get mainStatKey() {
+        get mainStat() {
             return __classPrivateFieldGet(this, _Artifact_mainStat, "f");
         }
         get subStats() {
             return __classPrivateFieldGet(this, _Artifact_subStats, "f").subStats;
         }
     }
-    _Artifact_element = new WeakMap(), _Artifact_star = new WeakMap(), _Artifact_level = new WeakMap(), _Artifact_mainStat = new WeakMap(), _Artifact_subStats = new WeakMap();
+    _Artifact_element = new WeakMap(), _Artifact_star = new WeakMap(), _Artifact_mainStat = new WeakMap(), _Artifact_subStats = new WeakMap();
 
     var _ArtifactSets_element, _ArtifactSets_artifacts;
     class ArtifactSets {

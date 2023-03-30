@@ -2,13 +2,13 @@ import {
     statsMainOptionKey,
     statsSubOptionKey,
 } from "../../types/characterStatKey";
+import { ArtifactMainStat } from "./artifactStatMain";
 import { ArtifactSubStat, ArtifactSubStats } from "./subStats";
 
 export class Artifact {
     #element: Element;
     #star = 0;
-    #level = 0;
-    #mainStat: statsMainOptionKey = "UNKNOWN";
+    #mainStat = new ArtifactMainStat("UNKNOWN", 0, 0);
     #subStats = new ArtifactSubStats();
 
     constructor(artifact: Element) {
@@ -24,14 +24,16 @@ export class Artifact {
         elements["level"] = elements["mainStat"].getElementsByClassName("level")[0];
 
         this.#star = elements["stars"].childElementCount;
-        this.#level = Number(elements["level"].textContent ?? "0");
-        this.#mainStat = elements["mainStat"]
-            .classList[1] as statsMainOptionKey;
+
+        const mainStatKey = elements["mainStat"].classList[1] as statsMainOptionKey;
+        const stat = elements["mainStat"].children[2].textContent?.replace("%", "") ?? "0";
+        const level = Number(elements["level"].textContent ?? "0");
+        this.#mainStat = new ArtifactMainStat(mainStatKey, Number(stat), level);
 
         const subStats = elements["subStats"].getElementsByClassName("Substat");
         for (const subStat of Array.from(subStats)) {
             const statKey = subStat.classList[1] as statsSubOptionKey;
-            const stat = Number(subStat.textContent?.replace("%", "") ?? "0");
+            const stat = Number(subStat.lastChild?.textContent?.replace("%", "") ?? "0");
             const rolls = Array.from(subStat.getElementsByClassName("rolls")[0].children)
                 .map((_roll) => _roll.children.length);
             this.#subStats.addSubStat(new ArtifactSubStat(statKey, stat, rolls));
@@ -46,11 +48,7 @@ export class Artifact {
         return this.#star;
     }
 
-    get level() {
-        return this.#level;
-    }
-
-    get mainStatKey() {
+    get mainStat() {
         return this.#mainStat;
     }
 

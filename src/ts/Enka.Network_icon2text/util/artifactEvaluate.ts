@@ -1,5 +1,5 @@
 import { Artifact } from "../class/artifact/artifact";
-import { statsSubOptionKey } from "../types/characterStatKey";
+import { characterStatKey, statsSubOptionKey } from "../types/characterStatKey";
 
 // 各ステータスの比率 (固定値はスコアに含まないようにするため inf)
 const STATS_OPTION_RATE: { [key in statsSubOptionKey]: number } = {
@@ -42,7 +42,7 @@ export const artifactRollValue = (artifact: Artifact, ...keys: statsSubOptionKey
     for (const subStat of artifact.subStats) {
         if (!subStat.statKey) continue;
 
-        if (keys.includes(subStat.statKey)) {
+        if ((keys as characterStatKey[]).includes(subStat.statKey)) {
             rollValue += subStat.rolls.sumRollValue();
         }
     }
