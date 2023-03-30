@@ -681,6 +681,19 @@
         }
     }
 
+    class Stat {
+        constructor(statName, stat) {
+            this._statName = statName;
+            this._stat = stat;
+        }
+        get statKey() {
+            return this._statName;
+        }
+        get stat() {
+            return this._stat;
+        }
+    }
+
     var _statRoll_roll, _statRolls_rolls;
     class statRoll {
         constructor(roll) {
@@ -724,15 +737,12 @@
     }
     _statRolls_rolls = new WeakMap();
 
-    var _ArtifactSubStat_statName, _ArtifactSubStat_stat, _ArtifactSubStat_rolls, _ArtifactSubStats_subStats;
-    class ArtifactSubStat {
+    var _ArtifactSubStat_rolls, _ArtifactSubStats_subStats;
+    class ArtifactSubStat extends Stat {
         constructor(statName, stat, rolls) {
-            _ArtifactSubStat_statName.set(this, "UNKNOWN");
-            _ArtifactSubStat_stat.set(this, 0);
+            super(statName, stat);
             _ArtifactSubStat_rolls.set(this, void 0);
             try {
-                __classPrivateFieldSet(this, _ArtifactSubStat_statName, statName, "f");
-                __classPrivateFieldSet(this, _ArtifactSubStat_stat, stat, "f");
                 __classPrivateFieldSet(this, _ArtifactSubStat_rolls, new statRolls(rolls), "f");
             }
             catch (e) {
@@ -742,17 +752,11 @@
                 }
             }
         }
-        get statKey() {
-            return __classPrivateFieldGet(this, _ArtifactSubStat_statName, "f");
-        }
-        get stat() {
-            return __classPrivateFieldGet(this, _ArtifactSubStat_stat, "f");
-        }
         get rolls() {
             return __classPrivateFieldGet(this, _ArtifactSubStat_rolls, "f");
         }
     }
-    _ArtifactSubStat_statName = new WeakMap(), _ArtifactSubStat_stat = new WeakMap(), _ArtifactSubStat_rolls = new WeakMap();
+    _ArtifactSubStat_rolls = new WeakMap();
     class ArtifactSubStats {
         constructor() {
             _ArtifactSubStats_subStats.set(this, []);

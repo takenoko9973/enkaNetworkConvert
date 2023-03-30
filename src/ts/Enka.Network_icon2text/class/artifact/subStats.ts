@@ -1,15 +1,14 @@
 import { statsSubOptionKey } from "../../types/characterStatKey";
+import { Stat } from "../stat";
 import { statRolls } from "./statRolls";
 
-export class ArtifactSubStat {
-    #statName: statsSubOptionKey = "UNKNOWN";
-    #stat = 0;
+export class ArtifactSubStat extends Stat {
     #rolls: statRolls;
 
     constructor(statName: statsSubOptionKey, stat: number, rolls: number[]) {
+        super(statName, stat);
+
         try {
-            this.#statName = statName;
-            this.#stat = stat;
             this.#rolls = new statRolls(rolls);
         } catch (e: unknown) {
             this.#rolls = new statRolls([]);
@@ -18,14 +17,6 @@ export class ArtifactSubStat {
                 console.error(e.message);
             }
         }
-    }
-
-    get statKey() {
-        return this.#statName;
-    }
-
-    get stat() {
-        return this.#stat;
     }
 
     get rolls() {
