@@ -1,4 +1,4 @@
-import { ArtifactSets } from "../../class/artifact/artifactSets";
+import { Artifacts } from "../../class/artifact/artifact";
 import { cssManager, optionLocale } from "../../myConst";
 import { artifactScoring, artifactRollValue } from "../../util/artifactEvaluate";
 import { characterStat } from "../../util/characterStat";
@@ -23,10 +23,10 @@ export class ArtifactEvaluateRoutine implements CreateWriteRoutine {
         return this.#instance;
     }
 
-    #artifactSets!: ArtifactSets;
+    #artifacts!: Artifacts;
 
     createText() {
-        this.#artifactSets = new ArtifactSets(
+        this.#artifacts = new Artifacts(
             document.getElementsByClassName("section right")[0]
         );
 
@@ -50,7 +50,7 @@ export class ArtifactEvaluateRoutine implements CreateWriteRoutine {
 
     // 各聖遺物評価用テキスト設置
     private createEvaluationText() {
-        for (const artifact of this.#artifactSets.artifacts) {
+        for (const artifact of this.#artifacts.artifacts) {
             const artifactElement = artifact.element;
 
             // 複数個作成防止
@@ -84,9 +84,9 @@ export class ArtifactEvaluateRoutine implements CreateWriteRoutine {
         extraParameter.style.fontSize = "0.8em";
         extraParameter.style.whiteSpace = "nowrap";
         extraParameter.classList.add(
-            getSvelteClassName(this.#artifactSets.artifacts[0].element)
+            getSvelteClassName(this.#artifacts.artifacts[0].element)
         );
-        this.#artifactSets.element.appendChild(extraParameter);
+        this.#artifacts.element.appendChild(extraParameter);
     }
 
     // スコア評価方式
@@ -95,7 +95,7 @@ export class ArtifactEvaluateRoutine implements CreateWriteRoutine {
         const scoreTypeKey = selectScoreType.getScoreTypeKey();
 
         // 各聖遺物スコア
-        for (const artifact of this.#artifactSets.artifacts) {
+        for (const artifact of this.#artifacts.artifacts) {
             const score = artifactScoring(artifact, scoreTypeKey);
             const scoreBox =
                 artifact.element.getElementsByClassName(EVALUATION_TEXT)[0];
@@ -112,10 +112,10 @@ export class ArtifactEvaluateRoutine implements CreateWriteRoutine {
         const critRatio = critDMG / critRate;
 
         const typeName = optionLocale.getLocaleSub(scoreTypeKey);
-        const sumScore = this.#artifactSets.artifacts
+        const sumScore = this.#artifacts.artifacts
             .map((_artifact) => artifactScoring(_artifact, scoreTypeKey))
             .reduce((_sum, _score) => _sum + _score);
-        const artifactNum = this.#artifactSets.artifactNum();
+        const artifactNum = this.#artifacts.artifactNum();
         const avgScore = (artifactNum != 0)
             ? sumScore / artifactNum
             : 0;
@@ -133,7 +133,7 @@ export class ArtifactEvaluateRoutine implements CreateWriteRoutine {
         const scoreTypeKeys = rollValueMethod.getCheckedKeys();
 
         // 各聖遺物スコア
-        for (const artifact of this.#artifactSets.artifacts) {
+        for (const artifact of this.#artifacts.artifacts) {
             const rv = artifactRollValue(artifact, ...scoreTypeKeys);
             const evaluateText =
                 artifact.element.getElementsByClassName(EVALUATION_TEXT)[0];
@@ -154,7 +154,7 @@ export class ArtifactEvaluateRoutine implements CreateWriteRoutine {
                 const name = optionLocale.getLocaleSub(key);
                 return name + (key.includes("PERCENT") ? "%" : "");
             });
-        const sumRV = this.#artifactSets.artifacts
+        const sumRV = this.#artifacts.artifacts
             .map((_artifact) => artifactRollValue(_artifact, ...scoreTypeKeys))
             .reduce((_sum, _score) => _sum + _score);
 
