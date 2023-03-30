@@ -3,7 +3,7 @@ import {
     statsSubOptionKey,
 } from "../../types/characterStatKey";
 import { ArtifactMainStat } from "./artifactStatMain";
-import { ArtifactSubStat, ArtifactSubStats } from "./subStats";
+import { ArtifactSubStat, ArtifactSubStats } from "./artifactStatSub";
 
 export class Artifact {
     #element: Element;

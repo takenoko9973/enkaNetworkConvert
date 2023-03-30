@@ -1,6 +1,6 @@
 import { statsSubOptionKey } from "../../types/characterStatKey";
 import { Stat } from "../stat";
-import { statRolls } from "./statRolls";
+import { statRolls } from "./artifactStatRolls";
 
 export class ArtifactSubStat extends Stat {
     #rolls: statRolls;
