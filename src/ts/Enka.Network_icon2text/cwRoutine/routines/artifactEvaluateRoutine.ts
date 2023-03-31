@@ -1,6 +1,5 @@
 import { Artifacts } from "../../class/artifact/artifact";
 import { cssManager, optionLocale } from "../../myConst";
-import { artifactScoring, artifactRollValue } from "../../util/artifactEvaluate";
 import { characterStat } from "../../util/characterStat";
 import { getSvelteClassName } from "../../util/enkaUtil";
 import { fmt } from "../../util/fmt";
@@ -36,12 +35,12 @@ export class ArtifactEvaluateRoutine implements CreateWriteRoutine {
 
     writeText() {
         const evaluationSelector = EvaluationSelector.instance;
-        switch(evaluationSelector.getSelectMethodId()) {
+        switch (evaluationSelector.getSelectMethodId()) {
             case "scoring": {
                 this.writeScoringMethod();
                 break;
             }
-            case "rollValue":{
+            case "rollValue": {
                 this.writeRollValueMethod();
                 break;
             }
@@ -96,7 +95,7 @@ export class ArtifactEvaluateRoutine implements CreateWriteRoutine {
 
         // 各聖遺物スコア
         for (const artifact of this.#artifacts.artifacts) {
-            const score = artifactScoring(artifact, scoreTypeKey);
+            const score = artifact.artifactScoring(scoreTypeKey);
             const scoreBox =
                 artifact.element.getElementsByClassName(EVALUATION_TEXT)[0];
             if (!scoreBox) continue;
@@ -112,13 +111,9 @@ export class ArtifactEvaluateRoutine implements CreateWriteRoutine {
         const critRatio = critDMG / critRate;
 
         const typeName = optionLocale.getLocaleSub(scoreTypeKey);
-        const sumScore = this.#artifacts.artifacts
-            .map((_artifact) => artifactScoring(_artifact, scoreTypeKey))
-            .reduce((_sum, _score) => _sum + _score);
+        const sumScore = this.#artifacts.sumArtifactScoring(scoreTypeKey);
         const artifactNum = this.#artifacts.artifactNum();
-        const avgScore = (artifactNum != 0)
-            ? sumScore / artifactNum
-            : 0;
+        const avgScore = artifactNum != 0 ? sumScore / artifactNum : 0;
 
         extraText.textContent = this.getScoringInfoText(
             critRatio,
@@ -134,7 +129,7 @@ export class ArtifactEvaluateRoutine implements CreateWriteRoutine {
 
         // 各聖遺物スコア
         for (const artifact of this.#artifacts.artifacts) {
-            const rv = artifactRollValue(artifact, ...scoreTypeKeys);
+            const rv = artifact.artifactRollValue(...scoreTypeKeys);
             const evaluateText =
                 artifact.element.getElementsByClassName(EVALUATION_TEXT)[0];
             if (!evaluateText) continue;
@@ -149,20 +144,13 @@ export class ArtifactEvaluateRoutine implements CreateWriteRoutine {
         const critDMG = characterStat("CRITICAL_HURT");
         const critRatio = critDMG / critRate;
 
-        const statNames = scoreTypeKeys
-            .map((key) => {
-                const name = optionLocale.getLocaleSub(key);
-                return name + (key.includes("PERCENT") ? "%" : "");
-            });
-        const sumRV = this.#artifacts.artifacts
-            .map((_artifact) => artifactRollValue(_artifact, ...scoreTypeKeys))
-            .reduce((_sum, _score) => _sum + _score);
+        const statNames = scoreTypeKeys.map((key) => {
+            const name = optionLocale.getLocaleSub(key);
+            return name + (key.includes("PERCENT") ? "%" : "");
+        });
+        const sumRV = this.#artifacts.sumArtifactRollValue(...scoreTypeKeys);
 
-        extraText.textContent = this.getRVInfoText(
-            critRatio,
-            statNames,
-            sumRV
-        );
+        extraText.textContent = this.getRVInfoText(critRatio, statNames, sumRV);
     }
 
     private getScoringInfoText(
@@ -186,7 +174,7 @@ export class ArtifactEvaluateRoutine implements CreateWriteRoutine {
     private getRVInfoText(
         ratio: number,
         statNames: string[],
-        sumRV: number,
+        sumRV: number
     ): string {
         const ratioFixed = ratio.toFixed(1);
         const sumRVFixed = sumRV.toFixed(0);

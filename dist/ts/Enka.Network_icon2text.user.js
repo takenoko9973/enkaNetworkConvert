@@ -790,12 +790,54 @@
     _ArtifactSubStats_subStats = new WeakMap();
 
     var _Artifact_element, _Artifact_star, _Artifact_mainStat, _Artifact_subStats, _Artifacts_element, _Artifacts_artifacts;
+    const STATS_OPTION_RATE = {
+        HP: Infinity,
+        ATTACK: Infinity,
+        DEFENSE: Infinity,
+        HP_PERCENT: 3,
+        ATTACK_PERCENT: 3,
+        DEFENSE_PERCENT: 15 / 4,
+        CRITICAL: 4,
+        CRITICAL_HURT: 2,
+        CHARGE_EFFICIENCY: 10 / 3,
+        ELEMENT_MASTERY: 12,
+        UNKNOWN: Infinity,
+    };
     class Artifact {
         constructor(artifact) {
             _Artifact_element.set(this, void 0);
             _Artifact_star.set(this, 0);
             _Artifact_mainStat.set(this, new ArtifactMainStat("UNKNOWN", 0, 0));
             _Artifact_subStats.set(this, new ArtifactSubStats());
+            this.artifactScoring = (key) => {
+                const rate = STATS_OPTION_RATE.ATTACK_PERCENT / STATS_OPTION_RATE[key];
+                let score = 0;
+                for (const subStat of __classPrivateFieldGet(this, _Artifact_subStats, "f").subStats) {
+                    switch (subStat.statKey) {
+                        case "CRITICAL":
+                            score += subStat.stat * 2;
+                            break;
+                        case "CRITICAL_HURT":
+                            score += subStat.stat;
+                            break;
+                        case key:
+                            score += subStat.stat * rate;
+                            break;
+                    }
+                }
+                return score;
+            };
+            this.artifactRollValue = (...keys) => {
+                let rollValue = 0;
+                for (const subStat of __classPrivateFieldGet(this, _Artifact_subStats, "f").subStats) {
+                    if (!subStat.statKey)
+                        continue;
+                    if (keys.includes(subStat.statKey)) {
+                        rollValue += subStat.rolls.sumRollValue();
+                    }
+                }
+                return rollValue;
+            };
             __classPrivateFieldSet(this, _Artifact_element, artifact, "f");
             if (!artifact.classList.contains("Artifact"))
                 return;
@@ -804,10 +846,13 @@
             const elements = {};
             elements["mainStat"] = artifact.getElementsByClassName("mainstat")[0];
             elements["subStats"] = artifact.getElementsByClassName("substats")[0];
-            elements["stars"] = elements["mainStat"].getElementsByClassName("Stars")[0];
-            elements["level"] = elements["mainStat"].getElementsByClassName("level")[0];
+            elements["stars"] =
+                elements["mainStat"].getElementsByClassName("Stars")[0];
+            elements["level"] =
+                elements["mainStat"].getElementsByClassName("level")[0];
             __classPrivateFieldSet(this, _Artifact_star, elements["stars"].childElementCount, "f");
-            const mainStatKey = elements["mainStat"].classList[1];
+            const mainStatKey = elements["mainStat"]
+                .classList[1];
             const stat = elements["mainStat"].children[1].textContent ?? "0";
             const level = Number(elements["level"].textContent ?? "0");
             __classPrivateFieldSet(this, _Artifact_mainStat, new ArtifactMainStat(mainStatKey, stat, level), "f");
@@ -815,8 +860,7 @@
             for (const subStat of Array.from(subStats)) {
                 const statKey = subStat.classList[1];
                 const stat = subStat.lastChild?.textContent ?? "0";
-                const rolls = Array.from(subStat.getElementsByClassName("rolls")[0].children)
-                    .map((_roll) => _roll.childElementCount);
+                const rolls = Array.from(subStat.getElementsByClassName("rolls")[0].children).map((_roll) => _roll.childElementCount);
                 __classPrivateFieldGet(this, _Artifact_subStats, "f").addSubStat(new ArtifactSubStat(statKey, stat, rolls));
             }
         }
@@ -842,6 +886,22 @@
                 const equippingArtifacts = __classPrivateFieldGet(this, _Artifacts_artifacts, "f").filter((_artifact) => !_artifact.element.classList.contains("empty"));
                 return equippingArtifacts.length;
             };
+            this.eachArtifactScoring = (key) => {
+                return __classPrivateFieldGet(this, _Artifacts_artifacts, "f")
+                    .map((_artifact) => _artifact.artifactScoring(key));
+            };
+            this.sumArtifactScoring = (key) => {
+                return this.eachArtifactScoring(key)
+                    .reduce((sum, score) => sum + score);
+            };
+            this.eachArtifactRollValue = (...keys) => {
+                return __classPrivateFieldGet(this, _Artifacts_artifacts, "f")
+                    .map((_artifact) => _artifact.artifactRollValue(...keys));
+            };
+            this.sumArtifactRollValue = (...keys) => {
+                return this.eachArtifactRollValue(...keys)
+                    .reduce((sum, rv) => sum + rv);
+            };
             __classPrivateFieldSet(this, _Artifacts_element, artifactSets, "f");
             const artifacts = artifactSets.getElementsByClassName("Artifact");
             for (const artifact of Array.from(artifacts)) {
@@ -856,49 +916,6 @@
         }
     }
     _Artifacts_element = new WeakMap(), _Artifacts_artifacts = new WeakMap();
-
-    const STATS_OPTION_RATE = {
-        HP: Infinity,
-        ATTACK: Infinity,
-        DEFENSE: Infinity,
-        HP_PERCENT: 3,
-        ATTACK_PERCENT: 3,
-        DEFENSE_PERCENT: 15 / 4,
-        CRITICAL: 4,
-        CRITICAL_HURT: 2,
-        CHARGE_EFFICIENCY: 10 / 3,
-        ELEMENT_MASTERY: 12,
-        UNKNOWN: Infinity
-    };
-    const artifactScoring = (artifact, key) => {
-        const rate = STATS_OPTION_RATE.ATTACK_PERCENT / STATS_OPTION_RATE[key];
-        let score = 0;
-        for (const subStat of artifact.subStats) {
-            switch (subStat.statKey) {
-                case "CRITICAL":
-                    score += subStat.stat * 2;
-                    break;
-                case "CRITICAL_HURT":
-                    score += subStat.stat;
-                    break;
-                case key:
-                    score += subStat.stat * rate;
-                    break;
-            }
-        }
-        return score;
-    };
-    const artifactRollValue = (artifact, ...keys) => {
-        let rollValue = 0;
-        for (const subStat of artifact.subStats) {
-            if (!subStat.statKey)
-                continue;
-            if (keys.includes(subStat.statKey)) {
-                rollValue += subStat.rolls.sumRollValue();
-            }
-        }
-        return rollValue;
-    };
 
     function characterStats() {
         const charaStatsTable = document.getElementsByClassName("StatsTable")[0];
@@ -1177,7 +1194,7 @@
             const selectScoreType = SelectScoreType.instance;
             const scoreTypeKey = selectScoreType.getScoreTypeKey();
             for (const artifact of __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifacts, "f").artifacts) {
-                const score = artifactScoring(artifact, scoreTypeKey);
+                const score = artifact.artifactScoring(scoreTypeKey);
                 const scoreBox = artifact.element.getElementsByClassName(EVALUATION_TEXT)[0];
                 if (!scoreBox)
                     continue;
@@ -1190,20 +1207,16 @@
             const critDMG = characterStat("CRITICAL_HURT");
             const critRatio = critDMG / critRate;
             const typeName = optionLocale.getLocaleSub(scoreTypeKey);
-            const sumScore = __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifacts, "f").artifacts
-                .map((_artifact) => artifactScoring(_artifact, scoreTypeKey))
-                .reduce((_sum, _score) => _sum + _score);
+            const sumScore = __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifacts, "f").sumArtifactScoring(scoreTypeKey);
             const artifactNum = __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifacts, "f").artifactNum();
-            const avgScore = (artifactNum != 0)
-                ? sumScore / artifactNum
-                : 0;
+            const avgScore = artifactNum != 0 ? sumScore / artifactNum : 0;
             extraText.textContent = this.getScoringInfoText(critRatio, typeName, sumScore, avgScore);
         }
         writeRollValueMethod() {
             const rollValueMethod = RollValueMethodRoutine.instance;
             const scoreTypeKeys = rollValueMethod.getCheckedKeys();
             for (const artifact of __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifacts, "f").artifacts) {
-                const rv = artifactRollValue(artifact, ...scoreTypeKeys);
+                const rv = artifact.artifactRollValue(...scoreTypeKeys);
                 const evaluateText = artifact.element.getElementsByClassName(EVALUATION_TEXT)[0];
                 if (!evaluateText)
                     continue;
@@ -1215,14 +1228,11 @@
             const critRate = characterStat("CRITICAL");
             const critDMG = characterStat("CRITICAL_HURT");
             const critRatio = critDMG / critRate;
-            const statNames = scoreTypeKeys
-                .map((key) => {
+            const statNames = scoreTypeKeys.map((key) => {
                 const name = optionLocale.getLocaleSub(key);
                 return name + (key.includes("PERCENT") ? "%" : "");
             });
-            const sumRV = __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifacts, "f").artifacts
-                .map((_artifact) => artifactRollValue(_artifact, ...scoreTypeKeys))
-                .reduce((_sum, _score) => _sum + _score);
+            const sumRV = __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifacts, "f").sumArtifactRollValue(...scoreTypeKeys);
             extraText.textContent = this.getRVInfoText(critRatio, statNames, sumRV);
         }
         getScoringInfoText(ratio, scoreTypeName, sumScore, avgScore) {
