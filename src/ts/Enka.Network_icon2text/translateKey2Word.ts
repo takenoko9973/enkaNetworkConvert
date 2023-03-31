@@ -137,7 +137,7 @@ localeArray["EN"] = {
         subOption: undefined,
     },
     SCORE_EXTRA_INFO: {
-        locale: "Crit Ratio 1:${critRatio} / Score(${scoreType}) Avg. ${avgScore} Total ${sumScore}",
+        locale: "Crit Ratio 1:${critRatio} / Score(${selectStat}) Avg. ${avgScore} Total ${sumScore}",
         subOption: undefined,
     },
     RV_EXTRA_INFO: {
