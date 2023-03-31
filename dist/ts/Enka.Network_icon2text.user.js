@@ -684,7 +684,13 @@
     class Stat {
         constructor(statName, stat) {
             this._statName = statName;
-            this._stat = stat;
+            if (typeof (stat) == "string") {
+                stat = stat.replace(/[,%]/, "");
+                this._stat = Number(stat);
+            }
+            else {
+                this._stat = stat;
+            }
         }
         get statKey() {
             return this._statName;
@@ -783,7 +789,7 @@
     }
     _ArtifactSubStats_subStats = new WeakMap();
 
-    var _Artifact_element, _Artifact_star, _Artifact_mainStat, _Artifact_subStats;
+    var _Artifact_element, _Artifact_star, _Artifact_mainStat, _Artifact_subStats, _Artifacts_element, _Artifacts_artifacts;
     class Artifact {
         constructor(artifact) {
             _Artifact_element.set(this, void 0);
@@ -802,15 +808,15 @@
             elements["level"] = elements["mainStat"].getElementsByClassName("level")[0];
             __classPrivateFieldSet(this, _Artifact_star, elements["stars"].childElementCount, "f");
             const mainStatKey = elements["mainStat"].classList[1];
-            const stat = elements["mainStat"].children[2].textContent?.replace("%", "") ?? "0";
+            const stat = elements["mainStat"].children[1].textContent ?? "0";
             const level = Number(elements["level"].textContent ?? "0");
-            __classPrivateFieldSet(this, _Artifact_mainStat, new ArtifactMainStat(mainStatKey, Number(stat), level), "f");
+            __classPrivateFieldSet(this, _Artifact_mainStat, new ArtifactMainStat(mainStatKey, stat, level), "f");
             const subStats = elements["subStats"].getElementsByClassName("Substat");
             for (const subStat of Array.from(subStats)) {
                 const statKey = subStat.classList[1];
-                const stat = Number(subStat.lastChild?.textContent?.replace("%", "") ?? "0");
+                const stat = subStat.lastChild?.textContent ?? "0";
                 const rolls = Array.from(subStat.getElementsByClassName("rolls")[0].children)
-                    .map((_roll) => _roll.children.length);
+                    .map((_roll) => _roll.childElementCount);
                 __classPrivateFieldGet(this, _Artifact_subStats, "f").addSubStat(new ArtifactSubStat(statKey, stat, rolls));
             }
         }
@@ -828,30 +834,28 @@
         }
     }
     _Artifact_element = new WeakMap(), _Artifact_star = new WeakMap(), _Artifact_mainStat = new WeakMap(), _Artifact_subStats = new WeakMap();
-
-    var _ArtifactSets_element, _ArtifactSets_artifacts;
-    class ArtifactSets {
+    class Artifacts {
         constructor(artifactSets) {
-            _ArtifactSets_element.set(this, void 0);
-            _ArtifactSets_artifacts.set(this, []);
+            _Artifacts_element.set(this, void 0);
+            _Artifacts_artifacts.set(this, []);
             this.artifactNum = () => {
-                const equippingArtifacts = __classPrivateFieldGet(this, _ArtifactSets_artifacts, "f").filter((_artifact) => !_artifact.element.classList.contains("empty"));
+                const equippingArtifacts = __classPrivateFieldGet(this, _Artifacts_artifacts, "f").filter((_artifact) => !_artifact.element.classList.contains("empty"));
                 return equippingArtifacts.length;
             };
-            __classPrivateFieldSet(this, _ArtifactSets_element, artifactSets, "f");
+            __classPrivateFieldSet(this, _Artifacts_element, artifactSets, "f");
             const artifacts = artifactSets.getElementsByClassName("Artifact");
             for (const artifact of Array.from(artifacts)) {
-                __classPrivateFieldGet(this, _ArtifactSets_artifacts, "f").push(new Artifact(artifact));
+                __classPrivateFieldGet(this, _Artifacts_artifacts, "f").push(new Artifact(artifact));
             }
         }
         get element() {
-            return __classPrivateFieldGet(this, _ArtifactSets_element, "f");
+            return __classPrivateFieldGet(this, _Artifacts_element, "f");
         }
         get artifacts() {
-            return __classPrivateFieldGet(this, _ArtifactSets_artifacts, "f");
+            return __classPrivateFieldGet(this, _Artifacts_artifacts, "f");
         }
     }
-    _ArtifactSets_element = new WeakMap(), _ArtifactSets_artifacts = new WeakMap();
+    _Artifacts_element = new WeakMap(), _Artifacts_artifacts = new WeakMap();
 
     const STATS_OPTION_RATE = {
         HP: Infinity,
@@ -1109,12 +1113,12 @@
     _a$1 = RollValueMethodRoutine;
     _RollValueMethodRoutine_instance = { value: void 0 };
 
-    var _a, _ArtifactEvaluateRoutine_instance, _ArtifactEvaluateRoutine_artifactSets;
+    var _a, _ArtifactEvaluateRoutine_instance, _ArtifactEvaluateRoutine_artifacts;
     const EVALUATION_TEXT = "artifactEvaluateText";
     const EXTRA_PARAMETER_TEXT = "extraParamText";
     class ArtifactEvaluateRoutine {
         constructor() {
-            _ArtifactEvaluateRoutine_artifactSets.set(this, void 0);
+            _ArtifactEvaluateRoutine_artifacts.set(this, void 0);
         }
         static get instance() {
             if (!__classPrivateFieldGet(this, _a, "f", _ArtifactEvaluateRoutine_instance)) {
@@ -1123,7 +1127,7 @@
             return __classPrivateFieldGet(this, _a, "f", _ArtifactEvaluateRoutine_instance);
         }
         createText() {
-            __classPrivateFieldSet(this, _ArtifactEvaluateRoutine_artifactSets, new ArtifactSets(document.getElementsByClassName("section right")[0]), "f");
+            __classPrivateFieldSet(this, _ArtifactEvaluateRoutine_artifacts, new Artifacts(document.getElementsByClassName("section right")[0]), "f");
             this.createEvaluationText();
             this.createExtraParameterText();
         }
@@ -1141,7 +1145,7 @@
             }
         }
         createEvaluationText() {
-            for (const artifact of __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").artifacts) {
+            for (const artifact of __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifacts, "f").artifacts) {
                 const artifactElement = artifact.element;
                 let evaluationText = artifactElement.getElementsByClassName(EVALUATION_TEXT)[0];
                 if (evaluationText)
@@ -1166,13 +1170,13 @@
             extraParameter.style.textAlign = "right";
             extraParameter.style.fontSize = "0.8em";
             extraParameter.style.whiteSpace = "nowrap";
-            extraParameter.classList.add(getSvelteClassName(__classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").artifacts[0].element));
-            __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").element.appendChild(extraParameter);
+            extraParameter.classList.add(getSvelteClassName(__classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifacts, "f").artifacts[0].element));
+            __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifacts, "f").element.appendChild(extraParameter);
         }
         writeScoringMethod() {
             const selectScoreType = SelectScoreType.instance;
             const scoreTypeKey = selectScoreType.getScoreTypeKey();
-            for (const artifact of __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").artifacts) {
+            for (const artifact of __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifacts, "f").artifacts) {
                 const score = artifactScoring(artifact, scoreTypeKey);
                 const scoreBox = artifact.element.getElementsByClassName(EVALUATION_TEXT)[0];
                 if (!scoreBox)
@@ -1186,10 +1190,10 @@
             const critDMG = characterStat("CRITICAL_HURT");
             const critRatio = critDMG / critRate;
             const typeName = optionLocale.getLocaleSub(scoreTypeKey);
-            const sumScore = __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").artifacts
+            const sumScore = __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifacts, "f").artifacts
                 .map((_artifact) => artifactScoring(_artifact, scoreTypeKey))
                 .reduce((_sum, _score) => _sum + _score);
-            const artifactNum = __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").artifactNum();
+            const artifactNum = __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifacts, "f").artifactNum();
             const avgScore = (artifactNum != 0)
                 ? sumScore / artifactNum
                 : 0;
@@ -1198,7 +1202,7 @@
         writeRollValueMethod() {
             const rollValueMethod = RollValueMethodRoutine.instance;
             const scoreTypeKeys = rollValueMethod.getCheckedKeys();
-            for (const artifact of __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").artifacts) {
+            for (const artifact of __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifacts, "f").artifacts) {
                 const rv = artifactRollValue(artifact, ...scoreTypeKeys);
                 const evaluateText = artifact.element.getElementsByClassName(EVALUATION_TEXT)[0];
                 if (!evaluateText)
@@ -1216,7 +1220,7 @@
                 const name = optionLocale.getLocaleSub(key);
                 return name + (key.includes("PERCENT") ? "%" : "");
             });
-            const sumRV = __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifactSets, "f").artifacts
+            const sumRV = __classPrivateFieldGet(this, _ArtifactEvaluateRoutine_artifacts, "f").artifacts
                 .map((_artifact) => artifactRollValue(_artifact, ...scoreTypeKeys))
                 .reduce((_sum, _score) => _sum + _score);
             extraText.textContent = this.getRVInfoText(critRatio, statNames, sumRV);
@@ -1242,7 +1246,7 @@
             });
         }
     }
-    _a = ArtifactEvaluateRoutine, _ArtifactEvaluateRoutine_artifactSets = new WeakMap();
+    _a = ArtifactEvaluateRoutine, _ArtifactEvaluateRoutine_artifacts = new WeakMap();
     _ArtifactEvaluateRoutine_instance = { value: void 0 };
 
     class CreateWriteManager {

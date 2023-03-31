@@ -5,7 +5,7 @@ import { statRolls } from "./artifactStatRolls";
 export class ArtifactSubStat extends Stat {
     #rolls: statRolls;
 
-    constructor(statName: statsSubOptionKey, stat: number, rolls: number[]) {
+    constructor(statName: statsSubOptionKey, stat: string | number, rolls: number[]) {
         super(statName, stat);
 
         try {

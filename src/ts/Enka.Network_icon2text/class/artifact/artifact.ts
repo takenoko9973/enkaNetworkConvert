@@ -26,16 +26,16 @@ export class Artifact {
         this.#star = elements["stars"].childElementCount;
 
         const mainStatKey = elements["mainStat"].classList[1] as statsMainOptionKey;
-        const stat = elements["mainStat"].children[2].textContent?.replace("%", "") ?? "0";
+        const stat = elements["mainStat"].children[1].textContent ?? "0";
         const level = Number(elements["level"].textContent ?? "0");
-        this.#mainStat = new ArtifactMainStat(mainStatKey, Number(stat), level);
+        this.#mainStat = new ArtifactMainStat(mainStatKey, stat, level);
 
         const subStats = elements["subStats"].getElementsByClassName("Substat");
         for (const subStat of Array.from(subStats)) {
             const statKey = subStat.classList[1] as statsSubOptionKey;
-            const stat = Number(subStat.lastChild?.textContent?.replace("%", "") ?? "0");
+            const stat = subStat.lastChild?.textContent ?? "0";
             const rolls = Array.from(subStat.getElementsByClassName("rolls")[0].children)
-                .map((_roll) => _roll.children.length);
+                .map((_roll) => _roll.childElementCount);
             this.#subStats.addSubStat(new ArtifactSubStat(statKey, stat, rolls));
         }
     }
