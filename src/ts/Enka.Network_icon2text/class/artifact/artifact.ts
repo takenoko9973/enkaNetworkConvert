@@ -1,4 +1,4 @@
-import { artifactMainOptionKey, artifactSubOptionKey } from "../../types/artifactOptionKey";
+import { StatNumber } from "../stat";
 import { ArtifactMainStat } from "./artifactStatMain";
 import { ArtifactSubStat, ArtifactSubStats } from "./artifactStatSub";
 
@@ -20,7 +20,7 @@ const STATS_OPTION_RATE: { [key in artifactSubOptionKey]: number } = {
 export class Artifact {
     #element: Element;
     #star = 0;
-    #mainStat = new ArtifactMainStat("UNKNOWN", 0, 0);
+    #mainStat = new ArtifactMainStat("UNKNOWN", new StatNumber(0), 0);
     #subStats = new ArtifactSubStats();
 
     constructor(artifact: Element) {
@@ -41,14 +41,16 @@ export class Artifact {
 
         const mainStatKey = elements["mainStat"]
             .classList[1] as artifactMainOptionKey;
-        const stat = elements["mainStat"].children[1].textContent ?? "0";
+        const stat = new StatNumber(
+            elements["mainStat"].children[1].textContent ?? "0"
+        );
         const level = Number(elements["level"].textContent ?? "0");
         this.#mainStat = new ArtifactMainStat(mainStatKey, stat, level);
 
         const subStats = elements["subStats"].getElementsByClassName("Substat");
         for (const subStat of Array.from(subStats)) {
             const statKey = subStat.classList[1] as artifactSubOptionKey;
-            const stat = subStat.lastChild?.textContent ?? "0";
+            const stat = new StatNumber(subStat.lastChild?.textContent ?? "0");
             const rolls = Array.from(
                 subStat.getElementsByClassName("rolls")[0].children
             ).map((_roll) => _roll.childElementCount);
