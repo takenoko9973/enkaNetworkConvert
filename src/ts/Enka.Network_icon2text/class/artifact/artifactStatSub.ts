@@ -3,7 +3,7 @@ import { Stat, StatNumber } from "../stat";
 import { statRolls } from "./artifactStatRolls";
 
 export class ArtifactSubStat extends Stat<artifactSubOptionKey> {
-    #rolls: statRolls;
+    readonly rolls: statRolls;
 
     constructor(
         statName: artifactSubOptionKey,
@@ -12,30 +12,18 @@ export class ArtifactSubStat extends Stat<artifactSubOptionKey> {
     ) {
         super(statName, stat);
 
-        try {
-            this.#rolls = new statRolls(rolls);
-        } catch (e: unknown) {
-            this.#rolls = new statRolls([]);
-
-            if (e instanceof Error) {
-                console.error(e.message);
-            }
-        }
-    }
-
-    get rolls() {
-        return this.#rolls;
+        this.rolls = new statRolls(rolls);
     }
 }
 
 export class ArtifactSubStats {
-    #subStats: ArtifactSubStat[] = [];
+    private readonly _subStats: ArtifactSubStat[] = [];
 
     addSubStat = (subStat: ArtifactSubStat) => {
-        this.#subStats.push(subStat);
+        this._subStats.push(subStat);
     };
 
     get subStats(): ArtifactSubStat[] {
-        return this.#subStats;
+        return this._subStats;
     }
 }

@@ -7,18 +7,14 @@ export abstract class Stat<T extends string> {
 }
 
 export class StatNumber {
-    #stat: number;
+    readonly stat: number;
 
     constructor(stat: string | number) {
         if (typeof stat == "string") {
             stat = stat.replace(/[,%]/, "");
-            this.#stat = Number(stat);
+            this.stat = Number(stat);
         } else {
-            this.#stat = stat;
+            this.stat = stat;
         }
-    }
-
-    get stat() {
-        return this.#stat;
     }
 }

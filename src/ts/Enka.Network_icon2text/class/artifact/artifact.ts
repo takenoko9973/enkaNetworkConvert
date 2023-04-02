@@ -1,3 +1,7 @@
+import {
+    artifactMainOptionKey,
+    artifactSubOptionKey,
+} from "../../types/artifactOptionKey";
 import { StatNumber } from "../stat";
 import { ArtifactMainStat } from "./artifactStatMain";
 import { ArtifactSubStat, ArtifactSubStats } from "./artifactStatSub";
@@ -140,22 +144,26 @@ export class Artifacts {
     };
 
     eachArtifactScoring = (key: artifactSubOptionKey): number[] => {
-        return this.#artifacts
-            .map((_artifact) => _artifact.artifactScoring(key));
+        return this.#artifacts.map((_artifact) =>
+            _artifact.artifactScoring(key)
+        );
     };
 
     sumArtifactScoring = (key: artifactSubOptionKey): number => {
-        return this.eachArtifactScoring(key)
-            .reduce((sum, score) => sum + score);
+        return this.eachArtifactScoring(key).reduce(
+            (sum, score) => sum + score
+        );
     };
 
     eachArtifactRollValue = (...keys: artifactSubOptionKey[]): number[] => {
-        return this.#artifacts
-            .map((_artifact) => _artifact.artifactRollValue(...keys));
+        return this.#artifacts.map((_artifact) =>
+            _artifact.artifactRollValue(...keys)
+        );
     };
 
     sumArtifactRollValue = (...keys: artifactSubOptionKey[]): number => {
-        return this.eachArtifactRollValue(...keys)
-            .reduce((sum, rv) => sum + rv);
+        return this.eachArtifactRollValue(...keys).reduce(
+            (sum, rv) => sum + rv
+        );
     };
 }

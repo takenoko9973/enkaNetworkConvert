@@ -681,14 +681,10 @@
         }
     }
 
-    var _StatNumber_stat;
     class Stat {
-        constructor(statName, stat) {
-            this._statName = statName;
-            this._stat = new StatNumber(stat);
-        }
-        get statKey() {
-            return this._statName;
+        constructor(statKey, _stat) {
+            this.statKey = statKey;
+            this._stat = _stat;
         }
         get stat() {
             return this._stat.stat;
@@ -696,53 +692,39 @@
     }
     class StatNumber {
         constructor(stat) {
-            _StatNumber_stat.set(this, void 0);
-            if (typeof (stat) == "string") {
+            if (typeof stat == "string") {
                 stat = stat.replace(/[,%]/, "");
-                __classPrivateFieldSet(this, _StatNumber_stat, Number(stat), "f");
+                this.stat = Number(stat);
             }
             else {
-                __classPrivateFieldSet(this, _StatNumber_stat, stat, "f");
+                this.stat = stat;
             }
         }
-        get stat() {
-            return __classPrivateFieldGet(this, _StatNumber_stat, "f");
-        }
     }
-    _StatNumber_stat = new WeakMap();
 
-    var _ArtifactMainStat_level;
     class ArtifactMainStat extends Stat {
-        constructor(statName, stat, level) {
-            super(statName, stat);
-            _ArtifactMainStat_level.set(this, void 0);
-            __classPrivateFieldSet(this, _ArtifactMainStat_level, level, "f");
-        }
-        get level() {
-            return __classPrivateFieldGet(this, _ArtifactMainStat_level, "f");
+        constructor(statKey, stat, level) {
+            super(statKey, stat);
+            this.level = level;
         }
     }
-    _ArtifactMainStat_level = new WeakMap();
 
-    var _statRoll_roll, _statRolls_rolls;
     class statRoll {
         constructor(roll) {
-            _statRoll_roll.set(this, void 0);
-            this.rollValue = () => 100 - 10 * (4 - __classPrivateFieldGet(this, _statRoll_roll, "f"));
+            this.rollValue = () => 100 - 10 * (4 - this.roll);
             if (1 <= roll && roll <= 4) {
-                __classPrivateFieldSet(this, _statRoll_roll, roll, "f");
+                this.roll = roll;
             }
             else {
                 throw "roll must be in range 1 to 4";
             }
         }
     }
-    _statRoll_roll = new WeakMap();
     class statRolls {
         constructor(rolls) {
-            _statRolls_rolls.set(this, []);
+            this.rolls = [];
             this.eachRollValue = () => {
-                return __classPrivateFieldGet(this, _statRolls_rolls, "f").map((roll) => roll.rollValue());
+                return this.rolls.map((roll) => roll.rollValue());
             };
             this.sumRollValue = () => {
                 const rollValues = this.eachRollValue();
@@ -753,10 +735,8 @@
                     return rollValues.reduce((sum, rollValue) => sum + rollValue);
                 }
             };
-            if (rolls.length > 6)
-                throw "number of rolls must be range 0 to 6";
             try {
-                rolls.forEach((roll) => __classPrivateFieldGet(this, _statRolls_rolls, "f").push(new statRoll(roll)));
+                rolls.forEach((roll) => this.rolls.push(new statRoll(roll)));
             }
             catch (e) {
                 if (e instanceof Error) {
@@ -765,40 +745,24 @@
             }
         }
     }
-    _statRolls_rolls = new WeakMap();
 
-    var _ArtifactSubStat_rolls, _ArtifactSubStats_subStats;
     class ArtifactSubStat extends Stat {
         constructor(statName, stat, rolls) {
             super(statName, stat);
-            _ArtifactSubStat_rolls.set(this, void 0);
-            try {
-                __classPrivateFieldSet(this, _ArtifactSubStat_rolls, new statRolls(rolls), "f");
-            }
-            catch (e) {
-                __classPrivateFieldSet(this, _ArtifactSubStat_rolls, new statRolls([]), "f");
-                if (e instanceof Error) {
-                    console.error(e.message);
-                }
-            }
-        }
-        get rolls() {
-            return __classPrivateFieldGet(this, _ArtifactSubStat_rolls, "f");
+            this.rolls = new statRolls(rolls);
         }
     }
-    _ArtifactSubStat_rolls = new WeakMap();
     class ArtifactSubStats {
         constructor() {
-            _ArtifactSubStats_subStats.set(this, []);
+            this._subStats = [];
             this.addSubStat = (subStat) => {
-                __classPrivateFieldGet(this, _ArtifactSubStats_subStats, "f").push(subStat);
+                this._subStats.push(subStat);
             };
         }
         get subStats() {
-            return __classPrivateFieldGet(this, _ArtifactSubStats_subStats, "f");
+            return this._subStats;
         }
     }
-    _ArtifactSubStats_subStats = new WeakMap();
 
     var _Artifact_element, _Artifact_star, _Artifact_mainStat, _Artifact_subStats, _Artifacts_element, _Artifacts_artifacts;
     const STATS_OPTION_RATE = {
@@ -818,7 +782,7 @@
         constructor(artifact) {
             _Artifact_element.set(this, void 0);
             _Artifact_star.set(this, 0);
-            _Artifact_mainStat.set(this, new ArtifactMainStat("UNKNOWN", 0, 0));
+            _Artifact_mainStat.set(this, new ArtifactMainStat("UNKNOWN", new StatNumber(0), 0));
             _Artifact_subStats.set(this, new ArtifactSubStats());
             this.artifactScoring = (key) => {
                 const rate = STATS_OPTION_RATE.ATTACK_PERCENT / STATS_OPTION_RATE[key];
@@ -864,13 +828,13 @@
             __classPrivateFieldSet(this, _Artifact_star, elements["stars"].childElementCount, "f");
             const mainStatKey = elements["mainStat"]
                 .classList[1];
-            const stat = elements["mainStat"].children[1].textContent ?? "0";
+            const stat = new StatNumber(elements["mainStat"].children[1].textContent ?? "0");
             const level = Number(elements["level"].textContent ?? "0");
             __classPrivateFieldSet(this, _Artifact_mainStat, new ArtifactMainStat(mainStatKey, stat, level), "f");
             const subStats = elements["subStats"].getElementsByClassName("Substat");
             for (const subStat of Array.from(subStats)) {
                 const statKey = subStat.classList[1];
-                const stat = subStat.lastChild?.textContent ?? "0";
+                const stat = new StatNumber(subStat.lastChild?.textContent ?? "0");
                 const rolls = Array.from(subStat.getElementsByClassName("rolls")[0].children).map((_roll) => _roll.childElementCount);
                 __classPrivateFieldGet(this, _Artifact_subStats, "f").addSubStat(new ArtifactSubStat(statKey, stat, rolls));
             }
@@ -898,20 +862,16 @@
                 return equippingArtifacts.length;
             };
             this.eachArtifactScoring = (key) => {
-                return __classPrivateFieldGet(this, _Artifacts_artifacts, "f")
-                    .map((_artifact) => _artifact.artifactScoring(key));
+                return __classPrivateFieldGet(this, _Artifacts_artifacts, "f").map((_artifact) => _artifact.artifactScoring(key));
             };
             this.sumArtifactScoring = (key) => {
-                return this.eachArtifactScoring(key)
-                    .reduce((sum, score) => sum + score);
+                return this.eachArtifactScoring(key).reduce((sum, score) => sum + score);
             };
             this.eachArtifactRollValue = (...keys) => {
-                return __classPrivateFieldGet(this, _Artifacts_artifacts, "f")
-                    .map((_artifact) => _artifact.artifactRollValue(...keys));
+                return __classPrivateFieldGet(this, _Artifacts_artifacts, "f").map((_artifact) => _artifact.artifactRollValue(...keys));
             };
             this.sumArtifactRollValue = (...keys) => {
-                return this.eachArtifactRollValue(...keys)
-                    .reduce((sum, rv) => sum + rv);
+                return this.eachArtifactRollValue(...keys).reduce((sum, rv) => sum + rv);
             };
             __classPrivateFieldSet(this, _Artifacts_element, artifactSets, "f");
             const artifacts = artifactSets.getElementsByClassName("Artifact");
@@ -1012,7 +972,8 @@
                 methodGroup.appendChild(baseLabel);
             }
             const scoringSelectId = `evaluation_${EVALUATION_METHOD[0].id}_radio`;
-            document.getElementById(scoringSelectId)
+            document
+                .getElementById(scoringSelectId)
                 ?.toggleAttribute("checked", true);
             const radioStyle = [
                 ".methodRadio input:checked ~ .toggle.svelte-1893j5:before { content: ''; border-radius: 1px; transform: scale(1); }",
@@ -1059,7 +1020,7 @@
         CRITICAL_HURT: "CD",
         CHARGE_EFFICIENCY: "ER",
         ELEMENT_MASTERY: "EM",
-        UNKNOWN: "UNKNOWN"
+        UNKNOWN: "UNKNOWN",
     };
     class RollValueMethodRoutine {
         static get instance() {
@@ -1130,8 +1091,7 @@
             document
                 .querySelectorAll(`.rvSelectCheckbox input:checked[name=${RV_CHECKBOX_NAME}]`)
                 .forEach((element) => checkedIds.push(element.id));
-            return checkedIds
-                .map((id) => id.match("RV_(.+)_CHECKBOX")?.at(1) ?? "");
+            return checkedIds.map((id) => id.match("RV_(.+)_CHECKBOX")?.at(1) ?? "");
         }
         getCheckedKeys() {
             const checkedIds = this.getCheckedIds();
