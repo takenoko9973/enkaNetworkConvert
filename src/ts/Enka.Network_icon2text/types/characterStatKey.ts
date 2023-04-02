@@ -1,9 +1,13 @@
-export type statsMainOptionKey
+export type characterBaseStatKey
+    = "BASE_HP"
+    | "BASE_ATTACK"
+    | "BASE_DEFENSE"
+    | "UNKNOWN";
+
+export type characterStatKey
     = "HP"
     | "ATTACK"
-    | "HP_PERCENT"
-    | "ATTACK_PERCENT"
-    | "DEFENSE_PERCENT"
+    | "DEFENSE"
     | "CRITICAL"
     | "CRITICAL_HURT"
     | "CHARGE_EFFICIENCY"
@@ -18,18 +22,3 @@ export type statsMainOptionKey
     | "ROCK_ADD_HURT"
     | "GRASS_ADD_HURT"
     | "UNKNOWN";
-
-export type statsSubOptionKey
-    = "HP"
-    | "ATTACK"
-    | "DEFENSE"
-    | "HP_PERCENT"
-    | "ATTACK_PERCENT"
-    | "DEFENSE_PERCENT"
-    | "CRITICAL"
-    | "CRITICAL_HURT"
-    | "CHARGE_EFFICIENCY"
-    | "ELEMENT_MASTERY"
-    | "UNKNOWN";
-
-export type characterStatKey = statsMainOptionKey | statsSubOptionKey;

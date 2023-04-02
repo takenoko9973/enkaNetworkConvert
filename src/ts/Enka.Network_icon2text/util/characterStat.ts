@@ -1,6 +1,6 @@
-import { characterBaseStatKey } from "../types/characterBaseStatKey";
+import { characterBaseStatKey } from "../types/characterStatKey";
 import { characterStatKey } from "../types/characterStatKey";
-import { baseKey2Normal } from "./enkaUtil";
+import { baseStat2characterStat } from "./enkaUtil";
 
 function characterStats(): Element[] {
     const charaStatsTable = document.getElementsByClassName("StatsTable")[0];
@@ -10,11 +10,11 @@ function characterStats(): Element[] {
     return statsList;
 }
 
-export function characterStatRow(key: characterStatKey): Element | null {
+export function characterStatRow(key: characterStatKey): Element | undefined {
     const statsList = characterStats();
     const index = statsList.map((stat) => stat.classList[1]).indexOf(key);
 
-    if (index === -1) return null;
+    if (index === -1) return undefined;
     return statsList[index];
 }
 
@@ -34,7 +34,8 @@ export function characterStat(key: characterStatKey): number {
  * @returns [number, number]: [基礎ステータス, 増加量]
  */
 export function characterBaseStat(key: characterBaseStatKey): [number, number] {
-    const key2 = baseKey2Normal(key);
+    const key2 = baseStat2characterStat(key);
+    if (!key2) return [0, 0];
     const statRow = characterStatRow(key2);
     if (!statRow) return [0, 0];
 

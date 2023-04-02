@@ -1,18 +1,10 @@
-import { characterStatKey } from "../types/characterStatKey";
+export abstract class Stat<T extends string> {
+    protected _statName: T;
+    protected _stat: StatNumber;
 
-export abstract class Stat {
-    protected _statName: characterStatKey;
-    protected _stat;
-
-    constructor(statName: characterStatKey, stat: string | number) {
+    constructor(statName: T, stat: string | number) {
         this._statName = statName;
-
-        if (typeof(stat) == "string") {
-            stat = stat.replace(/[,%]/, "");
-            this._stat = Number(stat);
-        } else {
-            this._stat = stat;
-        }
+        this._stat = new StatNumber(stat);
     }
 
 
@@ -21,6 +13,23 @@ export abstract class Stat {
     }
 
     get stat() {
-        return this._stat;
+        return this._stat.stat;
+    }
+}
+
+export class StatNumber {
+    #stat: number;
+
+    constructor(stat: string | number) {
+        if (typeof(stat) == "string") {
+            stat = stat.replace(/[,%]/, "");
+            this.#stat = Number(stat);
+        } else {
+            this.#stat = stat;
+        }
+    }
+
+    get stat() {
+        return this.#stat;
     }
 }

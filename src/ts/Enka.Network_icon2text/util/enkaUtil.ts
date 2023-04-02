@@ -1,4 +1,4 @@
-import { characterBaseStatKey } from "../types/characterBaseStatKey";
+import { characterBaseStatKey } from "../types/characterStatKey";
 import { characterStatKey } from "../types/characterStatKey";
 import { languages } from "../types/languages";
 
@@ -82,6 +82,11 @@ export function addStatTextElement(parentElement: Element, addSep = true): HTMLE
 /**
  * BaseStat用Keyを通常ステータスKeyに変換
  */
-export function baseKey2Normal(key: characterBaseStatKey): characterStatKey {
-    return key.replace(/BASE_/g, "") as characterStatKey;
+export function baseStat2characterStat(key: characterBaseStatKey): characterStatKey | undefined {
+    switch(key) {
+        case "BASE_HP": return "HP";
+        case "BASE_ATTACK": return "ATTACK";
+        case "BASE_DEFENSE": return "DEFENSE";
+        case "UNKNOWN": return undefined;
+    }
 }

@@ -681,24 +681,35 @@
         }
     }
 
+    var _StatNumber_stat;
     class Stat {
         constructor(statName, stat) {
             this._statName = statName;
-            if (typeof (stat) == "string") {
-                stat = stat.replace(/[,%]/, "");
-                this._stat = Number(stat);
-            }
-            else {
-                this._stat = stat;
-            }
+            this._stat = new StatNumber(stat);
         }
         get statKey() {
             return this._statName;
         }
         get stat() {
-            return this._stat;
+            return this._stat.stat;
         }
     }
+    class StatNumber {
+        constructor(stat) {
+            _StatNumber_stat.set(this, void 0);
+            if (typeof (stat) == "string") {
+                stat = stat.replace(/[,%]/, "");
+                __classPrivateFieldSet(this, _StatNumber_stat, Number(stat), "f");
+            }
+            else {
+                __classPrivateFieldSet(this, _StatNumber_stat, stat, "f");
+            }
+        }
+        get stat() {
+            return __classPrivateFieldGet(this, _StatNumber_stat, "f");
+        }
+    }
+    _StatNumber_stat = new WeakMap();
 
     var _ArtifactMainStat_level;
     class ArtifactMainStat extends Stat {
@@ -926,7 +937,7 @@
         const statsList = characterStats();
         const index = statsList.map((stat) => stat.classList[1]).indexOf(key);
         if (index === -1)
-            return null;
+            return undefined;
         return statsList[index];
     }
     function characterStat(key) {

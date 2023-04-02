@@ -1,13 +1,9 @@
-import {
-    characterStatKey,
-    statsMainOptionKey,
-    statsSubOptionKey,
-} from "../../types/characterStatKey";
+import { artifactMainOptionKey, artifactSubOptionKey } from "../../types/artifactOptionKey";
 import { ArtifactMainStat } from "./artifactStatMain";
 import { ArtifactSubStat, ArtifactSubStats } from "./artifactStatSub";
 
 // 各ステータスの比率 (固定値はスコアに含まないようにするため inf)
-const STATS_OPTION_RATE: { [key in statsSubOptionKey]: number } = {
+const STATS_OPTION_RATE: { [key in artifactSubOptionKey]: number } = {
     HP: Infinity,
     ATTACK: Infinity,
     DEFENSE: Infinity,
@@ -44,14 +40,14 @@ export class Artifact {
         this.#star = elements["stars"].childElementCount;
 
         const mainStatKey = elements["mainStat"]
-            .classList[1] as statsMainOptionKey;
+            .classList[1] as artifactMainOptionKey;
         const stat = elements["mainStat"].children[1].textContent ?? "0";
         const level = Number(elements["level"].textContent ?? "0");
         this.#mainStat = new ArtifactMainStat(mainStatKey, stat, level);
 
         const subStats = elements["subStats"].getElementsByClassName("Substat");
         for (const subStat of Array.from(subStats)) {
-            const statKey = subStat.classList[1] as statsSubOptionKey;
+            const statKey = subStat.classList[1] as artifactSubOptionKey;
             const stat = subStat.lastChild?.textContent ?? "0";
             const rolls = Array.from(
                 subStat.getElementsByClassName("rolls")[0].children
@@ -78,7 +74,7 @@ export class Artifact {
         return this.#subStats.subStats;
     }
 
-    artifactScoring = (key: statsSubOptionKey): number => {
+    artifactScoring = (key: artifactSubOptionKey): number => {
         const rate = STATS_OPTION_RATE.ATTACK_PERCENT / STATS_OPTION_RATE[key];
 
         let score = 0;
@@ -98,13 +94,13 @@ export class Artifact {
         return score;
     };
 
-    artifactRollValue = (...keys: statsSubOptionKey[]) => {
+    artifactRollValue = (...keys: artifactSubOptionKey[]) => {
         let rollValue = 0;
 
         for (const subStat of this.#subStats.subStats) {
             if (!subStat.statKey) continue;
 
-            if ((keys as characterStatKey[]).includes(subStat.statKey)) {
+            if (keys.includes(subStat.statKey)) {
                 rollValue += subStat.rolls.sumRollValue();
             }
         }
@@ -141,22 +137,22 @@ export class Artifacts {
         return equippingArtifacts.length;
     };
 
-    eachArtifactScoring = (key: statsSubOptionKey): number[] => {
+    eachArtifactScoring = (key: artifactSubOptionKey): number[] => {
         return this.#artifacts
             .map((_artifact) => _artifact.artifactScoring(key));
     };
 
-    sumArtifactScoring = (key: statsSubOptionKey): number => {
+    sumArtifactScoring = (key: artifactSubOptionKey): number => {
         return this.eachArtifactScoring(key)
             .reduce((sum, score) => sum + score);
     };
 
-    eachArtifactRollValue = (...keys: statsSubOptionKey[]): number[] => {
+    eachArtifactRollValue = (...keys: artifactSubOptionKey[]): number[] => {
         return this.#artifacts
             .map((_artifact) => _artifact.artifactRollValue(...keys));
     };
 
-    sumArtifactRollValue = (...keys: statsSubOptionKey[]): number => {
+    sumArtifactRollValue = (...keys: artifactSubOptionKey[]): number => {
         return this.eachArtifactRollValue(...keys)
             .reduce((sum, rv) => sum + rv);
     };

@@ -1,11 +1,11 @@
-import { statsSubOptionKey } from "../../types/characterStatKey";
+import { artifactSubOptionKey } from "../../types/artifactOptionKey";
 import { Stat } from "../stat";
 import { statRolls } from "./artifactStatRolls";
 
-export class ArtifactSubStat extends Stat {
+export class ArtifactSubStat extends Stat<artifactSubOptionKey> {
     #rolls: statRolls;
 
-    constructor(statName: statsSubOptionKey, stat: string | number, rolls: number[]) {
+    constructor(statName: artifactSubOptionKey, stat: string | number, rolls: number[]) {
         super(statName, stat);
 
         try {
