@@ -1,4 +1,4 @@
-import { TranslateKey2Word } from "./translateKey2Word";
+import { TranslateKey2Word } from "./class/translate/translateKey2Word";
 import { localeKeys } from "./types/localeKeys";
 import { CssStyleManager } from "./util/cssStyleManager";
 
