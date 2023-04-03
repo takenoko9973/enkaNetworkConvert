@@ -1,9 +1,9 @@
+import { TranslateKey2Word } from "../../class/translate/translateKey2Word";
 import {
     EVALUATION_SELECTOR,
     SCORE_RADIO_NAME,
     SCORE_SELECT_DIV,
     cssManager,
-    optionLocale,
 } from "../../myConst";
 import { artifactSubOptionKey } from "../../types/artifactOptionKey";
 import { CreateWriteRoutine } from "../createWriteRoutine";
@@ -101,6 +101,8 @@ export class SelectScoreType implements CreateWriteRoutine {
     }
 
     writeText() {
+        const optionLocale = TranslateKey2Word.getTranslate();
+
         const scoreSelectDiv = document.getElementById(SCORE_SELECT_DIV);
         if (!scoreSelectDiv) return;
 

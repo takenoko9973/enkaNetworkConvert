@@ -1,6 +1,10 @@
-import { optionLocale } from "../myConst";
+import { TranslateKey2Word } from "../class/translate/translateKey2Word";
 
-export function innerOptionText(statElement: Element, isSub = false): HTMLElement | null {
+export function innerOptionText(
+    statElement: Element,
+    isSub = false
+): HTMLElement | null {
+    const optionLocale = TranslateKey2Word.getTranslate();
     const statText = statElement?.getElementsByClassName(
         "statText"
     )[0] as HTMLElement;
@@ -8,7 +12,8 @@ export function innerOptionText(statElement: Element, isSub = false): HTMLElemen
     if (!statText) return null;
 
     const optionKey = statElement?.classList[1];
-    statText.innerText = (isSub)
+    // 改行も対応するため、innerTextで代入
+    statText.innerText = isSub
         ? optionLocale.getLocaleSub(optionKey)
         : optionLocale.getLocale(optionKey);
     return statText;

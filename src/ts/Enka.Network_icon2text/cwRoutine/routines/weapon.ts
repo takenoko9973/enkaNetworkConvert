@@ -1,4 +1,5 @@
-import { BASE_ATK_CLASS, optionLocale } from "../../myConst";
+import { TranslateKey2Word } from "../../class/translate/translateKey2Word";
+import { BASE_ATK_CLASS } from "../../myConst";
 import { addStatTextElement, getSeparateElement } from "../../util/enkaUtil";
 import { innerOptionText } from "../../util/innerOptionText";
 import { CreateWriteRoutine } from "../createWriteRoutine";
@@ -52,6 +53,7 @@ export class Weapon implements CreateWriteRoutine {
     }
 
     writeText() {
+        const optionLocale = TranslateKey2Word.getTranslate();
         const subStat = this.weapon[0].getElementsByClassName("Substat");
 
         const statText = innerOptionText(subStat[0]);

@@ -1,6 +1,7 @@
 import { Artifacts } from "../../class/artifact/artifact";
 import { CharacterStats } from "../../class/character/characterStat";
-import { cssManager, optionLocale } from "../../myConst";
+import { TranslateKey2Word } from "../../class/translate/translateKey2Word";
+import { cssManager } from "../../myConst";
 import { getSvelteClassName } from "../../util/enkaUtil";
 import { fmt } from "../../util/fmt";
 import { CreateWriteRoutine } from "../createWriteRoutine";
@@ -24,6 +25,7 @@ export class ArtifactEvaluateRoutine implements CreateWriteRoutine {
 
     private _artifacts!: Artifacts;
     private _characterStats!: CharacterStats;
+    private _optionLocale!: TranslateKey2Word;
 
     createText() {
         this._artifacts = new Artifacts(
@@ -38,6 +40,8 @@ export class ArtifactEvaluateRoutine implements CreateWriteRoutine {
     }
 
     writeText() {
+        this._optionLocale = TranslateKey2Word.getTranslate();
+
         const evaluationSelector = EvaluationSelector.instance;
         switch (evaluationSelector.getSelectMethodId()) {
             case "scoring": {
@@ -114,7 +118,7 @@ export class ArtifactEvaluateRoutine implements CreateWriteRoutine {
         const critDMG = this._characterStats.getCharacterStat("CRITICAL_HURT");
         const critRatio = critDMG / critRate;
 
-        const typeName = optionLocale.getLocaleSub(scoreTypeKey);
+        const typeName = this._optionLocale.getLocaleSub(scoreTypeKey);
         const sumScore = this._artifacts.sumArtifactScoring(scoreTypeKey);
         const artifactNum = this._artifacts.artifactNum();
         const avgScore = artifactNum != 0 ? sumScore / artifactNum : 0;
@@ -149,7 +153,7 @@ export class ArtifactEvaluateRoutine implements CreateWriteRoutine {
         const critRatio = critDMG / critRate;
 
         const statNames = scoreTypeKeys.map((key) => {
-            const name = optionLocale.getLocaleSub(key);
+            const name = this._optionLocale.getLocaleSub(key);
             return name + (key.includes("PERCENT") ? "%" : "");
         });
         const sumRV = this._artifacts.sumArtifactRollValue(...scoreTypeKeys);
@@ -167,7 +171,7 @@ export class ArtifactEvaluateRoutine implements CreateWriteRoutine {
         const sumScoreFixed = sumScore.toFixed(1);
         const avgScoreFixed = avgScore.toFixed(1);
 
-        return fmt(optionLocale.getLocale("SCORE_EXTRA_INFO"), {
+        return fmt(this._optionLocale.getLocale("SCORE_EXTRA_INFO"), {
             critRatio: ratioFixed,
             selectStat: scoreTypeName,
             avgScore: avgScoreFixed,
@@ -183,7 +187,7 @@ export class ArtifactEvaluateRoutine implements CreateWriteRoutine {
         const ratioFixed = ratio.toFixed(1);
         const sumRVFixed = sumRV.toFixed(0);
 
-        return fmt(optionLocale.getLocale("RV_EXTRA_INFO"), {
+        return fmt(this._optionLocale.getLocale("RV_EXTRA_INFO"), {
             critRatio: ratioFixed,
             selectStats: statNames.join(" "),
             sumRV: sumRVFixed,

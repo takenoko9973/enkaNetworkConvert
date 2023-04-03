@@ -1,9 +1,9 @@
+import { TranslateKey2Word } from "../../class/translate/translateKey2Word";
 import {
     EVALUATION_SELECTOR,
     RV_CHECKBOX_NAME,
     RV_SELECT_DIV,
     cssManager,
-    optionLocale,
 } from "../../myConst";
 import { artifactSubOptionKey } from "../../types/artifactOptionKey";
 import { CreateWriteRoutine } from "../createWriteRoutine";
@@ -94,6 +94,8 @@ export class RollValueMethodRoutine implements CreateWriteRoutine {
     }
 
     writeText() {
+        const optionLocale = TranslateKey2Word.getTranslate();
+
         const rvSelectDiv = document.getElementById(RV_SELECT_DIV);
         if (!rvSelectDiv) return;
 

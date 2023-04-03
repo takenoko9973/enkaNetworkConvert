@@ -1,4 +1,4 @@
-import { optionLocale } from "../../myConst";
+import { TranslateKey2Word } from "../../class/translate/translateKey2Word";
 import { localeKeys } from "../../types/localeKeys";
 import { addStatTextElement } from "../../util/enkaUtil";
 import { innerOptionText } from "../../util/innerOptionText";
@@ -37,6 +37,7 @@ export class Friend implements CreateWriteRoutine {
         const friendText = innerOptionText(friend);
         if (!friendText) return;
 
+        const optionLocale = TranslateKey2Word.getTranslate();
         friendText.innerText = optionLocale.getLocale(friendClassName); // "fren"では登録されてないので、上書き
     }
 }
