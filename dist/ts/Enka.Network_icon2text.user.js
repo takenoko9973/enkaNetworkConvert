@@ -16,6 +16,72 @@
 (function () {
     'use strict';
 
+    class CardSection {
+        constructor(cardSection) {
+            if (!cardSection.classList.contains("section")) {
+                throw new Error("not card section element");
+            }
+            this._cardSection = cardSection;
+        }
+        get element() {
+            return this._cardSection;
+        }
+    }
+
+    class CardSectionLeft extends CardSection {
+        init() {
+            throw new Error("Method not implemented.");
+        }
+    }
+
+    class CardSectionMiddle extends CardSection {
+        init() {
+            throw new Error("Method not implemented.");
+        }
+    }
+
+    class CardSectionRight extends CardSection {
+        init() {
+            throw new Error("Method not implemented.");
+        }
+    }
+
+    class CardSections {
+        constructor(cardSection) {
+            this.cardSection = (locate) => {
+                return this._cardSection[locate];
+            };
+            this._cardSection = {
+                left: new CardSectionLeft(cardSection[0]),
+                middle: new CardSectionMiddle(cardSection[1]),
+                right: new CardSectionRight(cardSection[2])
+            };
+        }
+    }
+
+    class BuildCard {
+        constructor(cardHost) {
+            if (!cardHost.classList.contains("Card")) {
+                throw new Error("not card element");
+            }
+            try {
+                this._cardSections = new CardSections(cardHost.getElementsByClassName("section"));
+            }
+            catch (e) {
+                if (e instanceof Error) {
+                    console.error(e.message);
+                    throw new Error("could not create build card");
+                }
+            }
+        }
+        init() {
+            this._cardSections.cardSection("left").element.style.width = "36%";
+            this._cardSections.cardSection("middle").element.style.width = "24%";
+            this._cardSections.cardSection("middle").element.style.left = "34%";
+            this._cardSections.cardSection("right").element.style.width = "43%";
+        }
+    }
+
     class CssStyleManager {
         constructor() {
             this.css = [];
@@ -1304,6 +1370,7 @@
         childList: true,
         subtree: true,
     });
+    let buildCard;
     function main() {
         cardObserver.disconnect();
         if (isIOS()) {
@@ -1312,11 +1379,9 @@
         else {
             cssManager.addStyle(".statText { font-weight: bold; font-size: 100%; }");
         }
-        const cardSection = document.getElementsByClassName("section");
-        cardSection[0].style.width = "36%";
-        cardSection[1].style.width = "24%";
-        cardSection[1].style.left = "34%";
-        cardSection[2].style.width = "43%";
+        const card = document.getElementsByClassName("Card")[0];
+        buildCard = new BuildCard(card);
+        buildCard.init();
         const cwManager = CreateWriteManager.instance;
         cwManager.createText();
         cwManager.writeText();
