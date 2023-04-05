@@ -14,19 +14,20 @@ export class Friend implements CreateWriteRoutine {
     }
 
     createText() {
-        // 好感度
-        const friend = document.getElementsByClassName("fren")[0] as HTMLElement;
-        if (!friend) return;
-        friend.style.whiteSpace = "nowrap";
+        // 好感度の有無(旅人)を確認
+        const friend = document.getElementsByClassName("fren")[0];
+        if (friend instanceof HTMLElement) {
+            friend.style.whiteSpace = "nowrap";
 
-        const friendText = addStatTextElement(friend, false);
-        if (!friendText) return;
+            const friendText = addStatTextElement(friend, false);
+            if (!friendText) return;
 
-        friendText.style.marginRight = "0.3em"; // sepでは調整できないので、手動調整
+            // sepでは調整できないので、手動調整
+            friendText.style.marginRight = "0.3em";
+        }
     }
 
     writeText() {
-        // 好感度
         const friend = document.getElementsByClassName("fren")[0];
         const friendText = friend?.children[0];
         if (!friendText) return;

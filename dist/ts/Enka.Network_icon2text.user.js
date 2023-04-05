@@ -449,13 +449,13 @@
         }
         createText() {
             const friend = document.getElementsByClassName("fren")[0];
-            if (!friend)
-                return;
-            friend.style.whiteSpace = "nowrap";
-            const friendText = addStatTextElement(friend, false);
-            if (!friendText)
-                return;
-            friendText.style.marginRight = "0.3em";
+            if (friend instanceof HTMLElement) {
+                friend.style.whiteSpace = "nowrap";
+                const friendText = addStatTextElement(friend, false);
+                if (!friendText)
+                    return;
+                friendText.style.marginRight = "0.3em";
+            }
         }
         writeText() {
             const friend = document.getElementsByClassName("fren")[0];
