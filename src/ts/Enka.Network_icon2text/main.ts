@@ -45,7 +45,8 @@ function main() {
         characterData: true,
     };
     const observer = new MutationObserver(() => {
-        cwManager.createText();
+        buildCard.init();
+        buildCard.update();
         cwManager.writeText();
     });
     observer.observe(charaName, observeConf); // キャラクター変更時
@@ -54,16 +55,19 @@ function main() {
     // 聖遺物評価対象変更時に発火
     document.getElementsByName(EVALUATION_SELECTOR_NAME).forEach(function (e) {
         e.addEventListener("click", function () {
+            buildCard.update();
             cwManager.writeText();
         });
     });
     document.getElementsByName(SCORE_RADIO_NAME).forEach(function (e) {
         e.addEventListener("click", function () {
+            buildCard.update();
             cwManager.writeText();
         });
     });
     document.getElementsByName(RV_CHECKBOX_NAME).forEach(function (e) {
         e.addEventListener("click", function () {
+            buildCard.update();
             cwManager.writeText();
         });
     });

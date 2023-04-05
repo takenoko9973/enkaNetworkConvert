@@ -1,6 +1,5 @@
 import { cssManager } from "../../myConst";
 import { addStatTextElement, getSvelteClassName } from "../../util/enkaUtil";
-import { innerOptionText } from "../../util/innerOptionText";
 import { CreateWriteRoutine } from "../createWriteRoutine";
 
 export class ArtifactRoutine implements CreateWriteRoutine {
@@ -26,7 +25,8 @@ export class ArtifactRoutine implements CreateWriteRoutine {
             // サブOP
             const subStatList = artifact.getElementsByClassName("Substat");
             for (const subStat of Array.from(subStatList)) {
-                addStatTextElement(subStat);
+                const statText = addStatTextElement(subStat);
+                statText?.classList.add("sub");
             }
         }
 
@@ -41,19 +41,6 @@ export class ArtifactRoutine implements CreateWriteRoutine {
         cssManager.addStyle(...cssStyle);
     }
 
-    writeText() {
-        for (const artifact of Array.from(this.artifacts)) {
-            if (artifact.classList.contains("empty")) continue;
-
-            // メインOP
-            const mainStat = artifact.getElementsByClassName("mainstat")[0];
-            innerOptionText(mainStat);
-
-            // サブOP
-            const subStatList = artifact.getElementsByClassName("Substat");
-            for (const subStat of Array.from(subStatList)) {
-                innerOptionText(subStat, true);
-            }
-        }
-    }
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    writeText() {}
 }

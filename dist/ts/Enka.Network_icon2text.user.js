@@ -16,183 +16,6 @@
 (function () {
     'use strict';
 
-    class CardSection {
-        constructor(cardSection) {
-            if (!cardSection.classList.contains("section")) {
-                throw new Error("not card section element");
-            }
-            this._cardSection = cardSection;
-        }
-        get element() {
-            return this._cardSection;
-        }
-    }
-
-    class CardSectionLeft extends CardSection {
-        init() {
-            throw new Error("Method not implemented.");
-        }
-    }
-
-    class CardSectionMiddle extends CardSection {
-        init() {
-            throw new Error("Method not implemented.");
-        }
-    }
-
-    class CardSectionRight extends CardSection {
-        init() {
-            throw new Error("Method not implemented.");
-        }
-    }
-
-    class CardSections {
-        constructor(cardSection) {
-            this.cardSection = (locate) => {
-                return this._cardSection[locate];
-            };
-            this._cardSection = {
-                left: new CardSectionLeft(cardSection[0]),
-                middle: new CardSectionMiddle(cardSection[1]),
-                right: new CardSectionRight(cardSection[2])
-            };
-        }
-    }
-
-    class BuildCard {
-        constructor(cardHost) {
-            if (!cardHost.classList.contains("Card")) {
-                throw new Error("not card element");
-            }
-            try {
-                this._cardSections = new CardSections(cardHost.getElementsByClassName("section"));
-            }
-            catch (e) {
-                if (e instanceof Error) {
-                    console.error(e.message);
-                    throw new Error("could not create build card");
-                }
-            }
-        }
-        init() {
-            this._cardSections.cardSection("left").element.style.width = "36%";
-            this._cardSections.cardSection("middle").element.style.width = "24%";
-            this._cardSections.cardSection("middle").element.style.left = "34%";
-            this._cardSections.cardSection("right").element.style.width = "43%";
-        }
-    }
-
-    class CssStyleManager {
-        constructor() {
-            this.css = [];
-            this.style = document.createElement("style");
-            const head = document.querySelector("head");
-            head?.append(this.style);
-        }
-        static get instance() {
-            if (!this._instance) {
-                this._instance = new CssStyleManager();
-            }
-            return this._instance;
-        }
-        addStyle(...css) {
-            this.css.push(...css);
-            this.css = [...new Set(this.css)];
-            this.style.innerHTML = this.css.join(" ");
-        }
-    }
-
-    const VERSION = "v1.1.0";
-    const BASE_ATK_CLASS = "BASE_ATTACK";
-    const TIME_STAMP = "timeStamp";
-    const EVALUATION_SELECTOR = "evaluationSelectorRow";
-    const EVALUATION_SELECTOR_DIV = "evaluationSelectorDiv";
-    const EVALUATION_SELECTOR_NAME = "evaluationSelector";
-    const SCORE_SELECT_DIV = "scoreSelectDiv";
-    const SCORE_RADIO_NAME = "sSource";
-    const RV_SELECT_DIV = "rvSelectDiv";
-    const RV_CHECKBOX_NAME = "rollValue";
-    const cssManager = CssStyleManager.instance;
-
-    function getFormattedDate(date, format) {
-        const symbol = {
-            M: date.getMonth() + 1,
-            d: date.getDate(),
-            h: date.getHours(),
-            m: date.getMinutes(),
-            s: date.getSeconds(),
-        };
-        const formatted = format.replace(/(M+|d+|h+|m+|s+)/g, (v) => {
-            const num = symbol[v.slice(-1)].toString();
-            if (v.length > 1) {
-                return ("0" + num).slice(-2);
-            }
-            else {
-                return num;
-            }
-        });
-        return formatted.replace(/(y+)/g, (v) => date.getFullYear().toString().slice(-v.length));
-    }
-
-    class DateText {
-        static get instance() {
-            if (!this._instance) {
-                this._instance = new DateText();
-            }
-            return this._instance;
-        }
-        createText() {
-            if (document.getElementById(TIME_STAMP))
-                return;
-            const charaSection = document.getElementsByClassName("section")[0];
-            if (!charaSection)
-                return;
-            const timeStamp = document.createElement("div");
-            timeStamp.id = TIME_STAMP;
-            timeStamp.innerText = "";
-            timeStamp.style.fontSize = "60%";
-            timeStamp.style.opacity = "0.4";
-            charaSection.firstChild?.after(timeStamp);
-            charaSection.style.paddingTop = "0.8%";
-        }
-        writeText() {
-            const timeStamp = document.getElementById(TIME_STAMP);
-            if (!timeStamp)
-                return;
-            const date = new Date();
-            const timeString = getFormattedDate(date, "yyyy-MM-dd hh:mm:ss");
-            timeStamp.textContent = `${VERSION}TE ${timeString}`;
-        }
-    }
-
-    /******************************************************************************
-    Copyright (c) Microsoft Corporation.
-
-    Permission to use, copy, modify, and/or distribute this software for any
-    purpose with or without fee is hereby granted.
-
-    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-    PERFORMANCE OF THIS SOFTWARE.
-    ***************************************************************************** */
-
-    function __classPrivateFieldGet(receiver, state, kind, f) {
-        if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-        return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-    }
-
-    function __classPrivateFieldSet(receiver, state, value, kind, f) {
-        if (kind === "m") throw new TypeError("Private method is not writable");
-        if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
-        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-        return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
-    }
-
     function getSeparateElement() {
         const separateElement = document.createElement("span");
         separateElement.classList.add("sep");
@@ -511,161 +334,166 @@
         }
     }
 
-    var _scoreType_id, _scoreType_key;
-    class scoreType {
-        constructor(id, key) {
-            _scoreType_id.set(this, void 0);
-            _scoreType_key.set(this, void 0);
-            __classPrivateFieldSet(this, _scoreType_id, id, "f");
-            __classPrivateFieldSet(this, _scoreType_key, key, "f");
-        }
-        get id() {
-            return __classPrivateFieldGet(this, _scoreType_id, "f");
-        }
-        get key() {
-            return __classPrivateFieldGet(this, _scoreType_key, "f");
-        }
-    }
-    _scoreType_id = new WeakMap(), _scoreType_key = new WeakMap();
-    const SCORE_TYPES = {
-        HP: new scoreType("H", "HP_PERCENT"),
-        ATTACK: new scoreType("A", "ATTACK_PERCENT"),
-        DEFENSE: new scoreType("D", "DEFENSE_PERCENT"),
-        EM: new scoreType("EM", "ELEMENT_MASTERY"),
-        ER: new scoreType("ER", "CHARGE_EFFICIENCY"),
-    };
-    class SelectScoreType {
-        static get instance() {
-            if (!this._instance) {
-                this._instance = new SelectScoreType();
-            }
-            return this._instance;
-        }
-        createText() {
-            const evaluationRow = document.getElementById(EVALUATION_SELECTOR);
-            if (document.getElementById(SCORE_SELECT_DIV))
-                return;
-            const scoreModeDiv = document.createElement("div");
-            scoreModeDiv.id = SCORE_SELECT_DIV;
-            scoreModeDiv.classList.add("Input", "svelte-1jzchrt");
-            evaluationRow?.appendChild(scoreModeDiv);
-            const scoreModeGroup = document.createElement("group");
-            scoreModeGroup.style.marginTop = "-1em";
-            scoreModeGroup.classList.add("scoreModeRadio");
-            scoreModeDiv.appendChild(scoreModeGroup);
-            for (const scoreType of Object.values(SCORE_TYPES)) {
-                const id = `SCORE_${scoreType.id}_R`;
-                const radio = document.createElement("input");
-                radio.id = id;
-                radio.name = SCORE_RADIO_NAME;
-                radio.setAttribute("type", "radio");
-                radio.value = scoreType.id;
-                const label = document.createElement("label");
-                label.setAttribute("for", id);
-                label.setAttribute("type", "radio");
-                label.setAttribute("data-type", "OUTLINE");
-                label.classList.add(scoreType.key, "radbox", "Button", "label", "svelte-6y8083");
-                scoreModeGroup.appendChild(radio);
-                scoreModeGroup.appendChild(label);
-            }
-            const atkRadioId = `SCORE_${SCORE_TYPES.ATTACK.id}_R`;
-            document.getElementById(atkRadioId)?.toggleAttribute("checked", true);
-            const radioStyle = [
-                `#${EVALUATION_SELECTOR}:not(:has(#evaluation_scoring_radio:checked)) #${SCORE_SELECT_DIV} { display:none }`,
-                ".scoreModeRadio input { display:none }",
-                ".scoreModeRadio label.radbox { opacity: 0.5; }",
-                ".scoreModeRadio input:checked + label.radbox { opacity: 1; }",
-            ];
-            cssManager.addStyle(...radioStyle);
-        }
-        writeText() {
+    var WriteStatText;
+    (function (WriteStatText) {
+        function writeStatText(statText) {
             const optionLocale = TranslateKey2Word.getTranslate();
-            const scoreSelectDiv = document.getElementById(SCORE_SELECT_DIV);
-            if (!scoreSelectDiv)
-                return;
-            const scoreButtons = scoreSelectDiv.getElementsByClassName("Button");
-            for (const label of Array.from(scoreButtons)) {
-                label.textContent = optionLocale.getLocaleSub(label.classList[0]);
+            const parentElement = statText.parentElement;
+            const statKey = parentElement?.classList[1] ?? "UNKNOWN";
+            statText.innerText = isSub(statText)
+                ? optionLocale.getLocaleSub(statKey)
+                : optionLocale.getLocale(statKey);
+        }
+        WriteStatText.writeStatText = writeStatText;
+        function writeStatTextAll() {
+            const statTexts = document.getElementsByClassName("statText");
+            for (const statText of Array.from(statTexts)) {
+                writeStatText(statText);
             }
         }
-        getScoreTypeId() {
-            const checkedRadio = document.querySelector(`.scoreModeRadio input:checked[name=${SCORE_RADIO_NAME}]`);
-            return checkedRadio?.value ?? SCORE_TYPES.ATTACK.id;
-        }
-        getScoreTypeKey() {
-            const id = this.getScoreTypeId();
-            for (const typeKey in SCORE_TYPES) {
-                const scoreType = SCORE_TYPES[typeKey];
-                if (id === scoreType.id)
-                    return scoreType.key;
-            }
-            return "ATTACK_PERCENT";
-        }
+        WriteStatText.writeStatTextAll = writeStatTextAll;
+    })(WriteStatText || (WriteStatText = {}));
+    function isSub(statText) {
+        return statText.classList.contains("sub");
     }
 
-    function fmt(template, values) {
-        if (!values)
-            return template;
-        const format = new Function(...Object.keys(values), `return \`${template}\`;`);
-        return format(...Object.values(values).map((value) => value ?? ""));
-    }
-
-    function innerOptionText(statElement, isSub = false) {
-        const optionLocale = TranslateKey2Word.getTranslate();
-        const statText = statElement?.getElementsByClassName("statText")[0];
-        if (!statText)
-            return null;
-        const optionKey = statElement?.classList[1];
-        statText.innerText = isSub
-            ? optionLocale.getLocaleSub(optionKey)
-            : optionLocale.getLocale(optionKey);
-        return statText;
-    }
-
-    let Artifact$1 = class Artifact {
+    class CssStyleManager {
         constructor() {
-            this.artifacts = document.getElementsByClassName("Artifact");
+            this.css = [];
+            this.style = document.createElement("style");
+            const head = document.querySelector("head");
+            head?.append(this.style);
         }
         static get instance() {
             if (!this._instance) {
-                this._instance = new Artifact$1();
+                this._instance = new CssStyleManager();
+            }
+            return this._instance;
+        }
+        addStyle(...css) {
+            this.css.push(...css);
+            this.css = [...new Set(this.css)];
+            this.style.innerHTML = this.css.join(" ");
+        }
+    }
+
+    const VERSION = "v1.1.0";
+    const BASE_ATK_CLASS = "BASE_ATTACK";
+    const TIME_STAMP = "timeStamp";
+    const EVALUATION_SELECTOR = "evaluationSelectorRow";
+    const EVALUATION_SELECTOR_DIV = "evaluationSelectorDiv";
+    const EVALUATION_SELECTOR_NAME = "evaluationSelector";
+    const SCORE_SELECT_DIV = "scoreSelectDiv";
+    const SCORE_RADIO_NAME = "sSource";
+    const RV_SELECT_DIV = "rvSelectDiv";
+    const RV_CHECKBOX_NAME = "rollValue";
+    const cssManager = CssStyleManager.instance;
+
+    function getFormattedDate(date, format) {
+        const symbol = {
+            M: date.getMonth() + 1,
+            d: date.getDate(),
+            h: date.getHours(),
+            m: date.getMinutes(),
+            s: date.getSeconds(),
+        };
+        const formatted = format.replace(/(M+|d+|h+|m+|s+)/g, (v) => {
+            const num = symbol[v.slice(-1)].toString();
+            if (v.length > 1) {
+                return ("0" + num).slice(-2);
+            }
+            else {
+                return num;
+            }
+        });
+        return formatted.replace(/(y+)/g, (v) => date.getFullYear().toString().slice(-v.length));
+    }
+
+    class DateText {
+        static get instance() {
+            if (!this._instance) {
+                this._instance = new DateText();
             }
             return this._instance;
         }
         createText() {
-            for (const artifact of Array.from(this.artifacts)) {
-                if (artifact.classList.contains("empty"))
-                    continue;
-                const mainStat = artifact.getElementsByClassName("mainstat")[0];
-                addStatTextElement(mainStat, false);
-                const subStatList = artifact.getElementsByClassName("Substat");
-                for (const subStat of Array.from(subStatList)) {
-                    addStatTextElement(subStat);
-                }
-            }
-            const svelte = getSvelteClassName(this.artifacts[0]);
-            const cssStyle = [
-                ".Artifact.${svelte} .ArtifactIcon { top: -37%; left: -6%; width: 28%; }",
-                ".substats.${svelte} > .Substat { display: flex; align-items: center; padding-right: 1.0em; white-space: nowrap; }",
-                ".mainstat.${svelte} > div.${svelte}:nth-child(1) { display: flex; align-items: center; top: 5%; line-height:0.9; max-height: 25%; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; justify-content: flex-end; align-self: unset; margin-left: unset;}",
-                ".mainstat.${svelte} > div.${svelte}:nth-child(2) { padding: 4% 0%; }",
-                ".mainstat.${svelte} > div.${svelte}:nth-child(3) { max-height: 25% }",
-            ].map(css => fmt(css, { svelte: svelte }));
-            cssManager.addStyle(...cssStyle);
+            if (document.getElementById(TIME_STAMP))
+                return;
+            const charaSection = document.getElementsByClassName("section")[0];
+            if (!charaSection)
+                return;
+            const timeStamp = document.createElement("div");
+            timeStamp.id = TIME_STAMP;
+            timeStamp.innerText = "";
+            timeStamp.style.fontSize = "60%";
+            timeStamp.style.opacity = "0.4";
+            charaSection.firstChild?.after(timeStamp);
+            charaSection.style.paddingTop = "0.8%";
         }
         writeText() {
-            for (const artifact of Array.from(this.artifacts)) {
-                if (artifact.classList.contains("empty"))
-                    continue;
-                const mainStat = artifact.getElementsByClassName("mainstat")[0];
-                innerOptionText(mainStat);
-                const subStatList = artifact.getElementsByClassName("Substat");
-                for (const subStat of Array.from(subStatList)) {
-                    innerOptionText(subStat, true);
-                }
-            }
+            const timeStamp = document.getElementById(TIME_STAMP);
+            if (!timeStamp)
+                return;
+            const date = new Date();
+            const timeString = getFormattedDate(date, "yyyy-MM-dd hh:mm:ss");
+            timeStamp.textContent = `${VERSION}TE ${timeString}`;
         }
-    };
+    }
+
+    class Friend {
+        static get instance() {
+            if (!this._instance) {
+                this._instance = new Friend();
+            }
+            return this._instance;
+        }
+        createText() {
+            const friend = document.getElementsByClassName("fren")[0];
+            if (!friend)
+                return;
+            friend.style.whiteSpace = "nowrap";
+            const friendText = addStatTextElement(friend, false);
+            if (!friendText)
+                return;
+            friendText.style.marginRight = "0.3em";
+        }
+        writeText() {
+            const friend = document.getElementsByClassName("fren")[0];
+            const friendText = friend?.children[0];
+            if (!friendText)
+                return;
+            const optionLocale = TranslateKey2Word.getTranslate();
+            friendText.textContent = optionLocale.getLocale("FRIEND");
+        }
+    }
+
+    class CardSection {
+        constructor(cardSection) {
+            if (!cardSection.classList.contains("section")) {
+                throw new Error("not card section element");
+            }
+            this._cardSection = cardSection;
+        }
+        get element() {
+            return this._cardSection;
+        }
+    }
+
+    class CardSectionLeft extends CardSection {
+        constructor(cardSection) {
+            super(cardSection);
+            this._date = DateText.instance;
+            this._friend = Friend.instance;
+        }
+        init() {
+            this._date.createText();
+            this._friend.createText();
+        }
+        update() {
+            this._date.writeText();
+            this._friend.writeText();
+        }
+    }
 
     class Weapon {
         constructor() {
@@ -698,46 +526,54 @@
             }
         }
         writeText() {
-            const optionLocale = TranslateKey2Word.getTranslate();
             const subStat = this.weapon[0].getElementsByClassName("Substat");
-            const statText = innerOptionText(subStat[0]);
+            const statText = subStat[0].getElementsByClassName("statText")[0];
             if (!statText)
                 return;
-            statText.innerHTML = optionLocale.getLocale(BASE_ATK_CLASS);
-            if (!subStat[1])
-                return;
-            innerOptionText(subStat[1]);
+            const optionLocale = TranslateKey2Word.getTranslate();
+            statText.textContent = optionLocale.getLocale(BASE_ATK_CLASS);
         }
     }
 
-    class Friend {
-        static get instance() {
-            if (!this._instance) {
-                this._instance = new Friend();
-            }
-            return this._instance;
+    class CardSectionMiddle extends CardSection {
+        constructor(cardSection) {
+            super(cardSection);
+            this._weapon = Weapon.instance;
         }
-        createText() {
-            const friend = document.getElementsByClassName("fren")[0];
-            if (!friend)
-                return;
-            friend.style.whiteSpace = "nowrap";
-            const friendText = addStatTextElement(friend, false);
-            if (!friendText)
-                return;
-            friendText.style.marginRight = "0.3em";
+        init() {
+            this._weapon.createText();
         }
-        writeText() {
-            const friend = document.getElementsByClassName("fren")[0];
-            if (!friend)
-                return;
-            const friendClassName = "FRIEND";
-            const friendText = innerOptionText(friend);
-            if (!friendText)
-                return;
-            const optionLocale = TranslateKey2Word.getTranslate();
-            friendText.innerText = optionLocale.getLocale(friendClassName);
+        update() {
+            this._weapon.writeText();
         }
+    }
+
+    /******************************************************************************
+    Copyright (c) Microsoft Corporation.
+
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted.
+
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    PERFORMANCE OF THIS SOFTWARE.
+    ***************************************************************************** */
+
+    function __classPrivateFieldGet(receiver, state, kind, f) {
+        if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+        return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+    }
+
+    function __classPrivateFieldSet(receiver, state, value, kind, f) {
+        if (kind === "m") throw new TypeError("Private method is not writable");
+        if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+        return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
     }
 
     class Stat {
@@ -999,6 +835,13 @@
         }
     }
 
+    function fmt(template, values) {
+        if (!values)
+            return template;
+        const format = new Function(...Object.keys(values), `return \`${template}\`;`);
+        return format(...Object.values(values).map((value) => value ?? ""));
+    }
+
     var _a$2, _EvaluationSelector_instance;
     const EVALUATION_METHOD = [
         { id: "scoring", key: "SCORING_METHOD" },
@@ -1085,7 +928,7 @@
         }
         getSelectMethodId() {
             const checkedRadio = document.querySelector(`.methodRadio input:checked[name=${EVALUATION_SELECTOR_NAME}]`);
-            return checkedRadio.value ?? EVALUATION_METHOD[0].id;
+            return checkedRadio?.value ?? EVALUATION_METHOD[0].id;
         }
         getSelectMethodKey() {
             const id = this.getSelectMethodId();
@@ -1193,6 +1036,98 @@
     }
     _a$1 = RollValueMethodRoutine;
     _RollValueMethodRoutine_instance = { value: void 0 };
+
+    var _scoreType_id, _scoreType_key;
+    class scoreType {
+        constructor(id, key) {
+            _scoreType_id.set(this, void 0);
+            _scoreType_key.set(this, void 0);
+            __classPrivateFieldSet(this, _scoreType_id, id, "f");
+            __classPrivateFieldSet(this, _scoreType_key, key, "f");
+        }
+        get id() {
+            return __classPrivateFieldGet(this, _scoreType_id, "f");
+        }
+        get key() {
+            return __classPrivateFieldGet(this, _scoreType_key, "f");
+        }
+    }
+    _scoreType_id = new WeakMap(), _scoreType_key = new WeakMap();
+    const SCORE_TYPES = {
+        HP: new scoreType("H", "HP_PERCENT"),
+        ATTACK: new scoreType("A", "ATTACK_PERCENT"),
+        DEFENSE: new scoreType("D", "DEFENSE_PERCENT"),
+        EM: new scoreType("EM", "ELEMENT_MASTERY"),
+        ER: new scoreType("ER", "CHARGE_EFFICIENCY"),
+    };
+    class SelectScoreType {
+        static get instance() {
+            if (!this._instance) {
+                this._instance = new SelectScoreType();
+            }
+            return this._instance;
+        }
+        createText() {
+            const evaluationRow = document.getElementById(EVALUATION_SELECTOR);
+            if (document.getElementById(SCORE_SELECT_DIV))
+                return;
+            const scoreModeDiv = document.createElement("div");
+            scoreModeDiv.id = SCORE_SELECT_DIV;
+            scoreModeDiv.classList.add("Input", "svelte-1jzchrt");
+            evaluationRow?.appendChild(scoreModeDiv);
+            const scoreModeGroup = document.createElement("group");
+            scoreModeGroup.style.marginTop = "-1em";
+            scoreModeGroup.classList.add("scoreModeRadio");
+            scoreModeDiv.appendChild(scoreModeGroup);
+            for (const scoreType of Object.values(SCORE_TYPES)) {
+                const id = `SCORE_${scoreType.id}_R`;
+                const radio = document.createElement("input");
+                radio.id = id;
+                radio.name = SCORE_RADIO_NAME;
+                radio.setAttribute("type", "radio");
+                radio.value = scoreType.id;
+                const label = document.createElement("label");
+                label.setAttribute("for", id);
+                label.setAttribute("type", "radio");
+                label.setAttribute("data-type", "OUTLINE");
+                label.classList.add(scoreType.key, "radbox", "Button", "label", "svelte-6y8083");
+                scoreModeGroup.appendChild(radio);
+                scoreModeGroup.appendChild(label);
+            }
+            const atkRadioId = `SCORE_${SCORE_TYPES.ATTACK.id}_R`;
+            document.getElementById(atkRadioId)?.toggleAttribute("checked", true);
+            const radioStyle = [
+                `#${EVALUATION_SELECTOR}:not(:has(#evaluation_scoring_radio:checked)) #${SCORE_SELECT_DIV} { display:none }`,
+                ".scoreModeRadio input { display:none }",
+                ".scoreModeRadio label.radbox { opacity: 0.5; }",
+                ".scoreModeRadio input:checked + label.radbox { opacity: 1; }",
+            ];
+            cssManager.addStyle(...radioStyle);
+        }
+        writeText() {
+            const optionLocale = TranslateKey2Word.getTranslate();
+            const scoreSelectDiv = document.getElementById(SCORE_SELECT_DIV);
+            if (!scoreSelectDiv)
+                return;
+            const scoreButtons = scoreSelectDiv.getElementsByClassName("Button");
+            for (const label of Array.from(scoreButtons)) {
+                label.textContent = optionLocale.getLocaleSub(label.classList[0]);
+            }
+        }
+        getScoreTypeId() {
+            const checkedRadio = document.querySelector(`.scoreModeRadio input:checked[name=${SCORE_RADIO_NAME}]`);
+            return checkedRadio?.value ?? SCORE_TYPES.ATTACK.id;
+        }
+        getScoreTypeKey() {
+            const id = this.getScoreTypeId();
+            for (const typeKey in SCORE_TYPES) {
+                const scoreType = SCORE_TYPES[typeKey];
+                if (id === scoreType.id)
+                    return scoreType.key;
+            }
+            return "ATTACK_PERCENT";
+        }
+    }
 
     var _a, _ArtifactEvaluateRoutine_instance;
     const EVALUATION_TEXT = "artifactEvaluateText";
@@ -1322,6 +1257,95 @@
     _a = ArtifactEvaluateRoutine;
     _ArtifactEvaluateRoutine_instance = { value: void 0 };
 
+    class ArtifactRoutine {
+        constructor() {
+            this.artifacts = document.getElementsByClassName("Artifact");
+        }
+        static get instance() {
+            if (!this._instance) {
+                this._instance = new ArtifactRoutine();
+            }
+            return this._instance;
+        }
+        createText() {
+            for (const artifact of Array.from(this.artifacts)) {
+                if (artifact.classList.contains("empty"))
+                    continue;
+                const mainStat = artifact.getElementsByClassName("mainstat")[0];
+                addStatTextElement(mainStat, false);
+                const subStatList = artifact.getElementsByClassName("Substat");
+                for (const subStat of Array.from(subStatList)) {
+                    const statText = addStatTextElement(subStat);
+                    statText?.classList.add("sub");
+                }
+            }
+            const svelte = getSvelteClassName(this.artifacts[0]);
+            const cssStyle = [
+                `.Artifact.${svelte} .ArtifactIcon { top: -37%; left: -6%; width: 28%; }`,
+                `.substats.${svelte} > .Substat { display: flex; align-items: center; padding-right: 1.0em; white-space: nowrap; }`,
+                `.mainstat.${svelte} > div.${svelte}:nth-child(1) { display: flex; align-items: center; top: 5%; line-height:0.9; max-height: 25%; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; justify-content: flex-end; align-self: unset; margin-left: unset;}`,
+                `.mainstat.${svelte} > div.${svelte}:nth-child(2) { padding: 4% 0%; }`,
+                `.mainstat.${svelte} > div.${svelte}:nth-child(3) { max-height: 25% }`,
+            ];
+            cssManager.addStyle(...cssStyle);
+        }
+        writeText() { }
+    }
+
+    class CardSectionRight extends CardSection {
+        constructor(cardSection) {
+            super(cardSection);
+            this._artifact = ArtifactRoutine.instance;
+            this._artifactEvaluate = ArtifactEvaluateRoutine.instance;
+        }
+        init() {
+            this._artifact.createText();
+            this._artifactEvaluate.createText();
+        }
+        update() {
+            this._artifact.writeText();
+            this._artifactEvaluate.writeText();
+        }
+    }
+
+    class BuildCard {
+        constructor(buildCard) {
+            this.init = () => {
+                this._cardSections["left"].element.style.width = "36%";
+                this._cardSections["middle"].element.style.width = "24%";
+                this._cardSections["middle"].element.style.left = "34%";
+                this._cardSections["right"].element.style.width = "43%";
+                for (const locate in this._cardSections) {
+                    this._cardSections[locate].init();
+                }
+            };
+            this.update = () => {
+                WriteStatText.writeStatTextAll();
+                for (const locate in this._cardSections) {
+                    this._cardSections[locate].update();
+                }
+            };
+            if (!buildCard.classList.contains("Card")) {
+                throw new Error("not card element");
+            }
+            this._buildCard = buildCard;
+            try {
+                const cardSections = this._buildCard.getElementsByClassName("section");
+                this._cardSections = {
+                    left: new CardSectionLeft(cardSections[0]),
+                    middle: new CardSectionMiddle(cardSections[1]),
+                    right: new CardSectionRight(cardSections[2]),
+                };
+            }
+            catch (e) {
+                if (e instanceof Error) {
+                    console.error(e.message);
+                    throw new Error("could not create build card");
+                }
+            }
+        }
+    }
+
     class CreateWriteManager {
         static get instance() {
             if (!this._instance) {
@@ -1331,14 +1355,9 @@
         }
         constructor() {
             this.createList = [];
-            this.createList.push(DateText.instance);
-            this.createList.push(Friend.instance);
             this.createList.push(EvaluationSelector.instance);
             this.createList.push(SelectScoreType.instance);
             this.createList.push(RollValueMethodRoutine.instance);
-            this.createList.push(Weapon.instance);
-            this.createList.push(Artifact$1.instance);
-            this.createList.push(ArtifactEvaluateRoutine.instance);
         }
         createText() {
             this.createList.forEach((value) => {
@@ -1382,6 +1401,7 @@
         const card = document.getElementsByClassName("Card")[0];
         buildCard = new BuildCard(card);
         buildCard.init();
+        buildCard.update();
         const cwManager = CreateWriteManager.instance;
         cwManager.createText();
         cwManager.writeText();
@@ -1393,23 +1413,27 @@
             characterData: true,
         };
         const observer = new MutationObserver(() => {
-            cwManager.createText();
+            buildCard.init();
+            buildCard.update();
             cwManager.writeText();
         });
         observer.observe(charaName, observeConf);
         observer.observe(language, observeConf);
         document.getElementsByName(EVALUATION_SELECTOR_NAME).forEach(function (e) {
             e.addEventListener("click", function () {
+                buildCard.update();
                 cwManager.writeText();
             });
         });
         document.getElementsByName(SCORE_RADIO_NAME).forEach(function (e) {
             e.addEventListener("click", function () {
+                buildCard.update();
                 cwManager.writeText();
             });
         });
         document.getElementsByName(RV_CHECKBOX_NAME).forEach(function (e) {
             e.addEventListener("click", function () {
+                buildCard.update();
                 cwManager.writeText();
             });
         });

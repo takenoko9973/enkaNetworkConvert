@@ -1,7 +1,5 @@
 import { TranslateKey2Word } from "../../class/translate/translateKey2Word";
-import { localeKeys } from "../../types/localeKeys";
 import { addStatTextElement } from "../../util/enkaUtil";
-import { innerOptionText } from "../../util/innerOptionText";
 import { CreateWriteRoutine } from "../createWriteRoutine";
 
 export class Friend implements CreateWriteRoutine {
@@ -30,14 +28,10 @@ export class Friend implements CreateWriteRoutine {
     writeText() {
         // 好感度
         const friend = document.getElementsByClassName("fren")[0];
-        if (!friend) return;
-
-        const friendClassName: localeKeys = "FRIEND";
-
-        const friendText = innerOptionText(friend);
+        const friendText = friend?.children[0];
         if (!friendText) return;
 
         const optionLocale = TranslateKey2Word.getTranslate();
-        friendText.innerText = optionLocale.getLocale(friendClassName); // "fren"では登録されてないので、上書き
+        friendText.textContent = optionLocale.getLocale("FRIEND");
     }
 }

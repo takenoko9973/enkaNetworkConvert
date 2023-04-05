@@ -148,7 +148,7 @@ export class EvaluationSelector implements CreateWriteRoutine {
         const checkedRadio = document.querySelector(
             `.methodRadio input:checked[name=${EVALUATION_SELECTOR_NAME}]`
         ) as HTMLInputElement;
-        return checkedRadio.value ?? EVALUATION_METHOD[0].id;
+        return checkedRadio?.value ?? EVALUATION_METHOD[0].id;
     }
 
     getSelectMethodKey(): localeKeys {
