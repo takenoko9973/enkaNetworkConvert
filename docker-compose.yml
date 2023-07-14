@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  myservice:
+    build: ./.devcontainer
+    # working_dirディレクトリ下にホストのディレクトリをマウントします
+    working_dir: /workspace
+    volumes:
+      # node_modulesディレクトリはホスト側に渡さないようにDockerのvolume内に格納します
+      - node-modules:/workspace/node_modules
+      - ./:/workspace
+    tty: true
+
+volumes:
+  node-modules:

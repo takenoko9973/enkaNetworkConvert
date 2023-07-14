@@ -6,7 +6,10 @@
             "es2021",
             "dom"
         ],
-        "outDir": "dist"
+        "outDir": "./dist",
+        "rootDir": ".",
+        "removeComments": true,
+        "strict": true
     },
     "compileOnSave": false
 }
