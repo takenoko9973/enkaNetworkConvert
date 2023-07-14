@@ -1,9 +1,12 @@
-import { characterBaseStatKey } from "./characterBaseStatKey";
+import { artifactMainOptionKey, artifactSubOptionKey } from "./artifactOptionKey";
+import { characterBaseStatKey } from "./characterStatKey";
 import { characterStatKey } from "./characterStatKey";
 
 export type localeKeys
     = characterBaseStatKey
     | characterStatKey
+    | artifactMainOptionKey
+    | artifactSubOptionKey
     | "UNKNOWN"
     | "FRIEND"
     | "EVALUATION_SELECTOR_INFO"

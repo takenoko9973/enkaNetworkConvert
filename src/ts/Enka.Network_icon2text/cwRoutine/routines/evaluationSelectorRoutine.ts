@@ -1,9 +1,9 @@
+import { TranslateKey2Word } from "../../class/translate/translateKey2Word";
 import {
     EVALUATION_SELECTOR,
     EVALUATION_SELECTOR_DIV,
     EVALUATION_SELECTOR_NAME,
     cssManager,
-    optionLocale,
 } from "../../myConst";
 import { localeKeys } from "../../types/localeKeys";
 import { getSvelteClassName } from "../../util/enkaUtil";
@@ -25,6 +25,8 @@ export class EvaluationSelector implements CreateWriteRoutine {
 
         return this.#instance;
     }
+
+    private _optionLocale!: TranslateKey2Word;
 
     createText() {
         const cardToggles = document.getElementsByClassName("CardToggles")[0];
@@ -122,19 +124,21 @@ export class EvaluationSelector implements CreateWriteRoutine {
     }
 
     writeText() {
+        this._optionLocale = TranslateKey2Word.getTranslate();
+
         const methodSelectDiv = document.getElementById(
             EVALUATION_SELECTOR_DIV
         );
         if (!methodSelectDiv) return;
 
         const infoText = methodSelectDiv.children[0];
-        infoText.textContent = optionLocale.getLocale(infoText.classList[0]);
+        infoText.textContent = this._optionLocale.getLocale(infoText.classList[0]);
 
         for (const method of EVALUATION_METHOD) {
             const methodLabel = methodSelectDiv.getElementsByClassName(
                 method.key
             )[0];
-            methodLabel.textContent = optionLocale.getLocale(
+            methodLabel.textContent = this._optionLocale.getLocale(
                 methodLabel.classList[0]
             );
         }
@@ -144,7 +148,7 @@ export class EvaluationSelector implements CreateWriteRoutine {
         const checkedRadio = document.querySelector(
             `.methodRadio input:checked[name=${EVALUATION_SELECTOR_NAME}]`
         ) as HTMLInputElement;
-        return checkedRadio.value ?? EVALUATION_METHOD[0].id;
+        return checkedRadio?.value ?? EVALUATION_METHOD[0].id;
     }
 
     getSelectMethodKey(): localeKeys {

@@ -19,7 +19,16 @@
     },
     "rules": {
         "no-console": "off",
-        "indent": ["error", 4, {"SwitchCase": 1}],
-        "semi": ["error", "always"]
+        "indent": [
+            "error",
+            4,
+            {
+                "SwitchCase": 1
+            }
+        ],
+        "semi": [
+            "error",
+            "always"
+        ]
     }
 }

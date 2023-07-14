@@ -1,14 +1,14 @@
+import { TranslateKey2Word } from "../../class/translate/translateKey2Word";
 import {
     EVALUATION_SELECTOR,
     RV_CHECKBOX_NAME,
     RV_SELECT_DIV,
     cssManager,
-    optionLocale,
 } from "../../myConst";
-import { statsSubOptionKey } from "../../types/characterStatKey";
+import { artifactSubOptionKey } from "../../types/artifactOptionKey";
 import { CreateWriteRoutine } from "../createWriteRoutine";
 
-const STATS_OPTION_ID: { [key in statsSubOptionKey]: string } = {
+const STATS_OPTION_ID: { [key in artifactSubOptionKey]: string } = {
     HP: "HP",
     ATTACK: "ATK",
     DEFENSE: "DEF",
@@ -19,6 +19,7 @@ const STATS_OPTION_ID: { [key in statsSubOptionKey]: string } = {
     CRITICAL_HURT: "CD",
     CHARGE_EFFICIENCY: "ER",
     ELEMENT_MASTERY: "EM",
+    UNKNOWN: "UNKNOWN"
 } as const;
 
 export class RollValueMethodRoutine implements CreateWriteRoutine {
@@ -48,7 +49,7 @@ export class RollValueMethodRoutine implements CreateWriteRoutine {
         rvSelectDiv.appendChild(rvSelectGroup);
 
         for (const scoreType in STATS_OPTION_ID) {
-            const statId = STATS_OPTION_ID[scoreType as statsSubOptionKey];
+            const statId = STATS_OPTION_ID[scoreType as artifactSubOptionKey];
             const checkboxId = `RV_${statId}_CHECKBOX`;
 
             // ボタン
@@ -56,7 +57,7 @@ export class RollValueMethodRoutine implements CreateWriteRoutine {
             checkbox.id = checkboxId;
             checkbox.name = RV_CHECKBOX_NAME;
             checkbox.setAttribute("type", "checkbox");
-            checkbox.value = STATS_OPTION_ID[scoreType as statsSubOptionKey];
+            checkbox.value = STATS_OPTION_ID[scoreType as artifactSubOptionKey];
 
             // ラベル (ボタンとリンクさせる)
             const label = document.createElement("label");
@@ -93,6 +94,8 @@ export class RollValueMethodRoutine implements CreateWriteRoutine {
     }
 
     writeText() {
+        const optionLocale = TranslateKey2Word.getTranslate();
+
         const rvSelectDiv = document.getElementById(RV_SELECT_DIV);
         if (!rvSelectDiv) return;
 
@@ -120,10 +123,10 @@ export class RollValueMethodRoutine implements CreateWriteRoutine {
             .map((id) => id.match("RV_(.+)_CHECKBOX")?.at(1) ?? "");
     }
 
-    getCheckedKeys(): statsSubOptionKey[] {
+    getCheckedKeys(): artifactSubOptionKey[] {
         const checkedIds = this.getCheckedIds();
 
-        return (Object.keys(STATS_OPTION_ID) as statsSubOptionKey[]).filter(
+        return (Object.keys(STATS_OPTION_ID) as artifactSubOptionKey[]).filter(
             (key) => checkedIds.includes(STATS_OPTION_ID[key])
         );
     }

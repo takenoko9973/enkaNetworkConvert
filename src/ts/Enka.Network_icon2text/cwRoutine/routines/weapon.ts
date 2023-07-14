@@ -1,6 +1,6 @@
-import { BASE_ATK_CLASS, optionLocale } from "../../myConst";
+import { TranslateKey2Word } from "../../class/translate/translateKey2Word";
+import { BASE_ATK_CLASS } from "../../myConst";
 import { addStatTextElement, getSeparateElement } from "../../util/enkaUtil";
-import { innerOptionText } from "../../util/innerOptionText";
 import { CreateWriteRoutine } from "../createWriteRoutine";
 
 export class Weapon implements CreateWriteRoutine {
@@ -53,13 +53,11 @@ export class Weapon implements CreateWriteRoutine {
 
     writeText() {
         const subStat = this.weapon[0].getElementsByClassName("Substat");
-
-        const statText = innerOptionText(subStat[0]);
+        const statText = subStat[0].getElementsByClassName("statText")[0];
         if (!statText) return;
-        // このままでは「攻撃力」となってしまうため、「基礎攻撃力」に上書き
-        statText.innerHTML = optionLocale.getLocale(BASE_ATK_CLASS);
 
-        if (!subStat[1]) return;
-        innerOptionText(subStat[1]);
+        // このままでは「攻撃力」となってしまうため、「基礎攻撃力」に上書き
+        const optionLocale = TranslateKey2Word.getTranslate();
+        statText.textContent = optionLocale.getLocale(BASE_ATK_CLASS);
     }
 }

@@ -1,7 +1,5 @@
-import { optionLocale } from "../../myConst";
-import { localeKeys } from "../../types/localeKeys";
+import { TranslateKey2Word } from "../../class/translate/translateKey2Word";
 import { addStatTextElement } from "../../util/enkaUtil";
-import { innerOptionText } from "../../util/innerOptionText";
 import { CreateWriteRoutine } from "../createWriteRoutine";
 
 export class Friend implements CreateWriteRoutine {
@@ -16,27 +14,25 @@ export class Friend implements CreateWriteRoutine {
     }
 
     createText() {
-        // 好感度
-        const friend = document.getElementsByClassName("fren")[0] as HTMLElement;
-        if (!friend) return;
-        friend.style.whiteSpace = "nowrap";
+        // 好感度の有無(旅人)を確認
+        const friend = document.getElementsByClassName("fren")[0];
+        if (friend instanceof HTMLElement) {
+            friend.style.whiteSpace = "nowrap";
 
-        const friendText = addStatTextElement(friend, false);
-        if (!friendText) return;
+            const friendText = addStatTextElement(friend, false);
+            if (!friendText) return;
 
-        friendText.style.marginRight = "0.3em"; // sepでは調整できないので、手動調整
+            // sepでは調整できないので、手動調整
+            friendText.style.marginRight = "0.3em";
+        }
     }
 
     writeText() {
-        // 好感度
         const friend = document.getElementsByClassName("fren")[0];
-        if (!friend) return;
-
-        const friendClassName: localeKeys = "FRIEND";
-
-        const friendText = innerOptionText(friend);
+        const friendText = friend?.children[0];
         if (!friendText) return;
 
-        friendText.innerText = optionLocale.getLocale(friendClassName); // "fren"では登録されてないので、上書き
+        const optionLocale = TranslateKey2Word.getTranslate();
+        friendText.textContent = optionLocale.getLocale("FRIEND");
     }
 }

@@ -1,3 +1,4 @@
+import { BuildCard } from "./class/buildCard";
 import { CreateWriteManager } from "./cwRoutine/cwManager";
 import { EVALUATION_SELECTOR_NAME, RV_CHECKBOX_NAME, SCORE_RADIO_NAME, cssManager } from "./myConst";
 import { isIOS } from "./util/ios";
@@ -11,6 +12,8 @@ cardObserver.observe(cardBase, {
     subtree: true,
 });
 
+let buildCard: BuildCard;
+
 function main() {
     cardObserver.disconnect();
 
@@ -22,17 +25,10 @@ function main() {
         cssManager.addStyle(".statText { font-weight: bold; font-size: 100%; }");
     }
 
-    // 全体の配置の変更
-    const cardSection = document.getElementsByClassName(
-        "section"
-    ) as HTMLCollectionOf<HTMLElement>;
-    // 左
-    cardSection[0].style.width = "36%";
-    // 中央
-    cardSection[1].style.width = "24%";
-    cardSection[1].style.left = "34%";
-    // 右
-    cardSection[2].style.width = "43%";
+    const card = document.getElementsByClassName("Card")[0];
+    buildCard = new BuildCard(card);
+    buildCard.init();
+    buildCard.update();
 
     const cwManager = CreateWriteManager.instance;
     cwManager.createText();
@@ -49,7 +45,8 @@ function main() {
         characterData: true,
     };
     const observer = new MutationObserver(() => {
-        cwManager.createText();
+        buildCard.init();
+        buildCard.update();
         cwManager.writeText();
     });
     observer.observe(charaName, observeConf); // キャラクター変更時
@@ -58,16 +55,19 @@ function main() {
     // 聖遺物評価対象変更時に発火
     document.getElementsByName(EVALUATION_SELECTOR_NAME).forEach(function (e) {
         e.addEventListener("click", function () {
+            buildCard.update();
             cwManager.writeText();
         });
     });
     document.getElementsByName(SCORE_RADIO_NAME).forEach(function (e) {
         e.addEventListener("click", function () {
+            buildCard.update();
             cwManager.writeText();
         });
     });
     document.getElementsByName(RV_CHECKBOX_NAME).forEach(function (e) {
         e.addEventListener("click", function () {
+            buildCard.update();
             cwManager.writeText();
         });
     });

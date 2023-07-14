@@ -1,4 +1,3 @@
-import { TranslateKey2Word } from "./translateKey2Word";
 import { localeKeys } from "./types/localeKeys";
 import { CssStyleManager } from "./util/cssStyleManager";
 
@@ -17,5 +16,4 @@ export const SCORE_RADIO_NAME = "sSource";
 export const RV_SELECT_DIV = "rvSelectDiv";
 export const RV_CHECKBOX_NAME = "rollValue";
 
-export const optionLocale = TranslateKey2Word.instance;
 export const cssManager = CssStyleManager.instance;

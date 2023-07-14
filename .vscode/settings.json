@@ -9,11 +9,4 @@
         "Pyro",
         "substats"
     ],
-    "[typescript]": {
-        "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
-        "editor.formatOnPaste": false, // required 
-        "editor.formatOnType": false, // required
-        "editor.formatOnSave": false, // optional 
-        "editor.formatOnSaveMode": "file", // required to format on save
-    },
 }

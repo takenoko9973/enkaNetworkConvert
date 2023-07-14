@@ -1,18 +1,18 @@
+import { TranslateKey2Word } from "../../class/translate/translateKey2Word";
 import {
     EVALUATION_SELECTOR,
     SCORE_RADIO_NAME,
     SCORE_SELECT_DIV,
     cssManager,
-    optionLocale,
 } from "../../myConst";
-import { statsSubOptionKey } from "../../types/characterStatKey";
+import { artifactSubOptionKey } from "../../types/artifactOptionKey";
 import { CreateWriteRoutine } from "../createWriteRoutine";
 
 class scoreType {
     #id;
     #key;
 
-    constructor(id: string, key: statsSubOptionKey) {
+    constructor(id: string, key: artifactSubOptionKey) {
         this.#id = id;
         this.#key = key;
     }
@@ -101,6 +101,8 @@ export class SelectScoreType implements CreateWriteRoutine {
     }
 
     writeText() {
+        const optionLocale = TranslateKey2Word.getTranslate();
+
         const scoreSelectDiv = document.getElementById(SCORE_SELECT_DIV);
         if (!scoreSelectDiv) return;
 
@@ -118,7 +120,7 @@ export class SelectScoreType implements CreateWriteRoutine {
         return checkedRadio?.value ?? SCORE_TYPES.ATTACK.id;
     }
 
-    getScoreTypeKey(): statsSubOptionKey {
+    getScoreTypeKey(): artifactSubOptionKey {
         const id = this.getScoreTypeId();
         for (const typeKey in SCORE_TYPES) {
             const scoreType = SCORE_TYPES[typeKey];
