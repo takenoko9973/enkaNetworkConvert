@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import glob from 'glob';
+import { glob } from 'glob';
 import type { RollupOptions } from 'rollup';
 import typescript from '@rollup/plugin-typescript';
 import cleanup from 'rollup-plugin-cleanup';

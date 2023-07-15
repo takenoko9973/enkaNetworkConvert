@@ -1,15 +1,37 @@
 version: "3"
 
 services:
-  myservice:
-    build: ./.devcontainer
-    # working_dirディレクトリ下にホストのディレクトリをマウントします
-    working_dir: /workspace
-    volumes:
-      # node_modulesディレクトリはホスト側に渡さないようにDockerのvolume内に格納します
-      - node-modules:/workspace/node_modules
-      - ./:/workspace
-    tty: true
+    myservice:
+        build: ./.devcontainer
+        container_name: enka-network-userscript
+        working_dir: /workspace
+        volumes:
+            # node_modulesディレクトリはホスト側に渡さないようにDockerのvolume内に格納
+            - node-modules:/workspace/node_modules
+            - ./:/workspace
+        ports:
+            - "8080:8080"
+        networks:
+            enka-network-group:
+                ipv4_address: 172.22.0.2
+        tty: true
+
+    plantuml-server:
+        image: plantuml/plantuml-server
+        container_name: plantuml-server
+        ports:
+            - 8081:8080
+        networks:
+            enka-network-group:
+                ipv4_address: 172.22.0.3
 
 volumes:
-  node-modules:
+    node-modules:
+
+networks:
+    enka-network-group:
+        external: true
+        ipam:
+            driver: default
+            config:
+                - subnet: 172.22.0.0/16

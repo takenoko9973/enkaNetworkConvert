@@ -30,8 +30,10 @@
                 "pmneo.tsimporter",
                 "bierner.comment-tagged-templates",
                 "streetsidesoftware.code-spell-checker",
-                "eamodio.gitlens"
+                "eamodio.gitlens",
+                "jebbs.plantuml"
             ]
         }
-    }
+    },
+    "initializeCommand": "docker network inspect enka-network-group || docker network create enka-network-group"
 }
