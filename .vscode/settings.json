@@ -9,6 +9,4 @@
         "Pyro",
         "substats"
     ],
-    "plantuml.render": "PlantUMLServer",
-    "plantuml.server": "http://172.22.0.3:8080",
 }
