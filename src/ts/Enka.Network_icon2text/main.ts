@@ -34,7 +34,7 @@ function main() {
     cwManager.createText();
     cwManager.writeText();
 
-    const charaName = document.getElementsByClassName("name")[0];
+    const characterName = document.getElementsByClassName("name")[0];
     const language = document.getElementsByClassName(
         "Dropdown-selectedItem"
     )[0];
@@ -49,7 +49,7 @@ function main() {
         buildCard.update();
         cwManager.writeText();
     });
-    observer.observe(charaName, observeConf); // キャラクター変更時
+    observer.observe(characterName, observeConf); // キャラクター変更時
     observer.observe(language, observeConf); // 言語変更時
 
     // 聖遺物評価対象変更時に発火
