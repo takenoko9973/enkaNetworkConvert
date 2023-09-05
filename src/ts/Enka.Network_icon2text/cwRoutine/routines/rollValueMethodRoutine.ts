@@ -49,6 +49,8 @@ export class RollValueMethodRoutine implements CreateWriteRoutine {
         rvSelectDiv.appendChild(rvSelectGroup);
 
         for (const scoreType in STATS_OPTION_ID) {
+            if (scoreType == "UNKNOWN") continue;
+
             const statId = STATS_OPTION_ID[scoreType as artifactSubOptionKey];
             const checkboxId = `RV_${statId}_CHECKBOX`;
 
