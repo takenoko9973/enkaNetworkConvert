@@ -3,10 +3,11 @@
         "Anemo",
         "Cryo",
         "Dendro",
+        "Pyro",
         "ELEC",
         "enka",
         "mainstat",
-        "Pyro",
+        "substat",
         "substats"
     ],
     "plantuml.render": "PlantUMLServer",

@@ -1,6 +1,10 @@
-FROM node:18.16.1-bullseye
+FROM node:18.17.1
 
-WORKDIR /workspace
+SHELL ["/bin/bash", "-c"]
+
 RUN apt update && apt install -y \
-    git
-RUN yarn
+    && apt clean \
+    && rm -rf /var/lib/apt/lists/*
+
+ARG USERNAME=vscode
+WORKDIR /home/$USERNAME/

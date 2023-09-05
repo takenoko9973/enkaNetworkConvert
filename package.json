@@ -23,6 +23,9 @@
         "url": "https://github.com/takenoko9973/enkaNetworkConvert/issues"
     },
     "homepage": "https://github.com/takenoko9973/enkaNetworkConvert#readme",
+    "engines": {
+        "node": "18"
+    },
     "devDependencies": {
         "@rollup/plugin-typescript": "^11.1.2",
         "@tsconfig/node18": "^2.0.1",

@@ -35,5 +35,12 @@
             ]
         }
     },
-    "initializeCommand": "docker network inspect enka-network-group || docker network create enka-network-group"
+    "features": {
+        "ghcr.io/devcontainers/features/git:latest": {
+            "version": "latest",
+            "ppa": true
+        }
+    },
+    "initializeCommand": "docker network inspect enka-network-group || docker network create enka-network-group",
+    "postCreateCommand": "npm install"
 }
