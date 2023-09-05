@@ -1,7 +1,7 @@
 {
     "name": "Enka.Network_lang-jp_mod_by_takenoko",
     "namespace": "http://tampermonkey.net/",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "description": "Enka.Network 日本語化スクリプト",
     "author": "Takenoko-ya",
     "updateURL": "https://github.com/takenoko9973/enkaNetworkConvert/raw/master/dist/ts/Enka.Network_icon2text.user.js",
