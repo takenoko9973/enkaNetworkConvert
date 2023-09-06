@@ -15,7 +15,7 @@
     "parserOptions": {
         "ecmaVersion": "latest",
         "sourceType": "module",
-        "project": "tsconfig.json"
+        "project": "./tsconfig.json"
     },
     "rules": {
         "no-console": "off",
@@ -30,5 +30,8 @@
             "error",
             "always"
         ]
-    }
+    },
+    "ignorePatterns": [
+        "dist/**/*.js"
+    ]
 }
