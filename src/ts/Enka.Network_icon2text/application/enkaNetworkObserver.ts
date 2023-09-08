@@ -16,7 +16,6 @@ export namespace EnkaNetworkObserver {
                 element.classList.contains("Tab") ||  // ビルドの種類
                 element.classList.contains("svelte-grjiuv")  // ユーザー変更
             ) {
-                console.log(mutation);
                 FormatBuildCard.formatBuildCard();
                 FormatBuildCard.createStatsName();
                 return;
