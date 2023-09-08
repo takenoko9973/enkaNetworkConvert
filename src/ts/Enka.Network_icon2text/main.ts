@@ -1,6 +1,6 @@
 import { isIOS } from './exception/ios';
-import { EnkaNetworkObserver } from "./consts";
-import { cssManager } from './consts';
+import { cssManager } from "./consts";
+import { EnkaNetworkObserver } from './application';
 
 function init() {
     // ###### キャラカードのデザイン変更 ######

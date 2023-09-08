@@ -1,3 +1,5 @@
+import { BuildCard } from "./buildCard";
+
 export namespace EnkaNetworkObserver {
     const enkaNetworkObserver = new MutationObserver((mutations: MutationRecord[]) => {
         for (const mutation of mutations) {
@@ -7,18 +9,16 @@ export namespace EnkaNetworkObserver {
                 element = element.parentElement!;
             }
 
-            if (element.classList.contains("Card")) {  // ビルドカードの出現確認
-                console.log(mutation);
-                console.log("exist card");
-                return;
-            }
-
             if (
+                element.classList.contains("Card") ||  // ビルドカードの出現確認
                 element.classList.contains("name") ||  // キャラ名
                 element.classList.contains("Dropdown-selectedItem") ||  // 言語
-                element.classList.contains("Tab")  // ビルドの種類
+                element.classList.contains("Tab") ||  // ビルドの種類
+                element.classList.contains("svelte-grjiuv")  // ユーザー変更
             ) {
                 console.log(mutation);
+                BuildCard.formatBuildCard();
+                BuildCard.createStatsName();
                 return;
             }
         }
@@ -27,9 +27,7 @@ export namespace EnkaNetworkObserver {
     export function active() {
         enkaNetworkObserver.observe(document, {
             childList: true,
-            attributes: true,
             characterData: true,
-            attributeFilter: ["class"],
             subtree: true,
         });
     }
