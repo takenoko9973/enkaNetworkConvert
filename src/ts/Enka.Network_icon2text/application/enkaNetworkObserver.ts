@@ -1,4 +1,4 @@
-import { BuildCard } from "./buildCard";
+import { FormatBuildCard } from "./formatBuildCard";
 
 export namespace EnkaNetworkObserver {
     const enkaNetworkObserver = new MutationObserver((mutations: MutationRecord[]) => {
@@ -17,8 +17,8 @@ export namespace EnkaNetworkObserver {
                 element.classList.contains("svelte-grjiuv")  // ユーザー変更
             ) {
                 console.log(mutation);
-                BuildCard.formatBuildCard();
-                BuildCard.createStatsName();
+                FormatBuildCard.formatBuildCard();
+                FormatBuildCard.createStatsName();
                 return;
             }
         }
