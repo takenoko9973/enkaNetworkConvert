@@ -61,18 +61,24 @@ export namespace FormatBuildCard {
 
     export const createStatsName = () => {
         const buildCard = BuildCard.getBuildCard();
-        const mainStats = buildCard.getElementsByClassName("mainstat");
-        const subStats = buildCard.getElementsByClassName("Substat");
-        const friend = buildCard.getElementsByClassName("fren")[0];
 
+        const mainStats = buildCard.getElementsByClassName("mainstat");
         for (const mainStat of Array.from(mainStats)) {
             EnkaNetworkUtil.addStatTextElement(mainStat);
         }
 
+        const subStats = buildCard.getElementsByClassName("Substat");
         for (const subStat of Array.from(subStats)) {
             EnkaNetworkUtil.addStatTextElement(subStat);
         }
 
-        EnkaNetworkUtil.addStatTextElement(friend, false);
+        const friend = buildCard.getElementsByClassName("fren")[0];
+        if (friend instanceof HTMLElement) {
+            const friendText = EnkaNetworkUtil.addStatTextElement(
+                friend,
+                false
+            )!;
+            friendText.style.marginRight = "0.3em";
+        }
     };
 }
