@@ -1,4 +1,5 @@
 import { FormatBuildCard } from "./formatBuildCard";
+import { LocalizeBuildCard } from "./localizeBuildCard";
 
 export namespace EnkaNetworkObserver {
     const enkaNetworkObserver = new MutationObserver((mutations: MutationRecord[]) => {
@@ -18,6 +19,8 @@ export namespace EnkaNetworkObserver {
             ) {
                 FormatBuildCard.formatBuildCard();
                 FormatBuildCard.createStatsName();
+
+                LocalizeBuildCard.localize();
                 return;
             }
         }

@@ -1,3 +1,5 @@
+import { Language } from "../types";
+
 export namespace EnkaNetworkUtil {
     /**
      * 表示させているプレイヤーのUIDと名前を取得
@@ -20,6 +22,13 @@ export namespace EnkaNetworkUtil {
 
         return separateElement;
     };
+
+    export function getLanguage(): Language {
+        const language = document.getElementsByClassName(
+            "Dropdown-selectedItem"
+        )[0];
+        return language.textContent as Language;
+    }
 
     /**
      * 要素から、"svelte"から始まるクラス名を取得
