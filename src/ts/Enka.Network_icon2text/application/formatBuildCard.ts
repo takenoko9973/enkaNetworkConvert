@@ -72,8 +72,14 @@ export namespace FormatBuildCard {
             EnkaNetworkUtil.addStatTextElement(subStat);
         }
 
+        const sections = BuildCard.getBuildCardSections();
+        const artifactSubStatTexts = sections["right"].getElementsByClassName("statText");
+        for (const statText of Array.from(artifactSubStatTexts)) {
+            statText.classList.add("sub");
+        }
+
         const friend = buildCard.getElementsByClassName("fren")[0];
-        if (friend instanceof HTMLElement) {
+        if (friend instanceof HTMLElement) { // 好感度の存在を確認 (旅人のみ存在しない)
             const friendText = EnkaNetworkUtil.addStatTextElement(
                 friend,
                 false
