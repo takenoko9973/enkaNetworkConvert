@@ -1,5 +1,7 @@
+import { TIME_STAMP, VERSION } from "../consts";
 import { BuildCard, EnkaNetworkUtil } from "../exception";
 import { LocalizeKey } from "../types";
+import { getFormattedDate } from "../utils/date";
 
 export namespace LocalizeBuildCard {
     const isSubStat = (element: Element): boolean => {
@@ -48,6 +50,15 @@ export namespace LocalizeBuildCard {
             const statText = friend.firstChild!;
 
             statText.textContent = localizeData.getLocale(LocalizeKey.friend);
+        }
+
+        // 日付
+        const timeStamp = document.getElementById(TIME_STAMP);
+        if (timeStamp instanceof HTMLElement) {
+            const date = new Date();
+            const timeString = getFormattedDate(date, "yyyy-MM-dd hh:mm:ss");
+
+            timeStamp.textContent = `v${VERSION}TE ${timeString}`;
         }
     };
 }

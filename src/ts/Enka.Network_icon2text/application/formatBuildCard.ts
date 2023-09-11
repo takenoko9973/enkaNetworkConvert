@@ -1,4 +1,4 @@
-import { EXTRA_PARAMETER_TEXT, EvaluationConst, cssManager } from '../consts';
+import { EXTRA_PARAMETER_TEXT, EvaluationConst, TIME_STAMP, cssManager } from '../consts';
 import { EnkaNetworkUtil, BuildCard } from "../exception";
 
 export namespace FormatBuildCard {
@@ -92,22 +92,33 @@ export namespace FormatBuildCard {
         }
     };
 
+    const createDateText = () => {
+        const sections = BuildCard.getBuildCardSections();
+
+        if (document.getElementById(TIME_STAMP)) return;
+
+        const timeStamp = document.createElement("div");
+        timeStamp.id = TIME_STAMP;
+        timeStamp.innerText = "";
+        timeStamp.style.fontSize = "60%";
+        timeStamp.style.opacity = "0.4";
+
+        sections.left.firstChild?.after(timeStamp);
+        sections.left.style.paddingTop = "0.8%";
+    };
+
     const createExtraText = () => {
         const sections = BuildCard.getBuildCardSections();
 
-        let extraParameter = document.getElementById(EXTRA_PARAMETER_TEXT);
-        if (extraParameter) return;
+        if (document.getElementById(EXTRA_PARAMETER_TEXT)) return;
 
-        extraParameter = document.createElement("div");
+        const extraParameter = document.createElement("div");
         extraParameter.id = EXTRA_PARAMETER_TEXT;
         extraParameter.style.right = "0.3em";
         extraParameter.style.marginTop = "-0.5em";
         extraParameter.style.textAlign = "right";
         extraParameter.style.fontSize = "0.8em";
         extraParameter.style.whiteSpace = "nowrap";
-        // extraParameter.classList.add(
-        //     getSvelteClassName(this._artifacts.artifacts[0].element)
-        // );
         sections.right.appendChild(extraParameter);
     };
 
@@ -124,6 +135,7 @@ export namespace FormatBuildCard {
         formatArtifacts();
 
         createStatsName();
+        createDateText();
         createExtraText();
     };
 }
