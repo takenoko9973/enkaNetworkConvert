@@ -1,3 +1,4 @@
+import { EN, JA, LocalizeData } from "../localizeData";
 import { Language } from "../types";
 
 export namespace EnkaNetworkUtil {
@@ -81,6 +82,19 @@ export namespace EnkaNetworkUtil {
         parentElement.removeChild(icon);
 
         return statText;
+    };
+
+    export const getLocalizeData = (): LocalizeData => {
+        const language = EnkaNetworkUtil.getLanguage();
+
+        switch (language) {
+            case Language.english:
+                return new EN();
+            case Language.japanese:
+                return new JA();
+            default:
+                return new EN();
+        }
     };
 }
 

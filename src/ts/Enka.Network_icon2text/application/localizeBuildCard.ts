@@ -1,27 +1,13 @@
-import { EN, JA, LocalizeData } from "../localizeData";
 import { BuildCard, EnkaNetworkUtil } from "../exception";
-import { Language, LocalizeKey } from "../types";
+import { LocalizeKey } from "../types";
 
 export namespace LocalizeBuildCard {
-    const getLocalizeData = (): LocalizeData => {
-        const language = EnkaNetworkUtil.getLanguage();
-
-        switch (language) {
-            case Language.english:
-                return new EN();
-            case Language.japanese:
-                return new JA();
-            default:
-                return new EN();
-        }
-    };
-
     const isSubStat = (element: Element): boolean => {
         return element.classList.contains("sub");
     };
 
     const inputLocalize = (parentElement: Element) => {
-        const localizeData = getLocalizeData();
+        const localizeData = EnkaNetworkUtil.getLocalizeData();
 
         const statText = parentElement.getElementsByClassName("statText")[0] as HTMLElement;
         if (!statText) return;
@@ -48,7 +34,7 @@ export namespace LocalizeBuildCard {
         }
 
         // 別枠
-        const localizeData = getLocalizeData();
+        const localizeData = EnkaNetworkUtil.getLocalizeData();
         // 基礎攻撃力
         const weapon = BuildCard.getWeapon();
         const baseAtkStatText = weapon.getElementsByClassName("statText")[0];

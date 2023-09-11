@@ -1,10 +1,6 @@
 export const TIME_STAMP = "timeStamp";
 
-export namespace EvaluationClassName {
-    export const SELECTOR_ROW = "evaluationSelectorRow";
-    export const SELECTOR_DIV = "evaluationSelectorDiv";
-    export const SELECTOR_NAME = "evaluationSelector";
-}
+export const EXTRA_PARAMETER_TEXT = "extraParamText";
 
 export namespace ScoreClassName {
     export const SELECT_DIV = "scoreSelectDiv";

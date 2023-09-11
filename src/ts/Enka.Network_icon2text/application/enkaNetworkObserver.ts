@@ -1,3 +1,5 @@
+import { EvaluationConst } from "../consts";
+import { EvaluationSelector } from "./evaluationBuildCard";
 import { FormatBuildCard } from "./formatBuildCard";
 import { LocalizeBuildCard } from "./localizeBuildCard";
 
@@ -11,16 +13,19 @@ export namespace EnkaNetworkObserver {
             }
 
             if (
-                element.classList.contains("Card") ||  // ビルドカードの出現確認
-                element.classList.contains("name") ||  // キャラ名
-                element.classList.contains("Dropdown-selectedItem") ||  // 言語
-                element.classList.contains("Tab") ||  // ビルドの種類
-                element.classList.contains("svelte-grjiuv")  // ユーザー変更
+                element.classList.contains("Card") || // ビルドカードの出現確認
+                element.classList.contains("name") || // キャラ名
+                element.classList.contains("Dropdown-selectedItem") || // 言語
+                element.classList.contains("Tab") || // ビルドの種類
+                element.classList.contains("svelte-grjiuv") || // ユーザー変更
+                element.id == EvaluationConst.SELECTOR_ROW
             ) {
                 FormatBuildCard.formatBuildCard();
-                FormatBuildCard.createStatsName();
+                EvaluationSelector.createSelector();
 
                 LocalizeBuildCard.localize();
+                EvaluationSelector.localize();
+                EvaluationSelector.evaluate();
                 return;
             }
         }

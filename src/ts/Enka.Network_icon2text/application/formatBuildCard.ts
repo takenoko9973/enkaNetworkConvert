@@ -1,4 +1,4 @@
-import { cssManager } from '../consts';
+import { EvaluationConst, cssManager } from '../consts';
 import { EnkaNetworkUtil, BuildCard } from "../exception";
 
 export namespace FormatBuildCard {
@@ -35,36 +35,40 @@ export namespace FormatBuildCard {
         // 聖遺物
         const artifacts = BuildCard.getArtifacts();
         const svelte = EnkaNetworkUtil.getSvelteClassName(artifacts[0]);
-        const cssStyle = [
+        cssManager.addStyle(
             `.Artifact.${svelte} .ArtifactIcon { top: -37%; left: -6%; width: 28%; }`, // 聖遺物画像の調整
             `.substats.${svelte} > .Substat { display: flex; align-items: center; padding-right: 1.0em; white-space: nowrap; }`, // 聖遺物のサブステータスが右に行きすぎるので調整
             `.mainstat.${svelte} > div.${svelte}:nth-child(1) { display: flex; align-items: center; top: 5%; line-height:0.9; max-height: 25%; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; justify-content: flex-end; align-self: unset; margin-left: unset;}`, // 聖遺物メインステータスの調整
             `.mainstat.${svelte} > div.${svelte}:nth-child(2) { padding: 4% 0%; }`,
-            `.mainstat.${svelte} > div.${svelte}:nth-child(3) { max-height: 25% }`,
-        ];
-        cssManager.addStyle(...cssStyle);
+            `.mainstat.${svelte} > div.${svelte}:nth-child(3) { max-height: 25% }`
+        );
+
+        // 聖遺物評価表示欄
+        for (const artifact of Array.from(artifacts)) {
+            // 複数個作成防止
+            let evaluationText = artifact.getElementsByClassName(
+                EvaluationConst.EVALUATION_TEXT
+            )[0];
+            if (evaluationText) continue;
+
+            evaluationText = document.createElement("div");
+            evaluationText.classList.add(
+                EvaluationConst.EVALUATION_TEXT,
+                EnkaNetworkUtil.getSvelteClassName(artifact)
+            );
+            artifact.appendChild(evaluationText);
+        }
+        cssManager.addStyle(
+            `.Artifact .${EvaluationConst.EVALUATION_TEXT}{ position: absolute; font-size: 0.7em; opacity: 0.6; right: 0.3em; }`
+        );
     };
 
-
-    export const formatBuildCard = () => {
-        const sections = BuildCard.getBuildCardSections();
-
-        // 各セクションの幅の調整
-        sections["left"].style.width = "36%";
-        sections["middle"].style.width = "24%";
-        sections["middle"].style.left = "34%";
-        sections["right"].style.width = "43%";
-
-        formatWeapon();
-        formatArtifacts();
-    };
-
-    export const createStatsName = () => {
+    const createStatsName = () => {
         const buildCard = BuildCard.getBuildCard();
 
         const mainStats = buildCard.getElementsByClassName("mainstat");
         for (const mainStat of Array.from(mainStats)) {
-            EnkaNetworkUtil.addStatTextElement(mainStat);
+            EnkaNetworkUtil.addStatTextElement(mainStat, false);
         }
 
         const subStats = buildCard.getElementsByClassName("Substat");
@@ -86,5 +90,20 @@ export namespace FormatBuildCard {
             )!;
             friendText.style.marginRight = "0.3em";
         }
+    };
+
+    export const formatBuildCard = () => {
+        const sections = BuildCard.getBuildCardSections();
+
+        // 各セクションの幅の調整
+        sections["left"].style.width = "36%";
+        sections["middle"].style.width = "24%";
+        sections["middle"].style.left = "34%";
+        sections["right"].style.width = "43%";
+
+        formatWeapon();
+        formatArtifacts();
+
+        createStatsName();
     };
 }

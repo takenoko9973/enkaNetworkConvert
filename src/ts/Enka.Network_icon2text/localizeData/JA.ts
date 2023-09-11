@@ -94,6 +94,26 @@ export class JA extends LocalizeData {
             locale: "好感度",
             sub: undefined,
         },
+        EVALUATION_SELECTOR_INFO: {
+            locale: "評価方式",
+            sub: undefined,
+        },
+        SCORING_METHOD: {
+            locale: "スコア方式",
+            sub: undefined,
+        },
+        RV_METHOD: {
+            locale: "RV方式",
+            sub: undefined,
+        },
+        SCORE_EXTRA_INFO: {
+            locale: "会心比 1:${critRatio} / スコア方式(${selectStat}) 平均:${avgScore} 合計:${sumScore}",
+            sub: undefined,
+        },
+        RV_EXTRA_INFO: {
+            locale: "会心比 1:${critRatio} / RV方式(${selectStats}) 合計:${sumRV}%",
+            sub: undefined,
+        },
         UNKNOWN: {
             locale: "不明",
             sub: undefined,

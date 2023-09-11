@@ -94,6 +94,26 @@ export class EN extends LocalizeData {
             locale: "Friendship",
             sub: undefined,
         },
+        EVALUATION_SELECTOR_INFO: {
+            locale: "Evaluation method",
+            sub: undefined,
+        },
+        SCORING_METHOD: {
+            locale: "Scoring method",
+            sub: undefined,
+        },
+        RV_METHOD: {
+            locale: "RV method",
+            sub: undefined,
+        },
+        SCORE_EXTRA_INFO: {
+            locale: "Crit Ratio 1:${critRatio} / Score(${selectStat}) Avg. ${avgScore} Total ${sumScore}",
+            sub: undefined,
+        },
+        RV_EXTRA_INFO: {
+            locale: "Crit Ratio 1:${critRatio} / RV(${scoreType}) Total ${sumScore}",
+            sub: undefined,
+        },
         UNKNOWN: {
             locale: "Unknown",
             sub: undefined,
