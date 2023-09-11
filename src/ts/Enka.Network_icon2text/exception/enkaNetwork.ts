@@ -1,3 +1,4 @@
+import { Artifact } from "../application/artifact/artifact";
 import { EN, JA, LocalizeData } from "../localizeData";
 import { Language } from "../types";
 
@@ -133,11 +134,12 @@ export namespace BuildCard {
         return buildCard.getElementsByClassName("Weapon")[0] as HTMLElement;
     };
 
-    export const getArtifacts = (): HTMLCollectionOf<HTMLElement> => {
+    export const getArtifacts = (): Artifact[] => {
         const buildCard = getBuildCard();
 
-        return buildCard.getElementsByClassName(
+        const artifacts = buildCard.getElementsByClassName(
             "Artifact"
         ) as HTMLCollectionOf<HTMLElement>;
+        return Array.from(artifacts).map((artifact) => new Artifact(artifact));
     };
 }

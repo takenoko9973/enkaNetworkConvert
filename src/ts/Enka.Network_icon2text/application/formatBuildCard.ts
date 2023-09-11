@@ -1,4 +1,4 @@
-import { EvaluationConst, cssManager } from '../consts';
+import { EXTRA_PARAMETER_TEXT, EvaluationConst, cssManager } from '../consts';
 import { EnkaNetworkUtil, BuildCard } from "../exception";
 
 export namespace FormatBuildCard {
@@ -34,7 +34,7 @@ export namespace FormatBuildCard {
     const formatArtifacts = () => {
         // 聖遺物
         const artifacts = BuildCard.getArtifacts();
-        const svelte = EnkaNetworkUtil.getSvelteClassName(artifacts[0]);
+        const svelte = EnkaNetworkUtil.getSvelteClassName(artifacts[0].element);
         cssManager.addStyle(
             `.Artifact.${svelte} .ArtifactIcon { top: -37%; left: -6%; width: 28%; }`, // 聖遺物画像の調整
             `.substats.${svelte} > .Substat { display: flex; align-items: center; padding-right: 1.0em; white-space: nowrap; }`, // 聖遺物のサブステータスが右に行きすぎるので調整
@@ -46,7 +46,7 @@ export namespace FormatBuildCard {
         // 聖遺物評価表示欄
         for (const artifact of Array.from(artifacts)) {
             // 複数個作成防止
-            let evaluationText = artifact.getElementsByClassName(
+            let evaluationText = artifact.element.getElementsByClassName(
                 EvaluationConst.EVALUATION_TEXT
             )[0];
             if (evaluationText) continue;
@@ -54,9 +54,9 @@ export namespace FormatBuildCard {
             evaluationText = document.createElement("div");
             evaluationText.classList.add(
                 EvaluationConst.EVALUATION_TEXT,
-                EnkaNetworkUtil.getSvelteClassName(artifact)
+                EnkaNetworkUtil.getSvelteClassName(artifact.element)
             );
-            artifact.appendChild(evaluationText);
+            artifact.element.appendChild(evaluationText);
         }
         cssManager.addStyle(
             `.Artifact .${EvaluationConst.EVALUATION_TEXT}{ position: absolute; font-size: 0.7em; opacity: 0.6; right: 0.3em; }`
@@ -92,18 +92,38 @@ export namespace FormatBuildCard {
         }
     };
 
+    const createExtraText = () => {
+        const sections = BuildCard.getBuildCardSections();
+
+        let extraParameter = document.getElementById(EXTRA_PARAMETER_TEXT);
+        if (extraParameter) return;
+
+        extraParameter = document.createElement("div");
+        extraParameter.id = EXTRA_PARAMETER_TEXT;
+        extraParameter.style.right = "0.3em";
+        extraParameter.style.marginTop = "-0.5em";
+        extraParameter.style.textAlign = "right";
+        extraParameter.style.fontSize = "0.8em";
+        extraParameter.style.whiteSpace = "nowrap";
+        // extraParameter.classList.add(
+        //     getSvelteClassName(this._artifacts.artifacts[0].element)
+        // );
+        sections.right.appendChild(extraParameter);
+    };
+
     export const formatBuildCard = () => {
         const sections = BuildCard.getBuildCardSections();
 
         // 各セクションの幅の調整
-        sections["left"].style.width = "36%";
-        sections["middle"].style.width = "24%";
-        sections["middle"].style.left = "34%";
-        sections["right"].style.width = "43%";
+        sections.left.style.width = "36%";
+        sections.middle.style.width = "24%";
+        sections.middle.style.left = "34%";
+        sections.right.style.width = "43%";
 
         formatWeapon();
         formatArtifacts();
 
         createStatsName();
+        createExtraText();
     };
 }
