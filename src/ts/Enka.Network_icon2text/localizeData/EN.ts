@@ -107,11 +107,11 @@ export class EN extends LocalizeData {
             sub: undefined,
         },
         SCORE_EXTRA_INFO: {
-            locale: "Crit Ratio 1:${critRatio} / Score(${selectStat}) Avg. ${avgScore} Total ${sumScore}",
+            locale: "Score(${selectStat}) Avg. ${avgScore} Total ${sumScore}",
             sub: undefined,
         },
         RV_EXTRA_INFO: {
-            locale: "Crit Ratio 1:${critRatio} / RV(${scoreType}) Total ${sumScore}",
+            locale: "RV(${selectStats}) Total ${sumRV}",
             sub: undefined,
         },
         UNKNOWN: {

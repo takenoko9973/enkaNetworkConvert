@@ -107,11 +107,11 @@ export class JA extends LocalizeData {
             sub: undefined,
         },
         SCORE_EXTRA_INFO: {
-            locale: "会心比 1:${critRatio} / スコア方式(${selectStat}) 平均:${avgScore} 合計:${sumScore}",
+            locale: "スコア方式(${selectStat}) 平均:${avgScore} 合計:${sumScore}",
             sub: undefined,
         },
         RV_EXTRA_INFO: {
-            locale: "会心比 1:${critRatio} / RV方式(${selectStats}) 合計:${sumRV}%",
+            locale: "RV方式(${selectStats}) 合計:${sumRV}",
             sub: undefined,
         },
         UNKNOWN: {
