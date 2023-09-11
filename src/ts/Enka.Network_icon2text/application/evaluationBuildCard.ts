@@ -1,9 +1,8 @@
-import { EvaluationConst, cssManager } from "../consts";
+import { EXTRA_PARAMETER_TEXT, EvaluationConst, cssManager } from "../consts";
 import { EnkaNetworkUtil } from "../exception";
 import { LocalizeKey } from "../types";
 import { ScoringMethod, RollValueMethod } from "./evaluation";
 import { BuildCard } from '../exception/enkaNetwork';
-import { Artifact } from "./artifact/artifact";
 import { IEvaluateMethod } from "./evaluation/evaluationMethod";
 
 export namespace EvaluationSelector {
@@ -149,7 +148,7 @@ export namespace EvaluationSelector {
 
     export const evaluate = () => {
         const method = getSelectedMethod();
-        const artifacts = Array.from(BuildCard.getArtifacts()).map((artifact) => new Artifact(artifact));
+        const artifacts = BuildCard.getArtifacts();
 
         for (const artifact of artifacts) {
             const text = artifact.element.getElementsByClassName("evaluateText")[0];
@@ -157,6 +156,9 @@ export namespace EvaluationSelector {
             const evaluate = method.evaluateArtifact(artifact);
             text.textContent = method.formatEvaluate(evaluate);
         }
+
+        const extraText = document.getElementById(EXTRA_PARAMETER_TEXT)!;
+        extraText.textContent = method.cardExtraText();
     };
 
     const getSelectedMethodId = (): string => {

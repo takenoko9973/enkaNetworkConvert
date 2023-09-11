@@ -1,9 +1,10 @@
 import { cssManager } from "../../consts";
-import { EnkaNetworkUtil } from "../../exception";
+import { BuildCard, EnkaNetworkUtil } from "../../exception";
 import { SubOption } from "../../types";
 import { LocalizeKey } from "../../types";
-import { Artifact } from "../artifact/artifact";
+import { Artifact } from '../artifact/artifact';
 import { IEvaluateMethod } from "./evaluationMethod";
+import { fmt } from "../../utils/format";
 
 export class RollValueMethod implements IEvaluateMethod {
     methodName = "rollValue";
@@ -99,7 +100,24 @@ export class RollValueMethod implements IEvaluateMethod {
     }
 
     cardExtraText(): string {
-        throw new Error("Method not implemented.");
+        const localizeData = EnkaNetworkUtil.getLocalizeData();
+
+        const artifacts = BuildCard.getArtifacts();
+        const selectedStats = this.selectedOptions().map((option) => {
+            if (option.includes("PERCENT")) {
+                return localizeData.getLocaleSub(option) + "%";
+            } else {
+                return localizeData.getLocaleSub(option);
+            }
+        });
+        const sumRollValue = artifacts
+            .map((artifact) => this.evaluateArtifact(artifact))
+            .reduce((sum, rv) => sum + rv);
+
+        return fmt(localizeData.getLocale(LocalizeKey.rollValueExtra), {
+            selectStats: selectedStats.join(" "),
+            sumRV: this.formatEvaluate(sumRollValue),
+        });
     }
 
     selectedOptions(): SubOption[] {

@@ -2,8 +2,9 @@ import { LocalizeKey } from "../../types";
 import { IEvaluateMethod } from "./evaluationMethod";
 import { SCORE_TYPE, STATS_OPTION_RATE, cssManager } from "../../consts";
 import { SubOption } from "../../types";
-import { EnkaNetworkUtil } from "../../exception";
+import { BuildCard, EnkaNetworkUtil } from "../../exception";
 import { Artifact } from "../artifact/artifact";
+import { fmt } from "../../utils/format";
 
 export class ScoringMethod implements IEvaluateMethod {
     methodName: string = "scoring";
@@ -76,7 +77,9 @@ export class ScoringMethod implements IEvaluateMethod {
 
     evaluateArtifact(artifact: Artifact): number {
         const selectedOption = this.selectedOption();
-        const rate = STATS_OPTION_RATE[selectedOption] / STATS_OPTION_RATE.ATTACK_PERCENT;
+        const rate =
+            STATS_OPTION_RATE.ATTACK_PERCENT /
+            STATS_OPTION_RATE[selectedOption];
 
         let sumScore = 0;
         for (const subStat of artifact.subStats) {
@@ -100,7 +103,24 @@ export class ScoringMethod implements IEvaluateMethod {
     }
 
     cardExtraText(): string {
-        throw new Error("Method not implemented.");
+        const localizeData = EnkaNetworkUtil.getLocalizeData();
+
+        const artifacts = BuildCard.getArtifacts();
+        const artifactCount = artifacts.filter(
+            (artifact) => !artifact.element.classList.contains("empty")
+        ).length;
+
+        const selectedStat = localizeData.getLocaleSub(this.selectedOption());
+        const sumScore = artifacts
+            .map((artifact) => this.evaluateArtifact(artifact))
+            .reduce((sum, rv) => sum + rv);
+        const avgScore = sumScore / artifactCount;
+
+        return fmt(localizeData.getLocale(LocalizeKey.scoreExtra), {
+            selectStat: selectedStat,
+            avgScore: this.formatEvaluate(avgScore),
+            sumScore: this.formatEvaluate(sumScore),
+        });
     }
 
     selectedOption(): SubOption {
@@ -108,6 +128,6 @@ export class ScoringMethod implements IEvaluateMethod {
             ".scoreModeRadio input:checked"
         ) as HTMLInputElement;
 
-        return checked?.value as SubOption ?? SubOption.atk_percent;
+        return (checked?.value as SubOption) ?? SubOption.atk_percent;
     }
 }
