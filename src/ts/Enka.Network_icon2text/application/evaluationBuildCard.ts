@@ -2,14 +2,23 @@ import { EXTRA_PARAMETER_TEXT, EvaluationConst, cssManager } from "../consts";
 import { EnkaNetworkUtil } from "../exception";
 import { LocalizeKey } from "../types";
 import { ScoringMethod, RollValueMethod } from "./evaluation";
-import { BuildCard } from '../exception/enkaNetwork';
+import { BuildCard } from "../exception/enkaNetwork";
 import { IEvaluateMethod } from "./evaluation/evaluationMethod";
 
-export namespace EvaluationSelector {
-    const evaluate_methods = [new ScoringMethod(), new RollValueMethod()];
+export class EvaluateBuildCard {
+    evaluateMethods: IEvaluateMethod[] = [];
 
-    export const createSelector = () => {
+    constructor() {
+        this.evaluateMethods.push(new ScoringMethod());
+        this.evaluateMethods.push(new RollValueMethod());
+    }
+
+    createSelector() {
+        if (this.evaluateMethods.length == 0) return;
         if (document.getElementById(EvaluationConst.SELECTOR_ROW)) return;
+
+        this.createEvaluationText();
+        this.createExtraText();
 
         const cardToggles = document.getElementsByClassName("CardToggles")[0];
 
@@ -26,82 +35,44 @@ export namespace EvaluationSelector {
         methodSelectDiv.id = EvaluationConst.SELECTOR_DIV;
         methodSelectDiv.style.display = "flex";
         methodSelectDiv.style.flexDirection = "column";
-        methodSelectDiv.classList.add("svelte-1jzchrt");
         rowElement.appendChild(methodSelectDiv);
 
         // 説明テキストを追加
         const infoText = document.createElement("label");
-        infoText.classList.add(
-            LocalizeKey.evaluationInfo,
-            EnkaNetworkUtil.getSvelteClassName(methodSelectDiv)
-        );
+        infoText.classList.add(LocalizeKey.evaluationInfo, "svelte-1jzchrt");
         methodSelectDiv.appendChild(infoText);
 
-        const methodGroup = document.createElement("group");
-        methodGroup.style.display = "flex";
-        methodGroup.style.flexWrap = "wrap";
-        methodGroup.classList.add("methodRadio", "svelte-1893j5");
-        methodSelectDiv.appendChild(methodGroup);
+        // 評価方式選択Dev
+        const methodSelectDev = document.createElement("dev");
+        methodSelectDev.style.display = "flex";
+        methodSelectDev.style.flexWrap = "wrap";
+        methodSelectDev.classList.add(
+            "methodRadio",
+            EvaluationConst.METHOD_SELECTOR_SVELTE
+        );
+        methodSelectDiv.appendChild(methodSelectDev);
 
-        for (const method of evaluate_methods) {
-            const id = `evaluation_${method.methodName}_radio`;
+        for (const method of this.evaluateMethods) {
+            const id = this.getMethodRadioId(method);
+            methodSelectDev.appendChild(this.methodRadio(method));
 
-            const baseLabel = document.createElement("label");
-            baseLabel.style.marginTop = "0em";
-            baseLabel.classList.add(
-                "Checkbox",
-                "Control",
-                "sm",
-                EnkaNetworkUtil.getSvelteClassName(methodGroup)
-            );
+            const methodModeSelect = document.createElement("dev");
+            methodModeSelect.id = method.methodName;
 
-            // ボタン
-            const radio = document.createElement("input");
-            radio.id = id;
-            radio.name = EvaluationConst.SELECTOR_NAME;
-            radio.style.display = "none";
-            radio.setAttribute("type", "radio");
-            radio.value = method.methodName;
-
-            const toggle = document.createElement("div");
-            toggle.classList.add(
-                "toggle",
-                EnkaNetworkUtil.getSvelteClassName(methodGroup)
-            );
-
-            // ラベル (ボタンとリンクさせる)
-            const methodNameBase = document.createElement("span");
-            methodNameBase.setAttribute("for", id);
-            methodNameBase.setAttribute("type", "radio");
-            methodNameBase.classList.add(
-                "info",
-                EnkaNetworkUtil.getSvelteClassName(methodGroup)
-            );
-
-            // ラベル (ボタンとリンクさせる)
-            const methodName = document.createElement("span");
-            methodName.classList.add(
-                method.methodKey,
-                "label",
-                EnkaNetworkUtil.getSvelteClassName(methodGroup)
-            );
-            methodNameBase.appendChild(methodName);
-
-            baseLabel.appendChild(radio);
-            baseLabel.appendChild(toggle);
-            baseLabel.appendChild(methodNameBase);
-            methodGroup.appendChild(baseLabel);
-
-            methodSelectDiv.appendChild(method.createSelector());
             cssManager.addStyle(
-                `:not(:has(#${id}:checked)) #${method.methodKey} { display:none }`
+                `:not(:has(#${id}:checked)) #${method.methodName} { display:none }`
             );
+
+            method.createSelector(methodModeSelect);
+            methodSelectDiv.appendChild(methodModeSelect);
         }
 
         // デフォルトはスコア方式
-        const scoringSelectId = `evaluation_${evaluate_methods[0].methodName}_radio`;
+        const defaultMethodRadioId = this.getMethodRadioId(
+            this.evaluateMethods[0]
+        );
         document
-            .getElementById(scoringSelectId)
+            .getElementById(defaultMethodRadioId)
             ?.toggleAttribute("checked", true);
 
         cssManager.addStyle(
@@ -110,19 +81,12 @@ export namespace EvaluationSelector {
         );
 
         // 聖遺物評価対象変更時に発火
-        document
-            .getElementsByName(EvaluationConst.SELECTOR_NAME)
-            .forEach((e) => {
-                e.addEventListener("click", evaluate);
-            });
-        for (const method of evaluate_methods) {
-            document.getElementsByName(method.methodName).forEach((e) => {
-                e.addEventListener("click", evaluate);
-            });
-        }
-    };
+        methodSelectDiv.addEventListener("click", () => {
+            this.evaluate();
+        });
+    }
 
-    export const localize = () => {
+    localize() {
         const localizeData = EnkaNetworkUtil.getLocalizeData();
 
         const methodSelectDiv = document.getElementById(
@@ -133,7 +97,7 @@ export namespace EvaluationSelector {
         const infoText = methodSelectDiv.children[0];
         infoText.textContent = localizeData.getLocale(infoText.classList[0]);
 
-        for (const method of evaluate_methods) {
+        for (const method of this.evaluateMethods) {
             const methodLabel = methodSelectDiv.getElementsByClassName(
                 method.methodKey
             )[0];
@@ -142,16 +106,20 @@ export namespace EvaluationSelector {
                 methodLabel.classList[0]
             );
 
-            method.localizeSelector();
+            const methodModeSelect = document.getElementById(
+                method.methodName
+            )!;
+            method.localizeSelector(methodModeSelect);
         }
-    };
+    }
 
-    export const evaluate = () => {
-        const method = getSelectedMethod();
+    evaluate() {
+        const method = this.getSelectedMethod();
         const artifacts = BuildCard.getArtifacts();
 
         for (const artifact of artifacts) {
-            const text = artifact.element.getElementsByClassName("evaluateText")[0];
+            const text =
+                artifact.element.getElementsByClassName("evaluateText")[0];
 
             const evaluate = method.evaluateArtifact(artifact);
             text.textContent = method.formatEvaluate(evaluate);
@@ -159,22 +127,111 @@ export namespace EvaluationSelector {
 
         const extraText = document.getElementById(EXTRA_PARAMETER_TEXT)!;
         extraText.textContent = method.cardExtraText();
-    };
+    }
 
-    const getSelectedMethodId = (): string => {
+    getSelectedMethodId(): string {
         const checkedRadio = document.querySelector(
-            `.methodRadio input:checked[name=${EvaluationConst.SELECTOR_NAME}]`
+            `.methodRadio input:checked[name=${EvaluationConst.METHOD_SELECTOR_NAME}]`
         ) as HTMLInputElement;
-        return checkedRadio?.value ?? evaluate_methods[0].methodName;
-    };
+        return checkedRadio?.value ?? this.evaluateMethods[0].methodName;
+    }
 
-    const getSelectedMethod = (): IEvaluateMethod => {
-        const id = getSelectedMethodId();
-        for (const method of evaluate_methods) {
+    getSelectedMethod(): IEvaluateMethod {
+        const id = this.getSelectedMethodId();
+        for (const method of this.evaluateMethods) {
             if (id == method.methodName) return method;
         }
 
-        return evaluate_methods[0];
-    };
+        return this.evaluateMethods[0];
+    }
 
+    getMethodRadioId(method: IEvaluateMethod): string {
+        return `method_${method.methodName}_radio`;
+    }
+
+    private createEvaluationText() {
+        // 聖遺物
+        const artifacts = BuildCard.getArtifacts();
+
+        // 聖遺物評価表示欄
+        for (const artifact of Array.from(artifacts)) {
+            // 複数個作成防止
+            let evaluationText = artifact.element.getElementsByClassName(
+                EvaluationConst.EVALUATION_TEXT
+            )[0];
+            if (evaluationText) continue;
+
+            evaluationText = document.createElement("div");
+            evaluationText.classList.add(
+                EvaluationConst.EVALUATION_TEXT,
+                EnkaNetworkUtil.getSvelteClassName(artifact.element)
+            );
+            artifact.element.appendChild(evaluationText);
+        }
+        cssManager.addStyle(
+            `.Artifact .${EvaluationConst.EVALUATION_TEXT}{ position: absolute; font-size: 0.7em; opacity: 0.6; right: 0.3em; }`
+        );
+    }
+
+    private createExtraText() {
+        const sections = BuildCard.getBuildCardSections();
+
+        if (document.getElementById(EXTRA_PARAMETER_TEXT)) return;
+
+        const extraParameter = document.createElement("div");
+        extraParameter.id = EXTRA_PARAMETER_TEXT;
+        extraParameter.style.right = "0.3em";
+        extraParameter.style.marginTop = "-0.5em";
+        extraParameter.style.textAlign = "right";
+        extraParameter.style.fontSize = "0.8em";
+        extraParameter.style.whiteSpace = "nowrap";
+        sections.right.appendChild(extraParameter);
+    }
+
+    private methodRadio(method: IEvaluateMethod): HTMLElement {
+        const id = this.getMethodRadioId(method);
+
+        // 評価方式選択ボタンべーズ
+        const baseLabel = document.createElement("label");
+        baseLabel.style.marginTop = "0em";
+        baseLabel.classList.add(
+            "Checkbox",
+            "Control",
+            "sm",
+            EvaluationConst.METHOD_SELECTOR_SVELTE
+        );
+
+        // radio
+        const radio = document.createElement("input");
+        radio.id = id;
+        radio.name = EvaluationConst.METHOD_SELECTOR_NAME;
+        radio.value = method.methodName;
+        radio.style.display = "none";
+        radio.setAttribute("type", "radio");
+
+        // 選択・非選択表示用
+        const toggle = document.createElement("div");
+        toggle.classList.add("toggle", EvaluationConst.METHOD_SELECTOR_SVELTE);
+
+        // ラベル貼り付け先
+        const methodNameBase = document.createElement("span");
+        methodNameBase.classList.add(
+            "info",
+            EvaluationConst.METHOD_SELECTOR_SVELTE
+        );
+        // ラベル
+        const methodName = document.createElement("span");
+        methodName.classList.add(
+            method.methodKey,
+            "label",
+            EvaluationConst.METHOD_SELECTOR_SVELTE
+        );
+        methodNameBase.appendChild(methodName);
+
+        baseLabel.appendChild(radio);
+        baseLabel.appendChild(toggle);
+        baseLabel.appendChild(methodNameBase);
+
+        return baseLabel;
+    }
 }

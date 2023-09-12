@@ -1,17 +1,17 @@
-import { LocalizeKey } from '../../types/localizeKeyType';
-import { Artifact } from '../artifact/artifact';
+import { LocalizeKey } from "../../types/localizeKeyType";
+import { Artifact } from "../artifact/artifact";
 
 export interface IEvaluateMethod {
     readonly methodName: string;
     readonly methodKey: LocalizeKey;
 
-    createSelector(): HTMLElement
+    createSelector(baseElement: HTMLElement): void;
 
-    localizeSelector(): void
+    localizeSelector(baseElement: HTMLElement): void;
 
-    formatEvaluate(num: number): string
+    formatEvaluate(num: number): string;
 
-    evaluateArtifact(artifact: Artifact): number
+    evaluateArtifact(artifact: Artifact): number;
 
-    cardExtraText(): string
+    cardExtraText(): string;
 }

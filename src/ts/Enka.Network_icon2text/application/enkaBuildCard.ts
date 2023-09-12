@@ -1,3 +1,4 @@
+import { BuildCard } from "../exception";
 import {
     ILocalize,
     LocalizeTimeStamp,
@@ -17,6 +18,14 @@ export class LocalizeBuildCardFacade implements ILocalize {
     }
 
     format() {
+        // 各セクションの幅の調整
+        const sections = BuildCard.getBuildCardSections();
+
+        sections.left.style.width = "36%";
+        sections.middle.style.width = "24%";
+        sections.middle.style.left = "34%";
+        sections.right.style.width = "43%";
+
         this.localizeList.forEach((localize) => localize.format());
     }
 

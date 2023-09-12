@@ -1,5 +1,4 @@
-import { EvaluationSelector } from "./evaluationBuildCard";
-import { FormatBuildCard } from "./formatBuildCard";
+import { EvaluateBuildCard } from './evaluationBuildCard';
 import { LocalizeBuildCardFacade } from "./enkaBuildCard";
 
 export namespace EnkaNetworkObserver {
@@ -20,14 +19,14 @@ export namespace EnkaNetworkObserver {
                     element.classList.contains("svelte-grjiuv") // ユーザー変更
                 ) {
                     const localizeBuildCard = new LocalizeBuildCardFacade();
+                    const evaluateBuildCard = new EvaluateBuildCard();
 
                     localizeBuildCard.format();
-                    FormatBuildCard.formatBuildCard();
-                    EvaluationSelector.createSelector();
+                    evaluateBuildCard.createSelector();
 
                     localizeBuildCard.localize();
-                    EvaluationSelector.localize();
-                    EvaluationSelector.evaluate();
+                    evaluateBuildCard.localize();
+                    evaluateBuildCard.evaluate();
                     break;
                 }
             }

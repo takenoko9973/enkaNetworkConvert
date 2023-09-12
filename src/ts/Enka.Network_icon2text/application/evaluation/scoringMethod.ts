@@ -14,10 +14,8 @@ export class ScoringMethod implements IEvaluateMethod {
         return `SCORE_${name}_R`;
     }
 
-    createSelector(): HTMLElement {
-        const group = document.createElement("group");
-        group.id = this.methodKey;
-        group.classList.add("scoreModeRadio");
+    createSelector(baseElement: HTMLElement) {
+        baseElement.classList.add("scoreModeRadio");
 
         for (const type in SCORE_TYPE) {
             const id = ScoringMethod.radioId(type);
@@ -46,8 +44,8 @@ export class ScoringMethod implements IEvaluateMethod {
                 radio.toggleAttribute("checked", true);
             }
 
-            group.appendChild(radio);
-            group.appendChild(label);
+            baseElement.appendChild(radio);
+            baseElement.appendChild(label);
         }
 
         cssManager.addStyle(
@@ -55,15 +53,12 @@ export class ScoringMethod implements IEvaluateMethod {
             ".scoreModeRadio label.radbox { opacity: 0.5; }", // 普段は薄目
             ".scoreModeRadio input:checked + label.radbox { opacity: 1; }"
         );
-
-        return group;
     }
 
-    localizeSelector(): void {
+    localizeSelector(baseElement: HTMLElement): void {
         const localizeData = EnkaNetworkUtil.getLocalizeData();
 
-        const group = document.getElementById(this.methodKey)!;
-        const labels = group.getElementsByTagName("label");
+        const labels = baseElement.getElementsByTagName("label");
 
         for (const label of Array.from(labels)) {
             const key = label.classList[0];

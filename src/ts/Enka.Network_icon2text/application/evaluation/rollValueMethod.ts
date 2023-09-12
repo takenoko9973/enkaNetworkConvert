@@ -2,7 +2,7 @@ import { cssManager } from "../../consts";
 import { BuildCard, EnkaNetworkUtil } from "../../exception";
 import { SubOption } from "../../types";
 import { LocalizeKey } from "../../types";
-import { Artifact } from '../artifact/artifact';
+import { Artifact } from "../artifact/artifact";
 import { IEvaluateMethod } from "./evaluationMethod";
 import { fmt } from "../../utils/format";
 
@@ -14,10 +14,8 @@ export class RollValueMethod implements IEvaluateMethod {
         return `RV_${name}_CHECKBOX`;
     }
 
-    createSelector(): HTMLElement {
-        const group = document.createElement("group");
-        group.id = this.methodKey;
-        group.classList.add("rvSelectCheckbox");
+    createSelector(baseElement: HTMLElement) {
+        baseElement.classList.add("rvSelectCheckbox");
 
         for (const statKey of Object.values(SubOption)) {
             if (statKey == SubOption.unknown) continue;
@@ -52,8 +50,8 @@ export class RollValueMethod implements IEvaluateMethod {
                 checkbox.toggleAttribute("checked", true);
             }
 
-            group.appendChild(checkbox);
-            group.appendChild(label);
+            baseElement.appendChild(checkbox);
+            baseElement.appendChild(label);
         }
 
         cssManager.addStyle(
@@ -61,15 +59,12 @@ export class RollValueMethod implements IEvaluateMethod {
             ".rvSelectCheckbox label.radbox { opacity: 0.5; }", // 普段は薄目
             ".rvSelectCheckbox input:checked + label.radbox { opacity: 1; }" // 選択しているボタンを強調
         );
-
-        return group;
     }
 
-    localizeSelector(): void {
+    localizeSelector(baseElement: HTMLElement): void {
         const localizeData = EnkaNetworkUtil.getLocalizeData();
 
-        const group = document.getElementById(this.methodKey)!;
-        const labels = group.getElementsByTagName("label");
+        const labels = baseElement.getElementsByTagName("label");
 
         for (const label of Array.from(labels)) {
             const key = label.classList[0];
