@@ -30,7 +30,7 @@ export class LocalizeArtifact implements ILocalize {
             this.artifacts[0].element
         );
         cssManager.addStyle(
-            `.Artifact.${svelte} .ArtifactIcon { top: -37%; left: -6%; width: 28%; }`, // 聖遺物画像の調整
+            `.Artifact.${svelte} canvas.ArtifactIcon { top: -37%; left: -6%; width: 28%; }`, // 聖遺物画像の調整
             `.substats.${svelte} > .Substat { display: flex; align-items: center; padding-right: 1.0em; white-space: nowrap; }`, // 聖遺物のサブステータスが右に行きすぎるので調整
             `.mainstat.${svelte} > div.${svelte}:nth-child(1) { display: flex; align-items: center; top: 5%; line-height:0.9; max-height: 25%; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; justify-content: flex-end; align-self: unset; margin-left: unset;}`, // 聖遺物メインステータスの調整
             `.mainstat.${svelte} > div.${svelte}:nth-child(2) { padding: 4% 0%; }`,
