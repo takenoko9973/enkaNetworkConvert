@@ -20,6 +20,6 @@ export const SCORE_TYPE: { [key: string]: SubOption } = {
     HP: SubOption.hp_percent,
     ATTACK: SubOption.atk_percent,
     DEFENSE: SubOption.def_percent,
-    EM: SubOption.em,
     ER: SubOption.er,
+    EM: SubOption.em,
 };
