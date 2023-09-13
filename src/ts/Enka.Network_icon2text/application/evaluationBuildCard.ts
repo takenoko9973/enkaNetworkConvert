@@ -22,13 +22,26 @@ export class EvaluateBuildCard {
 
         const cardToggles = document.getElementsByClassName("CardToggles")[0];
 
+        // 説明ヘッダーを追加
+        const evaluateHeader = cardToggles
+            .getElementsByTagName("header")[0]
+            .cloneNode(false) as HTMLElement;
+        evaluateHeader.id = EvaluationConst.SELECTOR_HEADER;
+
+        const textRow = cardToggles.getElementsByTagName("header")[1];
+        if (textRow) {
+            textRow.before(evaluateHeader);
+        } else {
+            cardToggles.appendChild(evaluateHeader);
+        }
+
         // カードオプション枠に作成
         const rowElement = cardToggles
             .getElementsByClassName("row")[0]
             .cloneNode(false) as HTMLElement;
         rowElement.id = EvaluationConst.SELECTOR_ROW;
         rowElement.style.marginTop = "1em";
-        cardToggles.getElementsByTagName("header")[2].before(rowElement);
+        evaluateHeader.after(rowElement);
 
         // 評価方式選択欄を作成
         const methodSelectDiv = document.createElement("div");
@@ -36,11 +49,6 @@ export class EvaluateBuildCard {
         methodSelectDiv.style.display = "flex";
         methodSelectDiv.style.flexDirection = "column";
         rowElement.appendChild(methodSelectDiv);
-
-        // 説明テキストを追加
-        const infoText = document.createElement("label");
-        infoText.classList.add(LocalizeKey.evaluationInfo, "svelte-1jzchrt");
-        methodSelectDiv.appendChild(infoText);
 
         // 評価方式選択Dev
         const methodSelectDev = document.createElement("dev");
@@ -89,14 +97,17 @@ export class EvaluateBuildCard {
     localize() {
         const localizeData = EnkaNetworkUtil.getLocalizeData();
 
+        const evaluateHeader = document.getElementById(
+            EvaluationConst.SELECTOR_HEADER
+        );
         const methodSelectDiv = document.getElementById(
             EvaluationConst.SELECTOR_DIV
         );
-        if (!methodSelectDiv) return;
+        if (!evaluateHeader || !methodSelectDiv) return;
 
-        const infoText = methodSelectDiv.children[0];
-        infoText.textContent = localizeData.getLocale(infoText.classList[0]);
-
+        evaluateHeader.innerText = localizeData.getLocale(
+            LocalizeKey.evaluationInfo
+        );
         for (const method of this.evaluateMethods) {
             const methodLabel = methodSelectDiv.getElementsByClassName(
                 method.methodKey
