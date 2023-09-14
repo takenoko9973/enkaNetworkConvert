@@ -1,19 +1,13 @@
-import { isIOS } from './exception/ios';
 import { cssManager } from "./consts";
-import { EnkaNetworkObserver } from './application';
+import { EnkaNetworkObserver } from "./application";
 
 function init() {
-    // ###### キャラカードのデザイン変更 ######
-    // cssの全面的な変更
-    if (isIOS()) {
-        cssManager.addStyle(
-            ".statText { font-weight: bold; font-size: 95%; }"
-        );
-    } else {
-        cssManager.addStyle(
-            ".statText { font-weight: bold; font-size: 100%; }"
-        );
-    }
+    // 原神のフォントを適応 (最終手段。どうしてもsafariにて改行を防ぐ方法が分からなかった #6)
+    cssManager.addStyle(
+        '@font-face { font-family: GenFont; src: url(https://7144.jp/SDK_JP_Web-3.woff2) format("woff2"), url(https://7144.jp/SDK_JP_Web-3.woff2) format("woff"); }',
+        ".Card { font-family: GenFont !important; font-weight: normal !important; }",
+        ".Card b { font-weight: normal !important; }",
+    );
 
     EnkaNetworkObserver.active();
 }
