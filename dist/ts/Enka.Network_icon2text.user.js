@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Enka.Network_lang-jp_mod_by_takenoko
 // @namespace    http://tampermonkey.net/
-// @version      1.2.0
+// @version      1.2.1
 // @description  Enka.Network 日本語化スクリプト
 // @author       Takenoko-ya
 // @updateURL    https://github.com/takenoko9973/enkaNetworkConvert/raw/master/dist/ts/Enka.Network_icon2text.user.js
@@ -15,17 +15,6 @@
 
 (function () {
     'use strict';
-
-    function isIOS() {
-        const userAgent = navigator.userAgent.toLowerCase();
-        const checkAgents = new RegExp(["iphone", "ipad", "macintosh"].join("|"));
-        if (checkAgents.test(userAgent) && "ontouchend" in document) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
 
     class CssStyleManager {
         constructor() {
@@ -49,7 +38,7 @@
 
     const cssManager = CssStyleManager.instance;
 
-    const VERSION = "1.2.0";
+    const VERSION = "1.2.1";
 
     const StatsKey = {
         base_hp: "BASE_HP",
@@ -156,6 +145,7 @@
     var EvaluationConst;
     (function (EvaluationConst) {
         EvaluationConst.EVALUATION_TEXT = "evaluateText";
+        EvaluationConst.SELECTOR_HEADER = "evaluationSelectorHeader";
         EvaluationConst.SELECTOR_ROW = "evaluationSelectorRow";
         EvaluationConst.SELECTOR_DIV = "evaluationSelectorDiv";
         EvaluationConst.METHOD_SELECTOR_NAME = "methodSelector";
@@ -760,20 +750,28 @@
             this.createEvaluationText();
             this.createExtraText();
             const cardToggles = document.getElementsByClassName("CardToggles")[0];
+            const evaluateHeader = cardToggles
+                .getElementsByTagName("header")[0]
+                .cloneNode(false);
+            evaluateHeader.id = EvaluationConst.SELECTOR_HEADER;
+            const textRow = cardToggles.getElementsByTagName("header")[1];
+            if (textRow) {
+                textRow.before(evaluateHeader);
+            }
+            else {
+                cardToggles.appendChild(evaluateHeader);
+            }
             const rowElement = cardToggles
                 .getElementsByClassName("row")[0]
                 .cloneNode(false);
             rowElement.id = EvaluationConst.SELECTOR_ROW;
             rowElement.style.marginTop = "1em";
-            cardToggles.getElementsByTagName("header")[2].before(rowElement);
+            evaluateHeader.after(rowElement);
             const methodSelectDiv = document.createElement("div");
             methodSelectDiv.id = EvaluationConst.SELECTOR_DIV;
             methodSelectDiv.style.display = "flex";
             methodSelectDiv.style.flexDirection = "column";
             rowElement.appendChild(methodSelectDiv);
-            const infoText = document.createElement("label");
-            infoText.classList.add(LocalizeKey.evaluationInfo, "svelte-1jzchrt");
-            methodSelectDiv.appendChild(infoText);
             const methodSelectDev = document.createElement("dev");
             methodSelectDev.style.display = "flex";
             methodSelectDev.style.flexWrap = "wrap";
@@ -799,11 +797,11 @@
         }
         localize() {
             const localizeData = EnkaNetworkUtil.getLocalizeData();
+            const evaluateHeader = document.getElementById(EvaluationConst.SELECTOR_HEADER);
             const methodSelectDiv = document.getElementById(EvaluationConst.SELECTOR_DIV);
-            if (!methodSelectDiv)
+            if (!evaluateHeader || !methodSelectDiv)
                 return;
-            const infoText = methodSelectDiv.children[0];
-            infoText.textContent = localizeData.getLocale(infoText.classList[0]);
+            evaluateHeader.innerText = localizeData.getLocale(LocalizeKey.evaluationInfo);
             for (const method of this.evaluateMethods) {
                 const methodLabel = methodSelectDiv.getElementsByClassName(method.methodKey)[0];
                 methodLabel.textContent = localizeData.getLocale(methodLabel.classList[0]);
@@ -892,6 +890,7 @@
             this.element = BuildCard.getWeapon();
         }
         format() {
+            this.element.style.textShadow = "0 0.1em 0.1em rgba(0,0,0,.4)";
             const weaponImage = this.element.getElementsByTagName("figure")[0];
             weaponImage.style.width = "30%";
             const weaponInfo = this.element.getElementsByClassName("weapon-caption")[0];
@@ -943,7 +942,7 @@
                 }
             }
             const svelte = EnkaNetworkUtil.getSvelteClassName(this.artifacts[0].element);
-            cssManager.addStyle(`.Artifact.${svelte} canvas.ArtifactIcon { top: -37%; left: -6%; width: 28%; }`, `.substats.${svelte} > .Substat { display: flex; align-items: center; padding-right: 1.0em; white-space: nowrap; }`, `.mainstat.${svelte} > div.${svelte}:nth-child(1) { display: flex; align-items: center; top: 5%; line-height:0.9; max-height: 25%; text-shadow: rgba(0,0,0,0.2) 2px 2px 1px; font-weight:bold; justify-content: flex-end; align-self: unset; margin-left: unset;}`, `.mainstat.${svelte} > div.${svelte}:nth-child(2) { padding: 4% 0%; }`, `.mainstat.${svelte} > div.${svelte}:nth-child(3) { max-height: 25% }`);
+            cssManager.addStyle(`.Artifact.${svelte} canvas.ArtifactIcon { top: -37%; left: -6%; width: 28%; }`, `.substats.${svelte} > .Substat { display: flex; align-items: center; padding-right: 1.0em; white-space: nowrap; }`, `.mainstat.${svelte} > div.${svelte}:nth-child(1) { display: flex; align-items: center; top: 5%; line-height:0.9; max-height: 25%; text-shadow: 0 0.07em 0.1em black; justify-content: flex-end; align-self: unset; margin-left: unset; }`, `.mainstat.${svelte} > div.${svelte}:nth-child(2) { padding: 4% 0%; }`, `.mainstat.${svelte} > div.${svelte}:nth-child(3) { max-height: 25% }`);
         }
         localize() {
             for (const artifact of this.artifacts) {
@@ -1093,12 +1092,7 @@
     })(EnkaNetworkObserver || (EnkaNetworkObserver = {}));
 
     function init() {
-        if (isIOS()) {
-            cssManager.addStyle(".statText { font-weight: bold; font-size: 95%; }");
-        }
-        else {
-            cssManager.addStyle(".statText { font-weight: bold; font-size: 100%; }");
-        }
+        cssManager.addStyle('@font-face { font-family: GenFont; src: url(https://7144.jp/SDK_JP_Web-3.woff2) format("woff2"), url(https://7144.jp/SDK_JP_Web-3.woff2) format("woff"); }', ".Card { font-family: GenFont !important; font-weight: normal !important; }", ".Card b { font-weight: normal !important; }");
         EnkaNetworkObserver.active();
     }
     init();
