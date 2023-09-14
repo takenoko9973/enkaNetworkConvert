@@ -10,6 +10,9 @@ export class LocalizeWeapon implements ILocalize {
     }
 
     format() {
+        // 武器フォントに影を追加
+        this.element.style.textShadow = "0 0.1em 0.1em rgba(0,0,0,.4)";
+
         // 武器画像
         const weaponImage = this.element.getElementsByTagName("figure")[0];
         weaponImage.style.width = "30%";
