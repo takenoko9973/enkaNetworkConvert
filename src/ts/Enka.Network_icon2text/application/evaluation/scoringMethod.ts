@@ -36,7 +36,7 @@ export class ScoringMethod implements IEvaluateMethod {
                 "radbox",
                 "Button",
                 "label",
-                "svelte-6y8083"
+                "svelte-hlzrdd"
             );
 
             // 攻撃をデフォルトにする

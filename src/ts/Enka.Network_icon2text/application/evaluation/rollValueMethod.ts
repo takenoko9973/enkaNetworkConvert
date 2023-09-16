@@ -39,7 +39,7 @@ export class RollValueMethod implements IEvaluateMethod {
                 "radbox",
                 "Button",
                 "label",
-                "svelte-6y8083"
+                "svelte-hlzrdd"
             );
 
             if (

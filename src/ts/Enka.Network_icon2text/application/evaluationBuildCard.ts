@@ -20,27 +20,27 @@ export class EvaluateBuildCard {
         this.createEvaluationText();
         this.createExtraText();
 
-        const cardToggles = document.getElementsByClassName("CardToggles")[0];
+        const svelte = EvaluationConst.METHOD_SELECTOR_SVELTE;
+        const additions = document.getElementsByClassName("additions")[0];
 
         // 説明ヘッダーを追加
-        const evaluateHeader = cardToggles
+        const evaluateHeader = additions
             .getElementsByTagName("header")[0]
             .cloneNode(false) as HTMLElement;
         evaluateHeader.id = EvaluationConst.SELECTOR_HEADER;
 
-        const textRow = cardToggles.getElementsByTagName("header")[1];
+        const textRow = additions.getElementsByTagName("header")[1];
         if (textRow) {
             textRow.before(evaluateHeader);
         } else {
-            cardToggles.appendChild(evaluateHeader);
+            additions.appendChild(evaluateHeader);
         }
 
         // カードオプション枠に作成
-        const rowElement = cardToggles
+        const rowElement = additions
             .getElementsByClassName("row")[0]
             .cloneNode(false) as HTMLElement;
         rowElement.id = EvaluationConst.SELECTOR_ROW;
-        rowElement.style.marginTop = "1em";
         evaluateHeader.after(rowElement);
 
         // 評価方式選択欄を作成
@@ -54,10 +54,9 @@ export class EvaluateBuildCard {
         const methodSelectDev = document.createElement("dev");
         methodSelectDev.style.display = "flex";
         methodSelectDev.style.flexWrap = "wrap";
-        methodSelectDev.classList.add(
-            "methodRadio",
-            EvaluationConst.METHOD_SELECTOR_SVELTE
-        );
+        methodSelectDev.style.gap = "0.5em";
+        methodSelectDev.style.paddingBottom = "0.6em";
+        methodSelectDev.classList.add("methodRadio", svelte);
         methodSelectDiv.appendChild(methodSelectDev);
 
         for (const method of this.evaluateMethods) {
@@ -84,8 +83,8 @@ export class EvaluateBuildCard {
             ?.toggleAttribute("checked", true);
 
         cssManager.addStyle(
-            ".methodRadio input:checked ~ .toggle.svelte-1893j5:before { content: ''; border-radius: 1px; transform: scale(1); }",
-            ".methodRadio .Checkbox.svelte-1893j5.svelte-1893j5:has(> input:checked) { opacity: 1; }"
+            `.methodRadio input:checked ~ .toggle.${svelte}:before { content: ''; border-radius: 1px; transform: scale(1); }`,
+            `.methodRadio label.Checkbox.${svelte}:has(> input:checked) { opacity: 1; }`
         );
 
         // 聖遺物評価対象変更時に発火
@@ -217,7 +216,7 @@ export class EvaluateBuildCard {
         radio.id = id;
         radio.name = EvaluationConst.METHOD_SELECTOR_NAME;
         radio.value = method.methodName;
-        radio.style.display = "none";
+        radio.toggleAttribute("hidden", true);
         radio.setAttribute("type", "radio");
 
         // 選択・非選択表示用
