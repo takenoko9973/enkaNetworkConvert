@@ -44,43 +44,8 @@ export class EvaluateBuildCard {
         evaluateHeader.after(rowElement);
 
         // 評価方式選択欄を作成
-        const evaluateDiv = document.createElement("div");
-        evaluateDiv.id = EvaluationConst.SELECTOR_DIV;
-        evaluateDiv.style.display = "flex";
-        evaluateDiv.style.flexDirection = "column";
-        rowElement.appendChild(evaluateDiv);
-
-        // 評価方式選択Div
-        const methodSelectDiv = document.createElement("div");
-        methodSelectDiv.style.display = "flex";
-        methodSelectDiv.style.flexWrap = "wrap";
-        methodSelectDiv.style.gap = "0.5em";
-        methodSelectDiv.style.paddingBottom = "0.6em";
-        methodSelectDiv.classList.add("methodRadio", svelte);
-        evaluateDiv.appendChild(methodSelectDiv);
-
-        for (const method of this.evaluateMethods) {
-            const id = this.getMethodRadioId(method);
-            methodSelectDiv.appendChild(this.methodRadio(method));
-
-            const methodModeSelect = document.createElement("div");
-            methodModeSelect.id = method.methodName;
-
-            cssManager.addStyle(
-                `:not(:has(#${id}:checked)) #${method.methodName} { display:none }`
-            );
-
-            method.createSelector(methodModeSelect);
-            evaluateDiv.appendChild(methodModeSelect);
-        }
-
-        // デフォルトはスコア方式
-        const defaultMethodRadioId = this.getMethodRadioId(
-            this.evaluateMethods[0]
-        );
-        document
-            .getElementById(defaultMethodRadioId)
-            ?.toggleAttribute("checked", true);
+        const evaluateDiv = this.methodSelector();
+        rowElement.appendChild(this.methodSelector());
 
         cssManager.addStyle(
             `.methodRadio input:checked ~ .toggle.${svelte}:before { content: ''; border-radius: 1px; transform: scale(1); }`,
@@ -196,6 +161,52 @@ export class EvaluateBuildCard {
         extraParameter.style.fontSize = "0.8em";
         extraParameter.style.whiteSpace = "nowrap";
         sections.right.appendChild(extraParameter);
+    }
+
+    private methodSelector(): HTMLDivElement {
+        const methodDiv = document.createElement("div");
+        methodDiv.id = EvaluationConst.SELECTOR_DIV;
+        methodDiv.style.display = "flex";
+        methodDiv.style.flexDirection = "column";
+
+        // 評価方式選択Div
+        const methodSelectDiv = document.createElement("div");
+        methodSelectDiv.style.display = "flex";
+        methodSelectDiv.style.flexWrap = "wrap";
+        methodSelectDiv.style.gap = "0.5em";
+        methodSelectDiv.style.paddingBottom = "0.6em";
+        methodSelectDiv.classList.add(
+            "methodRadio",
+            EvaluationConst.METHOD_SELECTOR_SVELTE
+        );
+        methodDiv.appendChild(methodSelectDiv);
+
+        // 方式選択
+        const methodRadios = this.evaluateMethods.map((method) =>
+            this.methodRadio(method)
+        );
+        methodRadios.forEach((radio) => methodSelectDiv.appendChild(radio));
+
+        // デフォルト
+        methodRadios[0]
+            ?.getElementsByTagName("input")[0]
+            ?.toggleAttribute("checked", true);
+
+        for (const method of this.evaluateMethods) {
+            const id = this.getMethodRadioId(method);
+
+            const methodModeSelect = document.createElement("div");
+            methodModeSelect.id = method.methodName;
+
+            cssManager.addStyle(
+                `:not(:has(#${id}:checked)) #${method.methodName} { display:none }`
+            );
+
+            method.createSelector(methodModeSelect);
+            methodDiv.appendChild(methodModeSelect);
+        }
+
+        return methodDiv;
     }
 
     private methodRadio(method: IEvaluateMethod): HTMLElement {
