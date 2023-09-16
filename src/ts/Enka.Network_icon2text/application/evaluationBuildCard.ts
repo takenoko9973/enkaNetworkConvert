@@ -44,26 +44,26 @@ export class EvaluateBuildCard {
         evaluateHeader.after(rowElement);
 
         // 評価方式選択欄を作成
-        const methodSelectDiv = document.createElement("div");
-        methodSelectDiv.id = EvaluationConst.SELECTOR_DIV;
-        methodSelectDiv.style.display = "flex";
-        methodSelectDiv.style.flexDirection = "column";
-        rowElement.appendChild(methodSelectDiv);
+        const evaluateDiv = document.createElement("div");
+        evaluateDiv.id = EvaluationConst.SELECTOR_DIV;
+        evaluateDiv.style.display = "flex";
+        evaluateDiv.style.flexDirection = "column";
+        rowElement.appendChild(evaluateDiv);
 
-        // 評価方式選択Dev
-        const methodSelectDev = document.createElement("dev");
-        methodSelectDev.style.display = "flex";
-        methodSelectDev.style.flexWrap = "wrap";
-        methodSelectDev.style.gap = "0.5em";
-        methodSelectDev.style.paddingBottom = "0.6em";
-        methodSelectDev.classList.add("methodRadio", svelte);
-        methodSelectDiv.appendChild(methodSelectDev);
+        // 評価方式選択Div
+        const methodSelectDiv = document.createElement("div");
+        methodSelectDiv.style.display = "flex";
+        methodSelectDiv.style.flexWrap = "wrap";
+        methodSelectDiv.style.gap = "0.5em";
+        methodSelectDiv.style.paddingBottom = "0.6em";
+        methodSelectDiv.classList.add("methodRadio", svelte);
+        evaluateDiv.appendChild(methodSelectDiv);
 
         for (const method of this.evaluateMethods) {
             const id = this.getMethodRadioId(method);
-            methodSelectDev.appendChild(this.methodRadio(method));
+            methodSelectDiv.appendChild(this.methodRadio(method));
 
-            const methodModeSelect = document.createElement("dev");
+            const methodModeSelect = document.createElement("div");
             methodModeSelect.id = method.methodName;
 
             cssManager.addStyle(
@@ -71,7 +71,7 @@ export class EvaluateBuildCard {
             );
 
             method.createSelector(methodModeSelect);
-            methodSelectDiv.appendChild(methodModeSelect);
+            evaluateDiv.appendChild(methodModeSelect);
         }
 
         // デフォルトはスコア方式
@@ -88,7 +88,7 @@ export class EvaluateBuildCard {
         );
 
         // 聖遺物評価対象変更時に発火
-        methodSelectDiv.addEventListener("click", () => {
+        evaluateDiv.addEventListener("click", () => {
             this.evaluate();
         });
     }
