@@ -28,7 +28,7 @@ export namespace ArtifactEvaluation {
         let rollValue = 0;
 
         for (const subStat of artifact.subStats) {
-            if (rvKeys.includes(subStat.statKey as SubOption)) {
+            if (rvKeys.includes(subStat.statKey)) {
                 rollValue += subStat.rolls.reduce(
                     (acc: number, roll: number): number => {
                         return acc + 100 - 10 * (4 - roll);
