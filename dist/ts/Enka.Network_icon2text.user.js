@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Enka.Network_lang-jp_mod_by_takenoko
 // @namespace    http://tampermonkey.net/
-// @version      1.2.1
+// @version      1.2.2
 // @description  Enka.Network 日本語化スクリプト
 // @author       Takenoko-ya
 // @updateURL    https://github.com/takenoko9973/enkaNetworkConvert/raw/master/dist/ts/Enka.Network_icon2text.user.js
@@ -38,7 +38,7 @@
 
     const cssManager = CssStyleManager.instance;
 
-    const VERSION = "1.2.1";
+    const VERSION = "1.2.2";
 
     const StatsKey = {
         base_hp: "BASE_HP",
@@ -149,7 +149,7 @@
         EvaluationConst.SELECTOR_ROW = "evaluationSelectorRow";
         EvaluationConst.SELECTOR_DIV = "evaluationSelectorDiv";
         EvaluationConst.METHOD_SELECTOR_NAME = "methodSelector";
-        EvaluationConst.METHOD_SELECTOR_SVELTE = "svelte-1893j5";
+        EvaluationConst.METHOD_SELECTOR_SVELTE = "svelte-13rev5";
     })(EvaluationConst || (EvaluationConst = {}));
 
     class StatNumber {
@@ -586,7 +586,7 @@
                 const label = document.createElement("label");
                 label.setAttribute("for", id);
                 label.setAttribute("data-type", "OUTLINE");
-                label.classList.add(SCORE_TYPE[type], "radbox", "Button", "label", "svelte-6y8083");
+                label.classList.add(SCORE_TYPE[type], "radbox", "Button", "label", "svelte-hlzrdd");
                 if (SCORE_TYPE[type] == SubOption.atk_percent) {
                     radio.toggleAttribute("checked", true);
                 }
@@ -672,7 +672,7 @@
                 label.setAttribute("for", checkboxId);
                 label.setAttribute("type", "checkbox");
                 label.setAttribute("data-type", "OUTLINE");
-                label.classList.add(statKey, "radbox", "Button", "label", "svelte-6y8083");
+                label.classList.add(statKey, "radbox", "Button", "label", "svelte-hlzrdd");
                 if (statKey == SubOption.crit_rate ||
                     statKey == SubOption.crit_dmg ||
                     statKey == SubOption.atk_percent) {
@@ -749,51 +749,39 @@
                 return;
             this.createEvaluationText();
             this.createExtraText();
-            const cardToggles = document.getElementsByClassName("CardToggles")[0];
-            const evaluateHeader = cardToggles
+            const svelte = EvaluationConst.METHOD_SELECTOR_SVELTE;
+            const additions = document.getElementsByClassName("additions")[0];
+            const evaluateHeader = additions
                 .getElementsByTagName("header")[0]
                 .cloneNode(false);
             evaluateHeader.id = EvaluationConst.SELECTOR_HEADER;
-            const textRow = cardToggles.getElementsByTagName("header")[1];
+            const textRow = additions.getElementsByTagName("header")[1];
             if (textRow) {
                 textRow.before(evaluateHeader);
             }
             else {
-                cardToggles.appendChild(evaluateHeader);
+                additions.appendChild(evaluateHeader);
             }
-            const rowElement = cardToggles
+            const rowElement = additions
                 .getElementsByClassName("row")[0]
                 .cloneNode(false);
             rowElement.id = EvaluationConst.SELECTOR_ROW;
-            rowElement.style.marginTop = "1em";
             evaluateHeader.after(rowElement);
-            const methodSelectDiv = document.createElement("div");
-            methodSelectDiv.id = EvaluationConst.SELECTOR_DIV;
-            methodSelectDiv.style.display = "flex";
-            methodSelectDiv.style.flexDirection = "column";
-            rowElement.appendChild(methodSelectDiv);
-            const methodSelectDev = document.createElement("dev");
-            methodSelectDev.style.display = "flex";
-            methodSelectDev.style.flexWrap = "wrap";
-            methodSelectDev.classList.add("methodRadio", EvaluationConst.METHOD_SELECTOR_SVELTE);
-            methodSelectDiv.appendChild(methodSelectDev);
-            for (const method of this.evaluateMethods) {
-                const id = this.getMethodRadioId(method);
-                methodSelectDev.appendChild(this.methodRadio(method));
-                const methodModeSelect = document.createElement("dev");
-                methodModeSelect.id = method.methodName;
-                cssManager.addStyle(`:not(:has(#${id}:checked)) #${method.methodName} { display:none }`);
-                method.createSelector(methodModeSelect);
-                methodSelectDiv.appendChild(methodModeSelect);
-            }
-            const defaultMethodRadioId = this.getMethodRadioId(this.evaluateMethods[0]);
-            document
-                .getElementById(defaultMethodRadioId)
-                ?.toggleAttribute("checked", true);
-            cssManager.addStyle(".methodRadio input:checked ~ .toggle.svelte-1893j5:before { content: ''; border-radius: 1px; transform: scale(1); }", ".methodRadio .Checkbox.svelte-1893j5.svelte-1893j5:has(> input:checked) { opacity: 1; }");
-            methodSelectDiv.addEventListener("click", () => {
+            const methodDiv = document.createElement("div");
+            methodDiv.id = EvaluationConst.SELECTOR_DIV;
+            methodDiv.style.display = "flex";
+            methodDiv.style.flexDirection = "column";
+            methodDiv.appendChild(this.methodSelect());
+            methodDiv.appendChild(this.methodMode());
+            methodDiv.addEventListener("click", () => {
                 this.evaluate();
             });
+            rowElement.appendChild(methodDiv);
+            this.evaluateMethods.forEach((_, index) => {
+                const child = index + 1;
+                cssManager.addStyle(`.methodMode > div:nth-child(${child}) { display: none; }`, `#methodSelect:has(label:nth-child(${child}) input:checked) ~ .methodMode > div:nth-child(${child}) { display: flex; flex-wrap: inherit; }`);
+            });
+            cssManager.addStyle(`.methodRadio input:checked ~ .toggle.${svelte}:before { content: ''; border-radius: 1px; transform: scale(1); }`, `.methodRadio label.Checkbox.${svelte}:has(> input:checked) { opacity: 1; }`);
         }
         localize() {
             const localizeData = EnkaNetworkUtil.getLocalizeData();
@@ -832,9 +820,6 @@
             }
             return this.evaluateMethods[0];
         }
-        getMethodRadioId(method) {
-            return `method_${method.methodName}_radio`;
-        }
         createEvaluationText() {
             const artifacts = BuildCard.getArtifacts();
             for (const artifact of Array.from(artifacts)) {
@@ -860,16 +845,45 @@
             extraParameter.style.whiteSpace = "nowrap";
             sections.right.appendChild(extraParameter);
         }
+        methodSelect() {
+            const methodSelectDiv = document.createElement("div");
+            methodSelectDiv.id = "methodSelect";
+            methodSelectDiv.style.display = "flex";
+            methodSelectDiv.style.flexWrap = "wrap";
+            methodSelectDiv.style.gap = "0.5em";
+            methodSelectDiv.style.paddingBottom = "0.6em";
+            methodSelectDiv.classList.add("methodRadio", EvaluationConst.METHOD_SELECTOR_SVELTE);
+            const methodRadios = this.evaluateMethods.map((method) => this.methodRadio(method));
+            methodRadios.forEach((radio) => methodSelectDiv.appendChild(radio));
+            methodRadios[0]
+                ?.getElementsByTagName("input")[0]
+                ?.toggleAttribute("checked", true);
+            return methodSelectDiv;
+        }
+        methodMode() {
+            const methodModeDiv = document.createElement("div");
+            methodModeDiv.id = "methodMode";
+            methodModeDiv.style.display = "flex";
+            methodModeDiv.style.flexWrap = "wrap";
+            methodModeDiv.style.gap = "0.5em";
+            methodModeDiv.style.paddingBottom = "0.6em";
+            methodModeDiv.classList.add("methodMode");
+            for (const method of this.evaluateMethods) {
+                const methodModeSelect = document.createElement("div");
+                methodModeSelect.id = method.methodName;
+                methodModeSelect.style.rowGap = "0.5em";
+                method.createSelector(methodModeSelect);
+                methodModeDiv.appendChild(methodModeSelect);
+            }
+            return methodModeDiv;
+        }
         methodRadio(method) {
-            const id = this.getMethodRadioId(method);
             const baseLabel = document.createElement("label");
-            baseLabel.style.marginTop = "0em";
             baseLabel.classList.add("Checkbox", "Control", "sm", EvaluationConst.METHOD_SELECTOR_SVELTE);
             const radio = document.createElement("input");
-            radio.id = id;
             radio.name = EvaluationConst.METHOD_SELECTOR_NAME;
             radio.value = method.methodName;
-            radio.style.display = "none";
+            radio.toggleAttribute("hidden", true);
             radio.setAttribute("type", "radio");
             const toggle = document.createElement("div");
             toggle.classList.add("toggle", EvaluationConst.METHOD_SELECTOR_SVELTE);
