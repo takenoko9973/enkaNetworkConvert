@@ -44,18 +44,30 @@ export class EvaluateBuildCard {
         evaluateHeader.after(rowElement);
 
         // 評価方式選択欄を作成
-        const evaluateDiv = this.methodSelector();
-        rowElement.appendChild(this.methodSelector());
+        const methodDiv = document.createElement("div");
+        methodDiv.id = EvaluationConst.SELECTOR_DIV;
+        methodDiv.style.display = "flex";
+        methodDiv.style.flexDirection = "column";
+        methodDiv.appendChild(this.methodSelect());
+        methodDiv.appendChild(this.methodMode());
+        methodDiv.addEventListener("click", () => {
+            // 聖遺物評価対象変更時に発火
+            this.evaluate();
+        });
+        rowElement.appendChild(methodDiv);
+
+        this.evaluateMethods.forEach((_, index) => {
+            const child = index + 1;
+            cssManager.addStyle(
+                `.methodMode > div:nth-child(${child}) { display: none; }`,
+                `#methodSelect:has(label:nth-child(${child}) input:checked) ~ .methodMode > div:nth-child(${child}) { display: flex; flex-wrap: inherit; }`
+            );
+        });
 
         cssManager.addStyle(
             `.methodRadio input:checked ~ .toggle.${svelte}:before { content: ''; border-radius: 1px; transform: scale(1); }`,
             `.methodRadio label.Checkbox.${svelte}:has(> input:checked) { opacity: 1; }`
         );
-
-        // 聖遺物評価対象変更時に発火
-        evaluateDiv.addEventListener("click", () => {
-            this.evaluate();
-        });
     }
 
     localize() {
@@ -120,12 +132,7 @@ export class EvaluateBuildCard {
         return this.evaluateMethods[0];
     }
 
-    getMethodRadioId(method: IEvaluateMethod): string {
-        return `method_${method.methodName}_radio`;
-    }
-
     private createEvaluationText() {
-        // 聖遺物
         const artifacts = BuildCard.getArtifacts();
 
         // 聖遺物評価表示欄
@@ -163,14 +170,10 @@ export class EvaluateBuildCard {
         sections.right.appendChild(extraParameter);
     }
 
-    private methodSelector(): HTMLDivElement {
-        const methodDiv = document.createElement("div");
-        methodDiv.id = EvaluationConst.SELECTOR_DIV;
-        methodDiv.style.display = "flex";
-        methodDiv.style.flexDirection = "column";
-
+    private methodSelect(): HTMLDivElement {
         // 評価方式選択Div
         const methodSelectDiv = document.createElement("div");
+        methodSelectDiv.id = "methodSelect";
         methodSelectDiv.style.display = "flex";
         methodSelectDiv.style.flexWrap = "wrap";
         methodSelectDiv.style.gap = "0.5em";
@@ -179,7 +182,6 @@ export class EvaluateBuildCard {
             "methodRadio",
             EvaluationConst.METHOD_SELECTOR_SVELTE
         );
-        methodDiv.appendChild(methodSelectDiv);
 
         // 方式選択
         const methodRadios = this.evaluateMethods.map((method) =>
@@ -192,29 +194,35 @@ export class EvaluateBuildCard {
             ?.getElementsByTagName("input")[0]
             ?.toggleAttribute("checked", true);
 
-        for (const method of this.evaluateMethods) {
-            const id = this.getMethodRadioId(method);
+        return methodSelectDiv;
+    }
 
+    private methodMode(): HTMLDivElement {
+        const methodModeDiv = document.createElement("div");
+        methodModeDiv.id = "methodMode";
+        methodModeDiv.style.display = "flex";
+        methodModeDiv.style.flexWrap = "wrap";
+        methodModeDiv.style.gap = "0.5em";
+        methodModeDiv.style.paddingBottom = "0.6em";
+        methodModeDiv.classList.add("methodMode");
+
+        // 各方式の設定枠
+        for (const method of this.evaluateMethods) {
             const methodModeSelect = document.createElement("div");
             methodModeSelect.id = method.methodName;
-
-            cssManager.addStyle(
-                `:not(:has(#${id}:checked)) #${method.methodName} { display:none }`
-            );
+            methodModeSelect.style.rowGap = "0.5em";
 
             method.createSelector(methodModeSelect);
-            methodDiv.appendChild(methodModeSelect);
+
+            methodModeDiv.appendChild(methodModeSelect);
         }
 
-        return methodDiv;
+        return methodModeDiv;
     }
 
     private methodRadio(method: IEvaluateMethod): HTMLElement {
-        const id = this.getMethodRadioId(method);
-
         // 評価方式選択ボタンべーズ
         const baseLabel = document.createElement("label");
-        baseLabel.style.marginTop = "0em";
         baseLabel.classList.add(
             "Checkbox",
             "Control",
@@ -224,7 +232,6 @@ export class EvaluateBuildCard {
 
         // radio
         const radio = document.createElement("input");
-        radio.id = id;
         radio.name = EvaluationConst.METHOD_SELECTOR_NAME;
         radio.value = method.methodName;
         radio.toggleAttribute("hidden", true);
