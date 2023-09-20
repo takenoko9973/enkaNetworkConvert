@@ -31,13 +31,7 @@ export class ScoringMethod implements IEvaluateMethod {
             const label = document.createElement("label");
             label.setAttribute("for", id);
             label.setAttribute("data-type", "OUTLINE");
-            label.classList.add(
-                SCORE_TYPE[type],
-                "radbox",
-                "Button",
-                "label",
-                "svelte-hlzrdd"
-            );
+            label.classList.add("radbox", "Button", "label", "svelte-hlzrdd");
 
             // 攻撃をデフォルトにする
             if (SCORE_TYPE[type] == SubOption.atk_percent) {
@@ -61,8 +55,15 @@ export class ScoringMethod implements IEvaluateMethod {
         const labels = baseElement.getElementsByTagName("label");
 
         for (const label of Array.from(labels)) {
-            const key = label.classList[0];
-            label.innerText = localizeData.getLocaleSub(key);
+            const radioId = label.getAttribute("for")!;
+            const radio = document.getElementById(radioId)! as HTMLInputElement;
+            const key = radio.value;
+
+            if (key == SubOption.unknown) {
+                label.innerText = localizeData.getLocaleSub(LocalizeKey.critOnly);
+            } else {
+                label.innerText = localizeData.getLocaleSub(key);
+            }
         }
     }
 
@@ -105,7 +106,14 @@ export class ScoringMethod implements IEvaluateMethod {
             (artifact) => !artifact.element.classList.contains("empty")
         ).length;
 
-        const selectedStat = localizeData.getLocaleSub(this.selectedOption());
+        const selectedOption = this.selectedOption();
+        let selectedStat = "";
+        if (selectedOption == SubOption.unknown) {
+            selectedStat = localizeData.getLocaleSub(LocalizeKey.critOnly);
+        } else {
+            selectedStat = localizeData.getLocaleSub(selectedOption);
+        }
+
         const sumScore = artifacts
             .map((artifact) => this.evaluateArtifact(artifact))
             .reduce((sum, rv) => sum + rv);
@@ -123,6 +131,7 @@ export class ScoringMethod implements IEvaluateMethod {
             ".scoreModeRadio input:checked"
         ) as HTMLInputElement;
 
-        return (checked?.value as SubOption) ?? SubOption.atk_percent;
+        const option = checked?.value;
+        return (option as SubOption) ?? SubOption.atk_percent;
     }
 }

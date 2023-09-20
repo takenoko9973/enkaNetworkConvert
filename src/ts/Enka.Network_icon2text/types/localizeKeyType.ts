@@ -3,6 +3,7 @@ import { StatsKey } from "./statsKeyType";
 export const LocalizeKey = {
     ...StatsKey,
     friend: "FRIEND",
+    critOnly: "CRIT_ONLY",
     evaluationInfo: "EVALUATION_SELECTOR_INFO",
     scoring: "SCORING_METHOD",
     rollValue: "RV_METHOD",

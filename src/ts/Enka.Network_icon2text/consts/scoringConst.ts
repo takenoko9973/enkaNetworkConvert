@@ -22,4 +22,5 @@ export const SCORE_TYPE: { [key: string]: SubOption } = {
     DEFENSE: SubOption.def_percent,
     ER: SubOption.er,
     EM: SubOption.em,
+    CRIT_ONLY: SubOption.unknown,
 };

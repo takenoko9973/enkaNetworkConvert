@@ -94,6 +94,10 @@ export class JA extends LocalizeData {
             locale: "好感度",
             sub: undefined,
         },
+        CRIT_ONLY: {
+            locale: "会心のみ",
+            sub: undefined,
+        },
         EVALUATION_SELECTOR_INFO: {
             locale: "評価方式",
             sub: undefined,

@@ -94,6 +94,10 @@ export class EN extends LocalizeData {
             locale: "Friendship",
             sub: undefined,
         },
+        CRIT_ONLY: {
+            locale: "CRIT Only",
+            sub: undefined,
+        },
         EVALUATION_SELECTOR_INFO: {
             locale: "Evaluation method",
             sub: undefined,
