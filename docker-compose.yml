@@ -13,7 +13,7 @@ services:
             - "8080:8080"
         networks:
             enka-network-group:
-                ipv4_address: 172.22.0.2
+                ipv4_address: 172.18.0.2
         tty: true
 
     plantuml-server:
@@ -23,7 +23,7 @@ services:
             - 8081:8080
         networks:
             enka-network-group:
-                ipv4_address: 172.22.0.3
+                ipv4_address: 172.18.0.3
 
 volumes:
     node-modules:
@@ -34,4 +34,4 @@ networks:
         ipam:
             driver: default
             config:
-                - subnet: 172.22.0.0/16
+                - subnet: 172.18.0.0/16
