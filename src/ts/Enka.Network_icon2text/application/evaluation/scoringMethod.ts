@@ -31,7 +31,7 @@ export class ScoringMethod implements IEvaluateMethod {
             const label = document.createElement("label");
             label.setAttribute("for", id);
             label.setAttribute("data-type", "OUTLINE");
-            label.classList.add("radbox", "Button", "label", "svelte-hlzrdd");
+            label.classList.add("radbox", "Button", "label", "svelte-7wwvqf");
 
             // 攻撃をデフォルトにする
             if (SCORE_TYPE[type] == SubOption.atk_percent) {
@@ -73,9 +73,7 @@ export class ScoringMethod implements IEvaluateMethod {
 
     evaluateArtifact(artifact: Artifact): number {
         const selectedOption = this.selectedOption();
-        const rate =
-            STATS_OPTION_RATE.ATTACK_PERCENT /
-            STATS_OPTION_RATE[selectedOption];
+        const rate = STATS_OPTION_RATE.ATTACK_PERCENT / STATS_OPTION_RATE[selectedOption];
 
         let sumScore = 0;
         for (const subStat of artifact.subStats) {
@@ -127,9 +125,7 @@ export class ScoringMethod implements IEvaluateMethod {
     }
 
     selectedOption(): SubOption {
-        const checked = document.querySelector(
-            ".scoreModeRadio input:checked"
-        ) as HTMLInputElement;
+        const checked = document.querySelector(".scoreModeRadio input:checked") as HTMLInputElement;
 
         const option = checked?.value;
         return (option as SubOption) ?? SubOption.atk_percent;

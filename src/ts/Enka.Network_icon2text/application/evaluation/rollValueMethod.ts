@@ -34,13 +34,7 @@ export class RollValueMethod implements IEvaluateMethod {
             label.setAttribute("for", checkboxId);
             label.setAttribute("type", "checkbox");
             label.setAttribute("data-type", "OUTLINE");
-            label.classList.add(
-                statKey,
-                "radbox",
-                "Button",
-                "label",
-                "svelte-hlzrdd"
-            );
+            label.classList.add(statKey, "radbox", "Button", "label", "svelte-7wwvqf");
 
             if (
                 statKey == SubOption.crit_rate ||
@@ -116,9 +110,7 @@ export class RollValueMethod implements IEvaluateMethod {
     }
 
     selectedOptions(): SubOption[] {
-        const checkedBoxes = document.querySelectorAll(
-            ".rvSelectCheckbox input:checked"
-        );
+        const checkedBoxes = document.querySelectorAll(".rvSelectCheckbox input:checked");
 
         return Array.from(checkedBoxes).map(
             (checked) => (checked as HTMLInputElement).value as SubOption
