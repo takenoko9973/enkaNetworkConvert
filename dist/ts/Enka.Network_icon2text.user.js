@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Enka.Network_lang-jp_mod_by_takenoko
 // @namespace    http://tampermonkey.net/
-// @version      1.2.2
+// @version      1.3.0
 // @description  Enka.Network 日本語化スクリプト
 // @author       Takenoko-ya
 // @updateURL    https://github.com/takenoko9973/enkaNetworkConvert/raw/master/dist/ts/Enka.Network_icon2text.user.js
@@ -38,7 +38,7 @@
 
     const cssManager = CssStyleManager.instance;
 
-    const VERSION = "1.2.2";
+    const VERSION = "1.3.0";
 
     const StatsKey = {
         base_hp: "BASE_HP",
@@ -82,6 +82,7 @@
     const LocalizeKey = {
         ...StatsKey,
         friend: "FRIEND",
+        critOnly: "CRIT_ONLY",
         evaluationInfo: "EVALUATION_SELECTOR_INFO",
         scoring: "SCORING_METHOD",
         rollValue: "RV_METHOD",
@@ -127,6 +128,7 @@
         DEFENSE: SubOption.def_percent,
         ER: SubOption.er,
         EM: SubOption.em,
+        CRIT_ONLY: SubOption.unknown,
     };
 
     const TIME_STAMP = "timeStamp";
@@ -321,6 +323,10 @@
                     locale: "Friendship",
                     sub: undefined,
                 },
+                CRIT_ONLY: {
+                    locale: "CRIT Only",
+                    sub: undefined,
+                },
                 EVALUATION_SELECTOR_INFO: {
                     locale: "Evaluation method",
                     sub: undefined,
@@ -443,6 +449,10 @@
                 },
                 FRIEND: {
                     locale: "好感度",
+                    sub: undefined,
+                },
+                CRIT_ONLY: {
+                    locale: "会心のみ",
                     sub: undefined,
                 },
                 EVALUATION_SELECTOR_INFO: {
@@ -586,7 +596,7 @@
                 const label = document.createElement("label");
                 label.setAttribute("for", id);
                 label.setAttribute("data-type", "OUTLINE");
-                label.classList.add(SCORE_TYPE[type], "radbox", "Button", "label", "svelte-hlzrdd");
+                label.classList.add("radbox", "Button", "label", "svelte-7wwvqf");
                 if (SCORE_TYPE[type] == SubOption.atk_percent) {
                     radio.toggleAttribute("checked", true);
                 }
@@ -599,8 +609,15 @@
             const localizeData = EnkaNetworkUtil.getLocalizeData();
             const labels = baseElement.getElementsByTagName("label");
             for (const label of Array.from(labels)) {
-                const key = label.classList[0];
-                label.innerText = localizeData.getLocaleSub(key);
+                const radioId = label.getAttribute("for");
+                const radio = document.getElementById(radioId);
+                const key = radio.value;
+                if (key == SubOption.unknown) {
+                    label.innerText = localizeData.getLocaleSub(LocalizeKey.critOnly);
+                }
+                else {
+                    label.innerText = localizeData.getLocaleSub(key);
+                }
             }
         }
         formatEvaluate(num) {
@@ -608,8 +625,7 @@
         }
         evaluateArtifact(artifact) {
             const selectedOption = this.selectedOption();
-            const rate = STATS_OPTION_RATE.ATTACK_PERCENT /
-                STATS_OPTION_RATE[selectedOption];
+            const rate = STATS_OPTION_RATE.ATTACK_PERCENT / STATS_OPTION_RATE[selectedOption];
             let sumScore = 0;
             for (const subStat of artifact.subStats) {
                 let score = 0;
@@ -632,7 +648,14 @@
             const localizeData = EnkaNetworkUtil.getLocalizeData();
             const artifacts = BuildCard.getArtifacts();
             const artifactCount = artifacts.filter((artifact) => !artifact.element.classList.contains("empty")).length;
-            const selectedStat = localizeData.getLocaleSub(this.selectedOption());
+            const selectedOption = this.selectedOption();
+            let selectedStat = "";
+            if (selectedOption == SubOption.unknown) {
+                selectedStat = localizeData.getLocaleSub(LocalizeKey.critOnly);
+            }
+            else {
+                selectedStat = localizeData.getLocaleSub(selectedOption);
+            }
             const sumScore = artifacts
                 .map((artifact) => this.evaluateArtifact(artifact))
                 .reduce((sum, rv) => sum + rv);
@@ -645,7 +668,8 @@
         }
         selectedOption() {
             const checked = document.querySelector(".scoreModeRadio input:checked");
-            return checked?.value ?? SubOption.atk_percent;
+            const option = checked?.value;
+            return option ?? SubOption.atk_percent;
         }
     }
 
@@ -672,7 +696,7 @@
                 label.setAttribute("for", checkboxId);
                 label.setAttribute("type", "checkbox");
                 label.setAttribute("data-type", "OUTLINE");
-                label.classList.add(statKey, "radbox", "Button", "label", "svelte-hlzrdd");
+                label.classList.add(statKey, "radbox", "Button", "label", "svelte-7wwvqf");
                 if (statKey == SubOption.crit_rate ||
                     statKey == SubOption.crit_dmg ||
                     statKey == SubOption.atk_percent) {
@@ -1064,6 +1088,7 @@
             sections.middle.style.width = "24%";
             sections.middle.style.left = "34%";
             sections.right.style.width = "43%";
+            cssManager.addStyle(`.Card .card-host svg.Icon { display:none; }`);
             this.localizeList.forEach((localize) => localize.format());
         }
         localize() {
