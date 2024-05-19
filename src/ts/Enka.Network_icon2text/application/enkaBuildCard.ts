@@ -1,3 +1,4 @@
+import { cssManager } from "../consts";
 import { BuildCard } from "../exception";
 import {
     ILocalize,
@@ -25,6 +26,11 @@ export class LocalizeBuildCardFacade implements ILocalize {
         sections.middle.style.width = "24%";
         sections.middle.style.left = "34%";
         sections.right.style.width = "43%";
+
+        // アイコンの削除
+        cssManager.addStyle(
+            `.Card .card-host svg.Icon { display:none; }`
+        );
 
         this.localizeList.forEach((localize) => localize.format());
     }
