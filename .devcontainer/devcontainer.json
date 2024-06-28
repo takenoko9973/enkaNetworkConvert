@@ -31,17 +31,9 @@
                 "bierner.comment-tagged-templates",
                 "streetsidesoftware.code-spell-checker",
                 "eamodio.gitlens",
-                "jebbs.plantuml",
                 "dsznajder.es7-react-js-snippets"
             ]
         }
     },
-    "features": {
-        "ghcr.io/devcontainers/features/git:latest": {
-            "version": "latest",
-            "ppa": true
-        }
-    },
-    "initializeCommand": "docker network inspect enka-network-group || docker network create enka-network-group",
     "postCreateCommand": "yarn install"
 }
