@@ -1,9 +1,9 @@
 {
-    "name": "Enka.Network-dev",
+    "name": "EnkaNetwork-translate",
     "dockerComposeFile": [
         "../docker-compose.yml"
     ],
-    "service": "myservice",
+    "service": "EnkaNetwork-translate",
     "workspaceFolder": "/workspace",
     "customizations": {
         "vscode": {
