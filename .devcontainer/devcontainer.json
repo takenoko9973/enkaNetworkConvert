@@ -1,9 +1,9 @@
 {
-    "name": "EnkaNetwork-translate",
+    "name": "enka_network-translate",
     "dockerComposeFile": [
         "../docker-compose.yml"
     ],
-    "service": "EnkaNetwork-translate",
+    "service": "enka_network-translate",
     "workspaceFolder": "/workspace",
     "customizations": {
         "vscode": {
@@ -44,6 +44,5 @@
                 "mhutchie.git-graph"
             ]
         }
-    },
-    "postCreateCommand": "yarn install"
+    }
 }
