@@ -8,13 +8,22 @@
     "customizations": {
         "vscode": {
             "settings": {
-                "editor.formatOnPaste": true,
-                "editor.formatOnSave": false,
-                "editor.formatOnType": true,
-                "prettier.tabWidth": 4,
+                "files.watcherExclude": {
+                    "**/node_modules/**": true
+                },
                 "[typescript][javascript]": {
-                    "editor.tabSize": 4,
-                    "editor.defaultFormatter": "esbenp.prettier-vscode"
+                    "editor.formatOnPaste": true,
+                    "editor.formatOnSave": true,
+                    "editor.formatOnType": true,
+                    "editor.defaultFormatter": "esbenp.prettier-vscode",
+                    "editor.codeActionsOnSave": {
+                        "source.fixAll.eslint": "never"
+                    },
+                    "eslint.useESLintClass": true,
+                    "eslint.useFlatConfig": true,
+                    "eslint.options": {
+                        "overrideConfigFile": "eslint.config.mjs"
+                    }
                 },
                 "javascript.updateImportsOnFileMove.enabled": "always",
                 "typescript.updateImportsOnFileMove.enabled": "always"
@@ -28,10 +37,11 @@
                 "ionutvmi.path-autocomplete",
                 "stylelint.vscode-stylelint",
                 "pmneo.tsimporter",
-                "bierner.comment-tagged-templates",
                 "streetsidesoftware.code-spell-checker",
-                "eamodio.gitlens",
-                "dsznajder.es7-react-js-snippets"
+                "dsznajder.es7-react-js-snippets",
+                "jasonnutter.search-node-modules",
+                "gamunu.vscode-yarn",
+                "mhutchie.git-graph"
             ]
         }
     },
