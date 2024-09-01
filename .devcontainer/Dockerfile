@@ -1,9 +1,8 @@
-FROM node:18.17.1
+FROM node:20-bullseye-slim
 
-RUN apt update; \
-    apt install -y \
+RUN apt-get update; \
+    apt-get install -y \
         git \
         ; \
-    apt clean; \
-    rm -rf /var/lib/apt/lists/* \
-    ;
+    apt-get clean; \
+    rm -rf /var/lib/apt/lists/*;
