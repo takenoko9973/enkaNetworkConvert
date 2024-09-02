@@ -1,5 +1,18 @@
 import { defineConfig } from "vite";
-import monkey from "vite-plugin-monkey";
+import monkey, { MonkeyUserScript } from "vite-plugin-monkey";
+
+const github_url = "https://github.com/takenoko9973/enkaNetworkConvert";
+
+const manifest: MonkeyUserScript = {
+    "name": "Enka.Network_lang-jp_mod_by_takenoko",
+    "updateURL": `${github_url}/raw/master/dist/Enka.Network_icon2text.user.js`,
+    "downloadURL": `${github_url}/raw/master/dist/Enka.Network_icon2text.user.js`,
+    "supportURL": `${github_url}/issues`,
+    "icon": "https://www.google.com/s2/favicons?sz=64&domain=shinshin.moe",
+    "match": ["https://enka.network/*"],
+    "run-at": "document-idle",
+    "grant": "none",
+};
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -15,12 +28,8 @@ export default defineConfig({
             },
         },
         monkey({
-            entry: "src/ts/Enka.Network_icon2text/main.ts",
-            userscript: {
-                icon: "https://vitejs.dev/logo.svg",
-                namespace: "npm/vite-plugin-monkey",
-                match: ["https://www.google.com/"],
-            },
+            entry: "src/main.ts",
+            userscript: manifest,
         }),
     ],
 });
