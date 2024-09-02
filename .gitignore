@@ -1,2 +1,3 @@
-node_modules
-/dist/**/*.dev.user.js
+node_modules/
+dist/*
+!dist/**/*.user.js

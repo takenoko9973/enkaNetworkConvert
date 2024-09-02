@@ -1,0 +1,1198 @@
+// ==UserScript==
+// @name         Enka.Network_lang-jp_mod_by_takenoko
+// @namespace    vite-plugin-monkey
+// @version      1.3.0
+// @author       Takenoko-ya
+// @description  Enka.Network 日本語化スクリプト
+// @license      MIT
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=shinshin.moe
+// @supportURL   https://github.com/takenoko9973/enkaNetworkConvert/issues
+// @downloadURL  https://github.com/takenoko9973/enkaNetworkConvert/raw/master/dist/Enka.Network_icon2text.user.js
+// @updateURL    https://github.com/takenoko9973/enkaNetworkConvert/raw/master/dist/Enka.Network_icon2text.user.js
+// @match        https://enka.network/*
+// @grant        none
+// @run-at       document-idle
+// ==/UserScript==
+
+(function () {
+  'use strict';
+
+  class CssStyleManager {
+    constructor() {
+      this.css = [];
+      this.style = document.createElement("style");
+      const head = document.querySelector("head");
+      head == null ? void 0 : head.append(this.style);
+    }
+    static get instance() {
+      if (!this._instance) {
+        this._instance = new CssStyleManager();
+      }
+      return this._instance;
+    }
+    addStyle(...css) {
+      this.css.push(...css);
+      this.css = [...new Set(this.css)];
+      this.style.innerHTML = this.css.join(" ");
+    }
+  }
+  const cssManager = CssStyleManager.instance;
+  const VERSION = "1.3.0";
+  const StatsKey = {
+    base_hp: "BASE_HP",
+    base_atk: "BASE_ATTACK",
+    base_def: "BASE_DEFENSE",
+    hp: "HP",
+    atk: "ATTACK",
+    def: "DEFENSE",
+    hp_percent: "HP_PERCENT",
+    atk_percent: "ATTACK_PERCENT",
+    def_percent: "DEFENSE_PERCENT",
+    crit_rate: "CRITICAL",
+    crit_dmg: "CRITICAL_HURT",
+    er: "CHARGE_EFFICIENCY",
+    em: "ELEMENT_MASTERY",
+    heal: "HEAL_ADD",
+    physical: "PHYSICAL_ADD_HURT",
+    pyro: "FIRE_ADD_HURT",
+    electro: "ELEC_ADD_HURT",
+    hydro: "WATER_ADD_HURT",
+    anemo: "WIND_ADD_HURT",
+    cryo: "ICE_ADD_HURT",
+    geo: "ROCK_ADD_HURT",
+    dendro: "GRASS_ADD_HURT",
+    unknown: "UNKNOWN"
+  };
+  const SubOption = {
+    hp: StatsKey.hp,
+    atk: StatsKey.atk,
+    def: StatsKey.def,
+    hp_percent: StatsKey.hp_percent,
+    atk_percent: StatsKey.atk_percent,
+    def_percent: StatsKey.def_percent,
+    crit_rate: StatsKey.crit_rate,
+    crit_dmg: StatsKey.crit_dmg,
+    er: StatsKey.er,
+    em: StatsKey.em,
+    unknown: StatsKey.unknown
+  };
+  const LocalizeKey = {
+    ...StatsKey,
+    friend: "FRIEND",
+    critOnly: "CRIT_ONLY",
+    evaluationInfo: "EVALUATION_SELECTOR_INFO",
+    scoring: "SCORING_METHOD",
+    rollValue: "RV_METHOD",
+    scoreExtra: "SCORE_EXTRA_INFO",
+    rollValueExtra: "RV_EXTRA_INFO"
+  };
+  const Language = {
+    english: "EN",
+    german: "DE",
+    spanish: "ES",
+    french: "FR",
+    indonesian: "ID",
+    italian: "IT",
+    japanese: "JA",
+    portuguese: "PT",
+    russian: "RU",
+    thai: "TH",
+    turkish: "TR",
+    vietnamese: "VI",
+    korean: "KO",
+    khaenriah: "KH",
+    simplifiedChinese: "ZH-CH",
+    traditionalChinese: "ZH-TW"
+  };
+  const STATS_OPTION_RATE = {
+    HP: Infinity,
+    ATTACK: Infinity,
+    DEFENSE: Infinity,
+    HP_PERCENT: 3,
+    ATTACK_PERCENT: 3,
+    DEFENSE_PERCENT: 15 / 4,
+    CRITICAL: 4,
+    CRITICAL_HURT: 2,
+    CHARGE_EFFICIENCY: 10 / 3,
+    ELEMENT_MASTERY: 12,
+    UNKNOWN: Infinity
+  };
+  const SCORE_TYPE = {
+    HP: SubOption.hp_percent,
+    ATTACK: SubOption.atk_percent,
+    DEFENSE: SubOption.def_percent,
+    ER: SubOption.er,
+    EM: SubOption.em,
+    CRIT_ONLY: SubOption.unknown
+  };
+  const TIME_STAMP = "timeStamp";
+  const EXTRA_PARAMETER_TEXT = "extraParamText";
+  var ScoreClassName;
+  ((ScoreClassName2) => {
+    ScoreClassName2.SELECT_DIV = "scoreSelectDiv";
+    ScoreClassName2.RADIO_NAME = "sSource";
+  })(ScoreClassName || (ScoreClassName = {}));
+  var RollValueClassName;
+  ((RollValueClassName2) => {
+    RollValueClassName2.SELECT_DIV = "rvSelectDiv";
+    RollValueClassName2.CHECKBOX_NAME = "rollValue";
+  })(RollValueClassName || (RollValueClassName = {}));
+  var EvaluationConst;
+  ((EvaluationConst2) => {
+    EvaluationConst2.EVALUATION_TEXT = "evaluateText";
+    EvaluationConst2.SELECTOR_HEADER = "evaluationSelectorHeader";
+    EvaluationConst2.SELECTOR_ROW = "evaluationSelectorRow";
+    EvaluationConst2.SELECTOR_DIV = "evaluationSelectorDiv";
+    EvaluationConst2.METHOD_SELECTOR_NAME = "methodSelector";
+    EvaluationConst2.METHOD_SELECTOR_SVELTE = "svelte-13rev5";
+  })(EvaluationConst || (EvaluationConst = {}));
+  class StatNumber {
+    constructor(stat) {
+      if (typeof stat == "string") {
+        stat = stat.replace(/[,%]/, "");
+        this.stat = Number(stat);
+      } else {
+        this.stat = stat;
+      }
+    }
+  }
+  class ArtifactMainStat {
+    constructor(statKey, stat) {
+      this.statKey = statKey;
+      this.stat = stat;
+    }
+  }
+  class ArtifactSubStat {
+    constructor(statKey, _stat, rolls) {
+      this.statKey = statKey;
+      this._stat = _stat;
+      this.rolls = rolls;
+    }
+    get stat() {
+      return this._stat.stat;
+    }
+  }
+  class Artifact {
+    constructor(element) {
+      this.mainStat = new ArtifactMainStat(
+        "UNKNOWN",
+        new StatNumber(0)
+      );
+      this.subStats = [];
+      this.element = element;
+      if (!this.element.classList.contains("Artifact")) return;
+      if (this.element.classList.contains("empty")) return;
+      const elements = {
+        mainStat: this.element.getElementsByClassName("mainstat")[0],
+        subStats: this.element.getElementsByClassName("substats")[0]
+      };
+      const mainStatKey = elements.mainStat.classList[1];
+      const mainStatNum = new StatNumber(
+        elements.mainStat.children[1].textContent ?? "0"
+      );
+      this.mainStat = new ArtifactMainStat(mainStatKey, mainStatNum);
+      const subStats = elements["subStats"].getElementsByClassName("Substat");
+      this.subStats = Array.from(subStats).map((subStat) => {
+        var _a;
+        const subStatKey = subStat.classList[1];
+        const subStatNum = new StatNumber(
+          ((_a = subStat.lastChild) == null ? void 0 : _a.textContent) ?? "0"
+        );
+        const rolls = Array.from(
+          subStat.getElementsByClassName("rolls")[0].children
+        ).map((roll) => roll.childElementCount);
+        return new ArtifactSubStat(subStatKey, subStatNum, rolls);
+      });
+    }
+  }
+  class LocalizeData {
+    isKey(checkKey) {
+      return checkKey in this.translateArray;
+    }
+    getLocale(key) {
+      if (this.isKey(key))
+        return this.translateArray[key].locale;
+      else
+        return this.translateArray["UNKNOWN"].locale;
+    }
+    getLocaleSub(key) {
+      if (this.isKey(key))
+        return this.translateArray[key].sub ?? this.translateArray[key].locale;
+      else
+        return this.translateArray["UNKNOWN"].sub ?? this.translateArray["UNKNOWN"].locale;
+    }
+  }
+  class EN extends LocalizeData {
+    constructor() {
+      super(...arguments);
+      this.translateArray = {
+        BASE_HP: {
+          locale: "Base HP",
+          sub: void 0
+        },
+        BASE_ATTACK: {
+          locale: "Base ATK",
+          sub: void 0
+        },
+        BASE_DEFENSE: {
+          locale: "Base DEF",
+          sub: void 0
+        },
+        HP: {
+          locale: "HP",
+          sub: void 0
+        },
+        ATTACK: {
+          locale: "ATK",
+          sub: void 0
+        },
+        DEFENSE: {
+          locale: "DEF",
+          sub: void 0
+        },
+        HP_PERCENT: {
+          locale: "HP",
+          sub: void 0
+        },
+        ATTACK_PERCENT: {
+          locale: "ATK",
+          sub: void 0
+        },
+        DEFENSE_PERCENT: {
+          locale: "DEF",
+          sub: void 0
+        },
+        CRITICAL: {
+          locale: "CRIT Rate",
+          sub: "CR"
+        },
+        CRITICAL_HURT: {
+          locale: "CRIT DMG",
+          sub: "CD"
+        },
+        CHARGE_EFFICIENCY: {
+          locale: "Energy Recharge",
+          sub: "ER"
+        },
+        HEAL_ADD: {
+          locale: "Healing Bonus",
+          sub: void 0
+        },
+        ELEMENT_MASTERY: {
+          locale: "Elemental Mastery",
+          sub: "EM"
+        },
+        PHYSICAL_ADD_HURT: {
+          locale: "Physical DMG\nBonus",
+          sub: void 0
+        },
+        FIRE_ADD_HURT: {
+          locale: "Pyro DMG\nBonus",
+          sub: void 0
+        },
+        ELEC_ADD_HURT: {
+          locale: "Electro DMG\nBonus",
+          sub: void 0
+        },
+        WATER_ADD_HURT: {
+          locale: "Hydro DMG\nBonus",
+          sub: void 0
+        },
+        WIND_ADD_HURT: {
+          locale: "Anemo DMG\nBonus",
+          sub: void 0
+        },
+        ICE_ADD_HURT: {
+          locale: "Cryo DMG\nBonus",
+          sub: void 0
+        },
+        ROCK_ADD_HURT: {
+          locale: "Geo DMG\nBonus",
+          sub: void 0
+        },
+        GRASS_ADD_HURT: {
+          locale: "Dendro DMG\nBonus",
+          sub: void 0
+        },
+        FRIEND: {
+          locale: "Friendship",
+          sub: void 0
+        },
+        CRIT_ONLY: {
+          locale: "CRIT Only",
+          sub: void 0
+        },
+        EVALUATION_SELECTOR_INFO: {
+          locale: "Evaluation method",
+          sub: void 0
+        },
+        SCORING_METHOD: {
+          locale: "Scoring method",
+          sub: void 0
+        },
+        RV_METHOD: {
+          locale: "RV method",
+          sub: void 0
+        },
+        SCORE_EXTRA_INFO: {
+          locale: "Score(${selectStat}) Avg. ${avgScore} Total ${sumScore}",
+          sub: void 0
+        },
+        RV_EXTRA_INFO: {
+          locale: "RV(${selectStats}) Total ${sumRV}",
+          sub: void 0
+        },
+        UNKNOWN: {
+          locale: "Unknown",
+          sub: void 0
+        }
+      };
+    }
+  }
+  class JA extends LocalizeData {
+    constructor() {
+      super(...arguments);
+      this.translateArray = {
+        BASE_HP: {
+          locale: "基礎HP",
+          sub: void 0
+        },
+        BASE_ATTACK: {
+          locale: "基礎攻撃力",
+          sub: void 0
+        },
+        BASE_DEFENSE: {
+          locale: "基礎防御力",
+          sub: void 0
+        },
+        HP: {
+          locale: "HP",
+          sub: void 0
+        },
+        ATTACK: {
+          locale: "攻撃力",
+          sub: void 0
+        },
+        DEFENSE: {
+          locale: "防御力",
+          sub: void 0
+        },
+        HP_PERCENT: {
+          locale: "HP",
+          sub: void 0
+        },
+        ATTACK_PERCENT: {
+          locale: "攻撃力",
+          sub: void 0
+        },
+        DEFENSE_PERCENT: {
+          locale: "防御力",
+          sub: void 0
+        },
+        CRITICAL: {
+          locale: "会心率",
+          sub: void 0
+        },
+        CRITICAL_HURT: {
+          locale: "会心ダメージ",
+          sub: "会心ダメ"
+        },
+        CHARGE_EFFICIENCY: {
+          locale: "元素チャージ効率",
+          sub: "元チャ"
+        },
+        HEAL_ADD: {
+          locale: "与える治癒効果",
+          sub: "与治癒"
+        },
+        ELEMENT_MASTERY: {
+          locale: "元素熟知",
+          sub: void 0
+        },
+        PHYSICAL_ADD_HURT: {
+          locale: "物理ダメージ",
+          sub: void 0
+        },
+        FIRE_ADD_HURT: {
+          locale: "炎元素ダメージ",
+          sub: void 0
+        },
+        ELEC_ADD_HURT: {
+          locale: "雷元素ダメージ",
+          sub: void 0
+        },
+        WATER_ADD_HURT: {
+          locale: "水元素ダメージ",
+          sub: void 0
+        },
+        WIND_ADD_HURT: {
+          locale: "風元素ダメージ",
+          sub: void 0
+        },
+        ICE_ADD_HURT: {
+          locale: "氷元素ダメージ",
+          sub: void 0
+        },
+        ROCK_ADD_HURT: {
+          locale: "岩元素ダメージ",
+          sub: void 0
+        },
+        GRASS_ADD_HURT: {
+          locale: "草元素ダメージ",
+          sub: void 0
+        },
+        FRIEND: {
+          locale: "好感度",
+          sub: void 0
+        },
+        CRIT_ONLY: {
+          locale: "会心のみ",
+          sub: void 0
+        },
+        EVALUATION_SELECTOR_INFO: {
+          locale: "評価方式",
+          sub: void 0
+        },
+        SCORING_METHOD: {
+          locale: "スコア方式",
+          sub: void 0
+        },
+        RV_METHOD: {
+          locale: "RV方式",
+          sub: void 0
+        },
+        SCORE_EXTRA_INFO: {
+          locale: "スコア方式(${selectStat}) 平均:${avgScore} 合計:${sumScore}",
+          sub: void 0
+        },
+        RV_EXTRA_INFO: {
+          locale: "RV方式(${selectStats}) 合計:${sumRV}",
+          sub: void 0
+        },
+        UNKNOWN: {
+          locale: "不明",
+          sub: void 0
+        }
+      };
+    }
+  }
+  var EnkaNetworkUtil;
+  ((EnkaNetworkUtil2) => {
+    EnkaNetworkUtil2.getPlayerInfo = () => {
+      const pathname = location.pathname.split("/")[2] ?? "";
+      const playerUID = pathname.split("/")[2];
+      const playerInfo = document.getElementsByClassName("PlayerInfo")[0];
+      const playerName = playerInfo.getElementsByTagName("h1")[0].innerText;
+      return [playerUID, playerName];
+    };
+    EnkaNetworkUtil2.getSeparateElement = () => {
+      const separateElement = document.createElement("span");
+      separateElement.classList.add("sep");
+      return separateElement;
+    };
+    function getLanguage() {
+      const language = document.getElementsByClassName(
+        "Dropdown-selectedItem"
+      )[0];
+      return language.textContent;
+    }
+    EnkaNetworkUtil2.getLanguage = getLanguage;
+    EnkaNetworkUtil2.getSvelteClassName = (element) => {
+      return Array.from(element.classList).filter(
+        (val) => val.match(/svelte/)
+      )[0] ?? "";
+    };
+    EnkaNetworkUtil2.createStatTextElement = (parentElement) => {
+      var _a;
+      const className = (0, EnkaNetworkUtil2.getSvelteClassName)(parentElement);
+      const tag = ((_a = parentElement.lastElementChild) == null ? void 0 : _a.tagName) ?? "div";
+      const statText = document.createElement(tag);
+      statText.classList.add("statText");
+      statText.classList.add(className);
+      return statText;
+    };
+    EnkaNetworkUtil2.addStatTextElement = (parentElement, addSep = true) => {
+      if (parentElement.getElementsByClassName("statText").length >= 1)
+        return parentElement.getElementsByClassName("statText")[0];
+      const icon = parentElement.getElementsByClassName("ShadedSvgIcon")[0] ?? // 影付きアイコン
+      parentElement.getElementsByClassName("Icon")[0];
+      if (addSep) {
+        const sep = (0, EnkaNetworkUtil2.getSeparateElement)();
+        sep.classList.add((0, EnkaNetworkUtil2.getSvelteClassName)(parentElement));
+        icon.after(sep);
+      }
+      const statText = (0, EnkaNetworkUtil2.createStatTextElement)(parentElement);
+      icon.after(statText);
+      parentElement.removeChild(icon);
+      return statText;
+    };
+    EnkaNetworkUtil2.getLocalizeData = () => {
+      const language = EnkaNetworkUtil2.getLanguage();
+      switch (language) {
+        case Language.english:
+          return new EN();
+        case Language.japanese:
+          return new JA();
+        default:
+          return new EN();
+      }
+    };
+  })(EnkaNetworkUtil || (EnkaNetworkUtil = {}));
+  var BuildCard;
+  ((BuildCard2) => {
+    BuildCard2.getBuildCard = () => {
+      const buildCard = document.getElementsByClassName(
+        "Card"
+      )[0];
+      if (buildCard == null) {
+        throw new Error("not card element");
+      }
+      return buildCard;
+    };
+    BuildCard2.getBuildCardSections = () => {
+      const buildCard = (0, BuildCard2.getBuildCard)();
+      const cardSections = buildCard.getElementsByClassName(
+        "section"
+      );
+      return {
+        left: cardSections[0],
+        middle: cardSections[1],
+        right: cardSections[2]
+      };
+    };
+    BuildCard2.getWeapon = () => {
+      const buildCard = (0, BuildCard2.getBuildCard)();
+      return buildCard.getElementsByClassName("Weapon")[0];
+    };
+    BuildCard2.getArtifacts = () => {
+      const buildCard = (0, BuildCard2.getBuildCard)();
+      const artifacts = buildCard.getElementsByClassName(
+        "Artifact"
+      );
+      return Array.from(artifacts).map((artifact) => new Artifact(artifact));
+    };
+  })(BuildCard || (BuildCard = {}));
+  function fmt(template, values) {
+    if (!values) return template;
+    const format = new Function(
+      ...Object.keys(values),
+      `return \`${template}\`;`
+    );
+    return format(
+      ...Object.values(values).map((value) => value ?? "")
+    );
+  }
+  class ScoringMethod {
+    constructor() {
+      this.methodName = "scoring";
+      this.methodKey = LocalizeKey.scoring;
+    }
+    static radioId(name) {
+      return `SCORE_${name}_R`;
+    }
+    createSelector(baseElement) {
+      baseElement.classList.add("scoreModeRadio");
+      for (const type in SCORE_TYPE) {
+        const id = ScoringMethod.radioId(type);
+        const radio = document.createElement("input");
+        radio.id = id;
+        radio.name = "scoring";
+        radio.setAttribute("type", "radio");
+        radio.value = SCORE_TYPE[type];
+        const label = document.createElement("label");
+        label.setAttribute("for", id);
+        label.setAttribute("data-type", "OUTLINE");
+        label.classList.add("radbox", "Button", "label", "svelte-7wwvqf");
+        if (SCORE_TYPE[type] == SubOption.atk_percent) {
+          radio.toggleAttribute("checked", true);
+        }
+        baseElement.appendChild(radio);
+        baseElement.appendChild(label);
+      }
+      cssManager.addStyle(
+        ".scoreModeRadio input { display:none }",
+        // チェックボックスを隠す
+        ".scoreModeRadio label.radbox { opacity: 0.5; }",
+        // 普段は薄目
+        ".scoreModeRadio input:checked + label.radbox { opacity: 1; }"
+      );
+    }
+    localizeSelector(baseElement) {
+      const localizeData = EnkaNetworkUtil.getLocalizeData();
+      const labels = baseElement.getElementsByTagName("label");
+      for (const label of Array.from(labels)) {
+        const radioId = label.getAttribute("for");
+        const radio = document.getElementById(radioId);
+        const key = radio.value;
+        if (key == SubOption.unknown) {
+          label.innerText = localizeData.getLocaleSub(LocalizeKey.critOnly);
+        } else {
+          label.innerText = localizeData.getLocaleSub(key);
+        }
+      }
+    }
+    formatEvaluate(num) {
+      return num.toFixed(1);
+    }
+    evaluateArtifact(artifact) {
+      const selectedOption = this.selectedOption();
+      const rate = STATS_OPTION_RATE.ATTACK_PERCENT / STATS_OPTION_RATE[selectedOption];
+      let sumScore = 0;
+      for (const subStat of artifact.subStats) {
+        let score = 0;
+        switch (subStat.statKey) {
+          case SubOption.crit_rate:
+            score = subStat.stat * 2;
+            break;
+          case SubOption.crit_dmg:
+            score = subStat.stat;
+            break;
+          case selectedOption:
+            score = subStat.stat * rate;
+            break;
+        }
+        sumScore += score;
+      }
+      return sumScore;
+    }
+    cardExtraText() {
+      const localizeData = EnkaNetworkUtil.getLocalizeData();
+      const artifacts = BuildCard.getArtifacts();
+      const artifactCount = artifacts.filter(
+        (artifact) => !artifact.element.classList.contains("empty")
+      ).length;
+      const selectedOption = this.selectedOption();
+      let selectedStat = "";
+      if (selectedOption == SubOption.unknown) {
+        selectedStat = localizeData.getLocaleSub(LocalizeKey.critOnly);
+      } else {
+        selectedStat = localizeData.getLocaleSub(selectedOption);
+      }
+      const sumScore = artifacts.map((artifact) => this.evaluateArtifact(artifact)).reduce((sum, rv) => sum + rv);
+      const avgScore = sumScore / artifactCount;
+      return fmt(localizeData.getLocale(LocalizeKey.scoreExtra), {
+        selectStat: selectedStat,
+        avgScore: this.formatEvaluate(avgScore),
+        sumScore: this.formatEvaluate(sumScore)
+      });
+    }
+    selectedOption() {
+      const checked = document.querySelector(".scoreModeRadio input:checked");
+      const option = checked == null ? void 0 : checked.value;
+      return option ?? SubOption.atk_percent;
+    }
+  }
+  class RollValueMethod {
+    constructor() {
+      this.methodName = "rollValue";
+      this.methodKey = LocalizeKey.rollValue;
+    }
+    static checkboxId(name) {
+      return `RV_${name}_CHECKBOX`;
+    }
+    createSelector(baseElement) {
+      baseElement.classList.add("rvSelectCheckbox");
+      for (const statKey of Object.values(SubOption)) {
+        if (statKey == SubOption.unknown) continue;
+        const checkboxId = RollValueMethod.checkboxId(statKey);
+        const checkbox = document.createElement("input");
+        checkbox.id = checkboxId;
+        checkbox.name = "rollValue";
+        checkbox.setAttribute("type", "checkbox");
+        checkbox.value = statKey;
+        const label = document.createElement("label");
+        label.setAttribute("for", checkboxId);
+        label.setAttribute("type", "checkbox");
+        label.setAttribute("data-type", "OUTLINE");
+        label.classList.add(statKey, "radbox", "Button", "label", "svelte-7wwvqf");
+        if (statKey == SubOption.crit_rate || statKey == SubOption.crit_dmg || statKey == SubOption.atk_percent) {
+          checkbox.toggleAttribute("checked", true);
+        }
+        baseElement.appendChild(checkbox);
+        baseElement.appendChild(label);
+      }
+      cssManager.addStyle(
+        ".rvSelectCheckbox input { display:none }",
+        // チェックボックスを隠す
+        ".rvSelectCheckbox label.radbox { opacity: 0.5; }",
+        // 普段は薄目
+        ".rvSelectCheckbox input:checked + label.radbox { opacity: 1; }"
+        // 選択しているボタンを強調
+      );
+    }
+    localizeSelector(baseElement) {
+      const localizeData = EnkaNetworkUtil.getLocalizeData();
+      const labels = baseElement.getElementsByTagName("label");
+      for (const label of Array.from(labels)) {
+        const key = label.classList[0];
+        if (key.includes("PERCENT")) {
+          label.innerText = localizeData.getLocaleSub(key) + "%";
+        } else {
+          label.innerText = localizeData.getLocaleSub(key);
+        }
+      }
+    }
+    formatEvaluate(num) {
+      return `${num}%`;
+    }
+    evaluateArtifact(artifact) {
+      const selectedOptions = this.selectedOptions();
+      let rollValue = 0;
+      for (const subStat of artifact.subStats) {
+        if (selectedOptions.includes(subStat.statKey)) {
+          rollValue += subStat.rolls.map((roll) => 100 - 10 * (4 - roll)).reduce((sum, rv) => sum + rv);
+        }
+      }
+      return rollValue;
+    }
+    cardExtraText() {
+      const localizeData = EnkaNetworkUtil.getLocalizeData();
+      const artifacts = BuildCard.getArtifacts();
+      const selectedStats = this.selectedOptions().map((option) => {
+        if (option.includes("PERCENT")) {
+          return localizeData.getLocaleSub(option) + "%";
+        } else {
+          return localizeData.getLocaleSub(option);
+        }
+      });
+      const sumRollValue = artifacts.map((artifact) => this.evaluateArtifact(artifact)).reduce((sum, rv) => sum + rv);
+      return fmt(localizeData.getLocale(LocalizeKey.rollValueExtra), {
+        selectStats: selectedStats.join(" "),
+        sumRV: this.formatEvaluate(sumRollValue)
+      });
+    }
+    selectedOptions() {
+      const checkedBoxes = document.querySelectorAll(".rvSelectCheckbox input:checked");
+      return Array.from(checkedBoxes).map(
+        (checked) => checked.value
+      );
+    }
+  }
+  class EvaluateBuildCard {
+    constructor() {
+      this.evaluateMethods = [];
+      this.evaluateMethods.push(new ScoringMethod());
+      this.evaluateMethods.push(new RollValueMethod());
+    }
+    createSelector() {
+      if (this.evaluateMethods.length == 0) return;
+      if (document.getElementById(EvaluationConst.SELECTOR_ROW)) return;
+      this.createEvaluationText();
+      this.createExtraText();
+      const svelte = EvaluationConst.METHOD_SELECTOR_SVELTE;
+      const additions = document.getElementsByClassName("additions")[0];
+      const evaluateHeader = additions.getElementsByTagName("header")[0].cloneNode(false);
+      evaluateHeader.id = EvaluationConst.SELECTOR_HEADER;
+      const textRow = additions.getElementsByTagName("header")[1];
+      if (textRow) {
+        textRow.before(evaluateHeader);
+      } else {
+        additions.appendChild(evaluateHeader);
+      }
+      const rowElement = additions.getElementsByClassName("row")[0].cloneNode(false);
+      rowElement.id = EvaluationConst.SELECTOR_ROW;
+      evaluateHeader.after(rowElement);
+      const methodDiv = document.createElement("div");
+      methodDiv.id = EvaluationConst.SELECTOR_DIV;
+      methodDiv.style.display = "flex";
+      methodDiv.style.flexDirection = "column";
+      methodDiv.appendChild(this.methodSelect());
+      methodDiv.appendChild(this.methodMode());
+      methodDiv.addEventListener("click", () => {
+        this.evaluate();
+      });
+      rowElement.appendChild(methodDiv);
+      this.evaluateMethods.forEach((_, index) => {
+        const child = index + 1;
+        cssManager.addStyle(
+          `.methodMode > div:nth-child(${child}) { display: none; }`,
+          `#methodSelect:has(label:nth-child(${child}) input:checked) ~ .methodMode > div:nth-child(${child}) { display: flex; flex-wrap: inherit; }`
+        );
+      });
+      cssManager.addStyle(
+        `.methodRadio input:checked ~ .toggle.${svelte}:before { content: ''; border-radius: 1px; transform: scale(1); }`,
+        `.methodRadio label.Checkbox.${svelte}:has(> input:checked) { opacity: 1; }`
+      );
+    }
+    localize() {
+      const localizeData = EnkaNetworkUtil.getLocalizeData();
+      const evaluateHeader = document.getElementById(
+        EvaluationConst.SELECTOR_HEADER
+      );
+      const methodSelectDiv = document.getElementById(
+        EvaluationConst.SELECTOR_DIV
+      );
+      if (!evaluateHeader || !methodSelectDiv) return;
+      evaluateHeader.innerText = localizeData.getLocale(
+        LocalizeKey.evaluationInfo
+      );
+      for (const method of this.evaluateMethods) {
+        const methodLabel = methodSelectDiv.getElementsByClassName(
+          method.methodKey
+        )[0];
+        methodLabel.textContent = localizeData.getLocale(
+          methodLabel.classList[0]
+        );
+        const methodModeSelect = document.getElementById(
+          method.methodName
+        );
+        method.localizeSelector(methodModeSelect);
+      }
+    }
+    evaluate() {
+      const method = this.getSelectedMethod();
+      const artifacts = BuildCard.getArtifacts();
+      for (const artifact of artifacts) {
+        const text = artifact.element.getElementsByClassName("evaluateText")[0];
+        const evaluate = method.evaluateArtifact(artifact);
+        text.textContent = method.formatEvaluate(evaluate);
+      }
+      const extraText = document.getElementById(EXTRA_PARAMETER_TEXT);
+      extraText.textContent = method.cardExtraText();
+    }
+    getSelectedMethodId() {
+      const checkedRadio = document.querySelector(
+        `.methodRadio input:checked[name=${EvaluationConst.METHOD_SELECTOR_NAME}]`
+      );
+      return (checkedRadio == null ? void 0 : checkedRadio.value) ?? this.evaluateMethods[0].methodName;
+    }
+    getSelectedMethod() {
+      const id = this.getSelectedMethodId();
+      for (const method of this.evaluateMethods) {
+        if (id == method.methodName) return method;
+      }
+      return this.evaluateMethods[0];
+    }
+    createEvaluationText() {
+      const artifacts = BuildCard.getArtifacts();
+      for (const artifact of Array.from(artifacts)) {
+        let evaluationText = artifact.element.getElementsByClassName(
+          EvaluationConst.EVALUATION_TEXT
+        )[0];
+        if (evaluationText) continue;
+        evaluationText = document.createElement("div");
+        evaluationText.classList.add(
+          EvaluationConst.EVALUATION_TEXT,
+          EnkaNetworkUtil.getSvelteClassName(artifact.element)
+        );
+        artifact.element.appendChild(evaluationText);
+      }
+      cssManager.addStyle(
+        `.Artifact .${EvaluationConst.EVALUATION_TEXT}{ position: absolute; font-size: 0.7em; opacity: 0.6; right: 0.3em; }`
+      );
+    }
+    createExtraText() {
+      const sections = BuildCard.getBuildCardSections();
+      if (document.getElementById(EXTRA_PARAMETER_TEXT)) return;
+      const extraParameter = document.createElement("div");
+      extraParameter.id = EXTRA_PARAMETER_TEXT;
+      extraParameter.style.right = "0.3em";
+      extraParameter.style.marginTop = "-0.5em";
+      extraParameter.style.textAlign = "right";
+      extraParameter.style.fontSize = "0.8em";
+      extraParameter.style.whiteSpace = "nowrap";
+      sections.right.appendChild(extraParameter);
+    }
+    methodSelect() {
+      var _a, _b;
+      const methodSelectDiv = document.createElement("div");
+      methodSelectDiv.id = "methodSelect";
+      methodSelectDiv.style.display = "flex";
+      methodSelectDiv.style.flexWrap = "wrap";
+      methodSelectDiv.style.gap = "0.5em";
+      methodSelectDiv.style.paddingBottom = "0.6em";
+      methodSelectDiv.classList.add(
+        "methodRadio",
+        EvaluationConst.METHOD_SELECTOR_SVELTE
+      );
+      const methodRadios = this.evaluateMethods.map(
+        (method) => this.methodRadio(method)
+      );
+      methodRadios.forEach((radio) => methodSelectDiv.appendChild(radio));
+      (_b = (_a = methodRadios[0]) == null ? void 0 : _a.getElementsByTagName("input")[0]) == null ? void 0 : _b.toggleAttribute("checked", true);
+      return methodSelectDiv;
+    }
+    methodMode() {
+      const methodModeDiv = document.createElement("div");
+      methodModeDiv.id = "methodMode";
+      methodModeDiv.style.display = "flex";
+      methodModeDiv.style.flexWrap = "wrap";
+      methodModeDiv.style.gap = "0.5em";
+      methodModeDiv.style.paddingBottom = "0.6em";
+      methodModeDiv.classList.add("methodMode");
+      for (const method of this.evaluateMethods) {
+        const methodModeSelect = document.createElement("div");
+        methodModeSelect.id = method.methodName;
+        methodModeSelect.style.rowGap = "0.5em";
+        method.createSelector(methodModeSelect);
+        methodModeDiv.appendChild(methodModeSelect);
+      }
+      return methodModeDiv;
+    }
+    methodRadio(method) {
+      const baseLabel = document.createElement("label");
+      baseLabel.classList.add(
+        "Checkbox",
+        "Control",
+        "sm",
+        EvaluationConst.METHOD_SELECTOR_SVELTE
+      );
+      const radio = document.createElement("input");
+      radio.name = EvaluationConst.METHOD_SELECTOR_NAME;
+      radio.value = method.methodName;
+      radio.toggleAttribute("hidden", true);
+      radio.setAttribute("type", "radio");
+      const toggle = document.createElement("div");
+      toggle.classList.add("toggle", EvaluationConst.METHOD_SELECTOR_SVELTE);
+      const methodNameBase = document.createElement("span");
+      methodNameBase.classList.add(
+        "info",
+        EvaluationConst.METHOD_SELECTOR_SVELTE
+      );
+      const methodName = document.createElement("span");
+      methodName.classList.add(
+        method.methodKey,
+        "label",
+        EvaluationConst.METHOD_SELECTOR_SVELTE
+      );
+      methodNameBase.appendChild(methodName);
+      baseLabel.appendChild(radio);
+      baseLabel.appendChild(toggle);
+      baseLabel.appendChild(methodNameBase);
+      return baseLabel;
+    }
+  }
+  class LocalizeWeapon {
+    constructor() {
+      this.element = BuildCard.getWeapon();
+    }
+    format() {
+      this.element.style.textShadow = "0 0.1em 0.1em rgba(0,0,0,.4)";
+      const weaponImage = this.element.getElementsByTagName("figure")[0];
+      weaponImage.style.width = "30%";
+      const weaponInfo = this.element.getElementsByClassName("weapon-caption")[0];
+      weaponInfo.style.paddingRight = "0%";
+      const weaponSub = this.element.getElementsByClassName("sub")[0];
+      weaponSub.style.display = "flex";
+      if (weaponSub.getElementsByClassName("sep").length <= 0) {
+        const refine = weaponSub.firstElementChild;
+        refine.after(EnkaNetworkUtil.getSeparateElement());
+      }
+      const subStats = this.element.getElementsByClassName("Substat");
+      for (const subStat of Array.from(subStats)) {
+        EnkaNetworkUtil.addStatTextElement(subStat);
+        subStat.style.display = "flex";
+        subStat.style.alignItems = "center";
+        subStat.style.marginRight = "0%";
+        subStat.style.marginBottom = "1%";
+        subStat.style.paddingTop = "3%";
+      }
+    }
+    localize() {
+      const localizeData = EnkaNetworkUtil.getLocalizeData();
+      const statTexts = this.element.getElementsByClassName("statText");
+      const baseAtkStatText = statTexts[0];
+      baseAtkStatText.textContent = localizeData.getLocale(
+        LocalizeKey.base_atk
+      );
+      const subStatText = statTexts[1];
+      if (subStatText instanceof HTMLElement) {
+        const subStat = subStatText.parentElement;
+        subStatText.textContent = localizeData.getLocale(
+          subStat.classList[1]
+        );
+      }
+    }
+  }
+  class LocalizeArtifact {
+    constructor() {
+      this.artifacts = [];
+      this.artifacts = BuildCard.getArtifacts();
+    }
+    format() {
+      for (const artifact of this.artifacts) {
+        if (artifact.element.classList.contains("empty")) continue;
+        const mainStat = artifact.element.getElementsByClassName("mainstat")[0];
+        EnkaNetworkUtil.addStatTextElement(mainStat, false);
+        const subStats = artifact.element.getElementsByClassName("Substat");
+        for (const subStat of Array.from(subStats)) {
+          const statText = EnkaNetworkUtil.addStatTextElement(subStat);
+          statText.classList.add("sub");
+        }
+      }
+      const svelte = EnkaNetworkUtil.getSvelteClassName(
+        this.artifacts[0].element
+      );
+      cssManager.addStyle(
+        `.Artifact.${svelte} canvas.ArtifactIcon { top: -37%; left: -6%; width: 28%; }`,
+        // 聖遺物画像の調整
+        `.substats.${svelte} > .Substat { display: flex; align-items: center; padding-right: 1.0em; white-space: nowrap; }`,
+        // 聖遺物のサブステータスが右に行きすぎるので調整
+        `.mainstat.${svelte} > div.${svelte}:nth-child(1) { display: flex; align-items: center; top: 5%; line-height:0.9; max-height: 25%; text-shadow: 0 0.07em 0.1em black; justify-content: flex-end; align-self: unset; margin-left: unset; }`,
+        // 聖遺物メインステータスの調整
+        `.mainstat.${svelte} > div.${svelte}:nth-child(2) { padding: 4% 0%; }`,
+        `.mainstat.${svelte} > div.${svelte}:nth-child(3) { max-height: 25% }`
+      );
+    }
+    localize() {
+      for (const artifact of this.artifacts) {
+        if (artifact.element.classList.contains("empty")) continue;
+        const mainStat = artifact.element.getElementsByClassName("mainstat")[0];
+        this.inputLocalize(mainStat);
+        const subStats = artifact.element.getElementsByClassName("Substat");
+        for (const subStat of Array.from(subStats)) {
+          this.inputLocalize(subStat);
+        }
+      }
+    }
+    inputLocalize(parentElement) {
+      const localizeData = EnkaNetworkUtil.getLocalizeData();
+      const statText = parentElement.getElementsByClassName(
+        "statText"
+      )[0];
+      if (!statText) return;
+      const statKey = parentElement.classList[1] ?? "UNKNOWN";
+      statText.innerText = this.isSubStat(statText) ? localizeData.getLocaleSub(statKey) : localizeData.getLocale(statKey);
+    }
+    isSubStat(element) {
+      return element.classList.contains("sub");
+    }
+  }
+  function getFormattedDate(date, format) {
+    const symbol = {
+      M: date.getMonth() + 1,
+      d: date.getDate(),
+      h: date.getHours(),
+      m: date.getMinutes(),
+      s: date.getSeconds()
+    };
+    const formatted = format.replace(/(M+|d+|h+|m+|s+)/g, (v) => {
+      const num = symbol[v.slice(-1)].toString();
+      if (v.length > 1) {
+        return ("0" + num).slice(-2);
+      } else {
+        return num;
+      }
+    });
+    return formatted.replace(
+      /(y+)/g,
+      (v) => date.getFullYear().toString().slice(-v.length)
+    );
+  }
+  class LocalizeTimeStamp {
+    constructor() {
+    }
+    format() {
+      var _a;
+      const sections = BuildCard.getBuildCardSections();
+      if (document.getElementById(TIME_STAMP)) return;
+      const timeStamp = document.createElement("div");
+      timeStamp.id = TIME_STAMP;
+      timeStamp.innerText = "";
+      timeStamp.style.fontSize = "60%";
+      timeStamp.style.opacity = "0.4";
+      (_a = sections.left.firstChild) == null ? void 0 : _a.after(timeStamp);
+      sections.left.style.paddingTop = "0.8%";
+    }
+    localize() {
+      const timeStamp = document.getElementById(TIME_STAMP);
+      if (timeStamp instanceof HTMLElement) {
+        const date = /* @__PURE__ */ new Date();
+        const timeString = getFormattedDate(date, "yyyy-MM-dd hh:mm:ss");
+        timeStamp.textContent = `v${VERSION}TE ${timeString}`;
+      }
+    }
+  }
+  class LocalizeFriendship {
+    constructor() {
+    }
+    format() {
+      const buildCard = BuildCard.getBuildCard();
+      const friend = buildCard.getElementsByClassName("fren")[0];
+      if (friend instanceof HTMLElement) {
+        const friendText = EnkaNetworkUtil.addStatTextElement(
+          friend,
+          false
+        );
+        friendText.style.marginRight = "0.3em";
+      }
+    }
+    localize() {
+      const localizeData = EnkaNetworkUtil.getLocalizeData();
+      const buildCard = BuildCard.getBuildCard();
+      const friend = buildCard.getElementsByClassName("fren")[0];
+      if (friend instanceof HTMLElement) {
+        const statText = friend.firstChild;
+        statText.textContent = localizeData.getLocale(LocalizeKey.friend);
+      }
+    }
+  }
+  class LocalizeBuildCardFacade {
+    constructor() {
+      this.localizeList = [];
+      this.localizeList.push(new LocalizeTimeStamp());
+      this.localizeList.push(new LocalizeFriendship());
+      this.localizeList.push(new LocalizeArtifact());
+      this.localizeList.push(new LocalizeWeapon());
+    }
+    format() {
+      const sections = BuildCard.getBuildCardSections();
+      sections.left.style.width = "36%";
+      sections.middle.style.width = "24%";
+      sections.middle.style.left = "34%";
+      sections.right.style.width = "43%";
+      cssManager.addStyle(
+        `.Card .card-host svg.Icon { display:none; }`
+      );
+      this.localizeList.forEach((localize) => localize.format());
+    }
+    localize() {
+      this.localizeList.forEach((localize) => localize.localize());
+    }
+  }
+  var EnkaNetworkObserver;
+  ((EnkaNetworkObserver2) => {
+    const enkaNetworkObserver = new MutationObserver(
+      (mutations) => {
+        for (const mutation of mutations) {
+          let element = mutation.target;
+          if (element.nodeName == "#text") {
+            element = element.parentElement;
+          }
+          if (element.classList.contains("Card") || // ビルドカードの出現確認
+          element.classList.contains("name") || // キャラ名
+          element.classList.contains("Dropdown-selectedItem") || // 言語
+          element.classList.contains("Tab") || // ビルドの種類
+          element.classList.contains("svelte-grjiuv")) {
+            const localizeBuildCard = new LocalizeBuildCardFacade();
+            const evaluateBuildCard = new EvaluateBuildCard();
+            localizeBuildCard.format();
+            evaluateBuildCard.createSelector();
+            localizeBuildCard.localize();
+            evaluateBuildCard.localize();
+            evaluateBuildCard.evaluate();
+            break;
+          }
+        }
+      }
+    );
+    function active() {
+      enkaNetworkObserver.observe(document, {
+        childList: true,
+        characterData: true,
+        subtree: true
+      });
+    }
+    EnkaNetworkObserver2.active = active;
+  })(EnkaNetworkObserver || (EnkaNetworkObserver = {}));
+  function init() {
+    cssManager.addStyle(
+      '@font-face { font-family: GenFont; src: url(https://7144.jp/SDK_JP_Web-3.woff2) format("woff2"), url(https://7144.jp/SDK_JP_Web-3.woff2) format("woff"); }',
+      ".Card { font-family: GenFont !important; font-weight: normal !important; }",
+      ".Card b { font-weight: normal !important; }"
+    );
+    EnkaNetworkObserver.active();
+  }
+  init();
+
+})();

@@ -9,6 +9,7 @@
         "mainstat",
         "Pyro",
         "substat",
-        "substats"
+        "substats",
+        "userscripts"
     ],
 }

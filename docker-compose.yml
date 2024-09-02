@@ -1,10 +1,12 @@
 services:
-    myservice:
-        build: ./.devcontainer
-        container_name: enka-network-userscript
+    enka_network-translate:
+        build:
+            context: .
+            dockerfile: .devcontainer/Dockerfile
+        init: true
+        container_name: enka_network-translate
         working_dir: /workspace
         volumes:
-            # node_modulesディレクトリはホスト側に渡さないようにDockerのvolume内に格納
             - ./:/workspace
             - node-modules:/workspace/node_modules
         tty: true

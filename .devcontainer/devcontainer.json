@@ -1,23 +1,29 @@
 {
-    "name": "Enka.Network-dev",
+    "name": "enka_network-translate",
     "dockerComposeFile": [
         "../docker-compose.yml"
     ],
-    "service": "myservice",
+    "service": "enka_network-translate",
     "workspaceFolder": "/workspace",
     "customizations": {
         "vscode": {
             "settings": {
-                "editor.formatOnPaste": true,
-                "editor.formatOnSave": false,
-                "editor.formatOnType": true,
-                "prettier.tabWidth": 4,
+                "files.watcherExclude": {
+                    "**/node_modules/**": true
+                },
                 "[typescript][javascript]": {
-                    "editor.tabSize": 4,
-                    "editor.defaultFormatter": "esbenp.prettier-vscode"
+                    "editor.formatOnPaste": true,
+                    "editor.formatOnSave": true,
+                    "editor.formatOnType": true,
+                    "editor.defaultFormatter": "esbenp.prettier-vscode",
+                    "editor.codeActionsOnSave": {
+                        "source.fixAll.eslint": "never"
+                    }
                 },
                 "javascript.updateImportsOnFileMove.enabled": "always",
-                "typescript.updateImportsOnFileMove.enabled": "always"
+                "typescript.updateImportsOnFileMove.enabled": "always",
+                "eslint.useESLintClass": true,
+                "eslint.useFlatConfig": true
             },
             "extensions": [
                 "VisualStudioExptTeam.vscodeintellicode",
@@ -28,12 +34,12 @@
                 "ionutvmi.path-autocomplete",
                 "stylelint.vscode-stylelint",
                 "pmneo.tsimporter",
-                "bierner.comment-tagged-templates",
                 "streetsidesoftware.code-spell-checker",
-                "eamodio.gitlens",
-                "dsznajder.es7-react-js-snippets"
+                "dsznajder.es7-react-js-snippets",
+                "jasonnutter.search-node-modules",
+                "gamunu.vscode-yarn",
+                "mhutchie.git-graph"
             ]
         }
-    },
-    "postCreateCommand": "yarn install"
+    }
 }
