@@ -18,15 +18,12 @@
                     "editor.defaultFormatter": "esbenp.prettier-vscode",
                     "editor.codeActionsOnSave": {
                         "source.fixAll.eslint": "never"
-                    },
-                    "eslint.useESLintClass": true,
-                    "eslint.useFlatConfig": true,
-                    "eslint.options": {
-                        "overrideConfigFile": "eslint.config.mjs"
                     }
                 },
                 "javascript.updateImportsOnFileMove.enabled": "always",
-                "typescript.updateImportsOnFileMove.enabled": "always"
+                "typescript.updateImportsOnFileMove.enabled": "always",
+                "eslint.useESLintClass": true,
+                "eslint.useFlatConfig": true
             },
             "extensions": [
                 "VisualStudioExptTeam.vscodeintellicode",
